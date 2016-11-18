@@ -12,7 +12,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
 {
     public sealed class AdaDiscord
     {
-        internal DiscordClient Client { get; private set; }
+        internal DiscordClient DiscordClient { get; private set; }
         private Timer BanHammer { get; set; }
         private string Token { get; set; }
 
@@ -23,9 +23,9 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             dcb.LogLevel = Debugger.IsAttached ? LogSeverity.Debug : LogSeverity.Info;
             var dc = dcb.Build();
 
-            this.Client = new DiscordClient(dc);
-            this.Client.Log.Message += Log_Message;
-            this.Client.Ready += Client_Ready;
+            this.DiscordClient = new DiscordClient(dc);
+            this.DiscordClient.Log.Message += Log_Message;
+            this.DiscordClient.Ready += Client_Ready;
 
             var a = Assembly.GetExecutingAssembly();
             var n = a.GetName();
@@ -42,14 +42,14 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
         internal void Initialize()
         {
             L.W("ADA DSC", "Connecting");
-            this.Client.Connect(this.Token, TokenType.Bot).Wait();
-            L.W("ADA DSC", "Connected as '{0}'", this.Client.CurrentUser.Name);
+            this.DiscordClient.Connect(this.Token, TokenType.Bot).Wait();
+            L.W("ADA DSC", "Connected as '{0}'", this.DiscordClient.CurrentUser.Name);
         }
 
         internal void Deinitialize()
         {
             L.W("ADA DSC", "Disconnecting");
-            this.Client.Disconnect();
+            this.DiscordClient.Disconnect();
             L.W("ADA DSC", "Disconnected");
         }
 
@@ -62,7 +62,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
         {
             var ch = (Channel)null;
             while (ch == null)
-                ch = this.Client.GetChannel(channel);
+                ch = this.DiscordClient.GetChannel(channel);
             this.SendMessage(message, ch);
         }
 
@@ -115,7 +115,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
 
         private void BanHammer_Tick(object _)
         {
-            this.Client.SetGame("Banhammer 40,000");
+            this.DiscordClient.SetGame("Banhammer 40,000");
             L.W("ADA DSC BH", "Ticked banhammer");
         }
     }

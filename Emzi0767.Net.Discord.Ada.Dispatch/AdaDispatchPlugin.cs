@@ -58,7 +58,7 @@ namespace Emzi0767.Net.Discord.Ada.Dispatch
 
             var msg = utf8.GetString(buff, 0, (int)bl);
             msg = string.Format("**Date**: {0:yyyy-MM-dd HH:mm.ss zzz}{3}**Endpoint**: {1}{3}**Message**:{3}```{3}{2}{3}```", DateTime.Now, handler.RemoteEndPoint, msg, Environment.NewLine);
-            AdaBotCore.Client.SendMessage(msg, 207896989088743424u);
+            AdaBotCore.AdaClient.SendMessage(msg, 207896989088743424u);
             L.W("ADA-Disp", "Message from {0}", handler.RemoteEndPoint);
         }
     }

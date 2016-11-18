@@ -144,7 +144,7 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
                         sb.AppendFormat("{0}**{1}**", feed.Tag == null ? "" : string.Concat("[", feed.Tag, "] "), itt).AppendLine();
                         sb.AppendFormat("Published on {0:yyyy-MM-dd HH:mm} UTC", itd.ToUniversalTime()).AppendLine();
                         sb.AppendLine(itu.ToString());
-                        AdaBotCore.Client.SendMessage(sb.ToString(), feed.ChannelId);
+                        AdaBotCore.AdaClient.SendMessage(sb.ToString(), feed.ChannelId);
                     }
                 }
             }

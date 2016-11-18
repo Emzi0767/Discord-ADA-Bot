@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emzi0767.Net.Discord.Dispatch", "Emzi0767.Net.Discord.Dispatch\Emzi0767.Net.Discord.Dispatch.csproj", "{1F617225-2121-4BF8-9914-2D15E2C0F083}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dispatchtest", "dispatchtest\dispatchtest.csproj", "{112DA879-C91B-48CA-86D2-605ED6A00111}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ext_lib", "ext_lib", "{0F2D9783-9522-4B08-A83A-1F930CEF10FB}"
+	ProjectSection(SolutionItems) = preProject
+		ext_lib\Emzi0767.Tools.MicroLogger.dll = ext_lib\Emzi0767.Tools.MicroLogger.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample_configs", "sample_configs", "{061B5A91-5E15-403B-AD53-29EE5B2BDD89}"
+	ProjectSection(SolutionItems) = preProject
+		sample_configs\config.json = sample_configs\config.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9EB9A9A8-D8C1-4D35-A445-4EBF17FD3C2D}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emzi0767.Net.Discord.Dispatch.GenPurge", "Emzi0767.Net.Discord.Dispatch.GenPurge\Emzi0767.Net.Discord.Dispatch.GenPurge.csproj", "{BF58BDC2-2BCE-4D5A-B666-7AA65F7482A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emzi0767.Net.Discord.AdaBot", "Emzi0767.Net.Discord.AdaBot\Emzi0767.Net.Discord.AdaBot.csproj", "{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F617225-2121-4BF8-9914-2D15E2C0F083}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F617225-2121-4BF8-9914-2D15E2C0F083}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F617225-2121-4BF8-9914-2D15E2C0F083}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F617225-2121-4BF8-9914-2D15E2C0F083}.Release|Any CPU.Build.0 = Release|Any CPU
+		{112DA879-C91B-48CA-86D2-605ED6A00111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{112DA879-C91B-48CA-86D2-605ED6A00111}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{112DA879-C91B-48CA-86D2-605ED6A00111}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{112DA879-C91B-48CA-86D2-605ED6A00111}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF58BDC2-2BCE-4D5A-B666-7AA65F7482A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF58BDC2-2BCE-4D5A-B666-7AA65F7482A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF58BDC2-2BCE-4D5A-B666-7AA65F7482A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF58BDC2-2BCE-4D5A-B666-7AA65F7482A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -114,8 +114,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             cscb.PrefixChar = '/';
             cscb.HelpMode = HelpMode.Public;
             cscb.ErrorHandler = new EventHandler<CommandErrorEventArgs>(Cmds_Error);
-            AdaBotCore.Client.Client.UsingCommands(cscb.Build());
-            var cmds = AdaBotCore.Client.Client.GetService<CommandService>();
+            AdaBotCore.AdaClient.DiscordClient.UsingCommands(cscb.Build());
+            var cmds = AdaBotCore.AdaClient.DiscordClient.GetService<CommandService>();
             cmds.CommandExecuted += Cmds_CommandExecuted;
             cmds.CommandErrored += Cmds_CommandErrored;
             foreach (var cmd in this.GetCommands())

@@ -10,7 +10,7 @@ namespace Emzi0767.Net.Discord.AdaBot
     public static class AdaBotCore
     {
         public static AdaCommandHandler Handler { get; internal set; }
-        public static AdaDiscord Client { get; internal set; }
+        public static AdaDiscord AdaClient { get; internal set; }
         internal static AdaPluginManager PluginManager { get; set; }
         internal static UTF8Encoding UTF8 { get; set; }
         private static bool KeepRunning { get; set; }
@@ -25,8 +25,8 @@ namespace Emzi0767.Net.Discord.AdaBot
 
             // init discord
             L.W("ADA", "Initializing ADA Discord module");
-            Client = new AdaDiscord();
-            Client.Initialize();
+            AdaClient = new AdaDiscord();
+            AdaClient.Initialize();
             L.W("ADA", "ADA Discord module initialized");
 
             // init plugins
@@ -48,7 +48,7 @@ namespace Emzi0767.Net.Discord.AdaBot
 
             // some shutdown signal and subsequent shutdown
             L.W("ADA", "Caught exit signal");
-            Client.Deinitialize();
+            AdaClient.Deinitialize();
             L.W("ADA", "Disposing logger");
             L.Q();
         }
