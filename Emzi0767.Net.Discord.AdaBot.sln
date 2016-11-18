@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ext_lib", "ext_lib", "{0F2D9783-9522-4B08-A83A-1F930CEF10FB}"
+	ProjectSection(SolutionItems) = preProject
+		ext_lib\Emzi0767.Tools.MicroLogger.dll = ext_lib\Emzi0767.Tools.MicroLogger.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample_configs", "sample_configs", "{061B5A91-5E15-403B-AD53-29EE5B2BDD89}"
+	ProjectSection(SolutionItems) = preProject
+		sample_configs\config.json = sample_configs\config.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9EB9A9A8-D8C1-4D35-A445-4EBF17FD3C2D}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emzi0767.Net.Discord.AdaBot", "Emzi0767.Net.Discord.AdaBot\Emzi0767.Net.Discord.AdaBot.csproj", "{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emzi0767.Net.Discord.Ada.Dispatch", "Emzi0767.Net.Discord.Ada.Dispatch\Emzi0767.Net.Discord.Ada.Dispatch.csproj", "{6C89D694-9F46-42DA-8DCC-76A7E2278628}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emzi0767.Net.Discord.Ada.AdvancedCommands", "Emzi0767.Net.Discord.Ada.AdvancedCommands\Emzi0767.Net.Discord.Ada.AdvancedCommands.csproj", "{B50D886A-384A-4649-A8FA-CDBFFBB8AAEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emzi0767.Net.Discord.Ada.Feedle", "Emzi0767.Net.Discord.Ada.Feedle\Emzi0767.Net.Discord.Ada.Feedle.csproj", "{14A67A73-5CD0-450F-87AE-8060CAFAC36B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C89D694-9F46-42DA-8DCC-76A7E2278628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C89D694-9F46-42DA-8DCC-76A7E2278628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C89D694-9F46-42DA-8DCC-76A7E2278628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C89D694-9F46-42DA-8DCC-76A7E2278628}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B50D886A-384A-4649-A8FA-CDBFFBB8AAEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B50D886A-384A-4649-A8FA-CDBFFBB8AAEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B50D886A-384A-4649-A8FA-CDBFFBB8AAEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B50D886A-384A-4649-A8FA-CDBFFBB8AAEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14A67A73-5CD0-450F-87AE-8060CAFAC36B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14A67A73-5CD0-450F-87AE-8060CAFAC36B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14A67A73-5CD0-450F-87AE-8060CAFAC36B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14A67A73-5CD0-450F-87AE-8060CAFAC36B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
