@@ -536,7 +536,9 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             sb.AppendLine();
             sb.AppendFormat("I currently run on {0:#,##0} servers. If you want to add me to your server, contact <@181875147148361728>.", srv.Client.Servers.Count()).AppendLine();
             sb.AppendLine();
-            sb.AppendFormat("Current ADA version is {0}. There are {1:#,##0} plugins loaded, and {2:#,##0} commands registered.", n.Version, AdaBotCore.PluginManager.PluginCount, AdaBotCore.Handler.CommandCount);
+            sb.AppendFormat("Current ADA version is {0}. There are {1:#,##0} plugins loaded, and {2:#,##0} commands registered.", n.Version, AdaBotCore.PluginManager.PluginCount, AdaBotCore.Handler.CommandCount).AppendLine();
+            sb.AppendLine();
+            sb.AppendFormat("The brave individuals who wish to do so, can view and contribute to my source code at https://github.com/Emzi0767/Discord-ADA-Bot");
 
             await chn.SendMessage(sb.ToString());
         }

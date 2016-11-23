@@ -133,6 +133,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
                 g.Flush();
 
                 bmp.Save(ms, ImageFormat.Png);
+                ms.Seek(0, SeekOrigin.Begin);
 
                 await chn.SendFile("color_square.png", ms);
             }
