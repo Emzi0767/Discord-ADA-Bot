@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Emzi0767.Net.Discord.AdaBot.Attributes;
+using Emzi0767.Net.Discord.AdaBot.Extensions;
 
 namespace Emzi0767.Net.Discord.AdaBot.Core
 {
@@ -376,7 +378,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             foreach (var xus in uss)
             {
                 msb = new StringBuilder();
-                msb.AppendFormat("**User**: {0}#{1}", xus.Name, xus.Discriminator).AppendLine();
+                msb.AppendFormat("**User**: {0}#{1:0000}", xus.Name, xus.Discriminator).AppendLine();
                 msb.AppendFormat("**ID**: {0}", xus.Id).AppendLine();
                 msb.AppendFormat("**Nickname**: {0}", xus.Nickname).AppendLine();
                 msb.AppendFormat("**Roles**: {0}", string.Join(", ", xus.Roles)).AppendLine();
@@ -541,6 +543,127 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             sb.AppendFormat("The brave individuals who wish to do so, can view and contribute to my source code at https://github.com/Emzi0767/Discord-ADA-Bot");
 
             await chn.SendMessage(sb.ToString());
+        }
+
+        [Command("fulldump", "Performs a full environment dump. This command can only be used by Emzi0767.", CheckerId = "CoreDebugChecker", CheckPermissions = true)]
+        public static async Task FullDump(CommandEventArgs ea)
+        {
+            var srv = ea.Server;
+            var chn = ea.Channel;
+            var msg = ea.Message;
+            var usr = ea.User;
+
+            await msg.Delete();
+
+            // ada assembly data
+            var ada_a = Assembly.GetExecutingAssembly();
+            var ada_n = ada_a.GetName();
+            var ada_l = ada_a.Location;
+
+            // ada process data
+            var ada_p = Process.GetCurrentProcess();
+            var ada_m = ada_p.Modules;
+
+            // ada appdomain
+            var ada_d = AppDomain.CurrentDomain;
+            var ada_s = ada_d.GetAssemblies().OrderBy(xa => xa.FullName);
+
+            // dump holders
+            var ada_info = new List<string>();
+            var ada_sb0 = new StringBuilder();
+            var ada_sb1 = new StringBuilder();
+
+            // create the dump
+            ada_sb0.AppendLine("**ADA**: full debug dump").AppendLine();
+
+            // dump process info
+            ada_sb0.AppendLine("**ADA PROCESS**");
+            ada_sb0.AppendFormat("PID: {0}", ada_p.Id).AppendLine();
+            ada_sb0.AppendFormat("Name: '{0}'", ada_p.ProcessName).AppendLine();
+            ada_sb0.AppendFormat("Command line: {0} {1}", ada_p.StartInfo.FileName, ada_p.StartInfo.Arguments).AppendLine();
+            ada_sb0.AppendFormat("Started: {0:yyyy-MM-dd HH:mm:ss} UTC", ada_p.StartTime.ToUniversalTime()).AppendLine();
+            ada_sb0.AppendFormat("Thread count: {0:#,##0}", ada_p.Threads.Count).AppendLine();
+            ada_sb0.AppendFormat("Total processor time: {0:c}", ada_p.TotalProcessorTime).AppendLine();
+            ada_sb0.AppendFormat("User processor time: {0:c}", ada_p.UserProcessorTime).AppendLine();
+            ada_sb0.AppendFormat("Privileged processor time: {0:c}", ada_p.PrivilegedProcessorTime).AppendLine();
+            ada_sb0.AppendFormat("Handle count: {0:#,##0}", ada_p.HandleCount).AppendLine();
+            ada_sb0.AppendFormat("Working set: {0}", ada_p.WorkingSet64.ToSizeString()).AppendLine();
+            ada_sb0.AppendFormat("Virtual memory size: {0}", ada_p.VirtualMemorySize64.ToSizeString()).AppendLine();
+            ada_sb0.AppendFormat("Paged memory size: {0}", ada_p.PagedMemorySize64.ToSizeString()).AppendLine();
+            ada_info.Add(ada_sb0.ToString());
+            ada_sb0 = new StringBuilder();
+
+            // dump process module info
+            ada_sb0.AppendLine("**ADA PROCESS MODULES**");
+            foreach (ProcessModule ada_xm in ada_m)
+            {
+                ada_sb1 = new StringBuilder();
+                ada_sb1.AppendFormat("Name: {0}", ada_xm.ModuleName).AppendLine();
+                //ada_sb1.AppendFormat("File name: {0}", ada_xm.FileName).AppendLine();
+                ada_sb1.AppendFormat("File version: {0}", ada_xm.FileVersionInfo.FileVersion).AppendLine();
+                ada_sb1.AppendFormat("Product version: {0}", ada_xm.FileVersionInfo.ProductVersion).AppendLine();
+                ada_sb1.AppendFormat("Product name: {0}", ada_xm.FileVersionInfo.ProductName).AppendLine();
+                ada_sb1.AppendFormat("Base address: {0}", ada_xm.BaseAddress.ToPointerString()).AppendLine();
+                ada_sb1.AppendFormat("Entry point address: {0}", ada_xm.EntryPointAddress.ToPointerString()).AppendLine();
+                ada_sb1.AppendFormat("Memory size: {0}", ada_xm.ModuleMemorySize.ToSizeString()).AppendLine();
+                ada_sb1.AppendLine("---");
+
+                if (ada_sb0.Length + ada_sb1.Length >= 2000)
+                {
+                    ada_info.Add(ada_sb0.ToString());
+                    ada_sb0 = new StringBuilder();
+                }
+                ada_sb0.Append(ada_sb1.ToString());
+            }
+            ada_info.Add(ada_sb0.ToString());
+            ada_sb0 = new StringBuilder();
+
+            // dump assembly info
+            ada_sb0.AppendLine("**ADA ASSEMBLY INFO**");
+            ada_sb0.AppendFormat("Name: {0}", ada_n.FullName).AppendLine();
+            ada_sb0.AppendFormat("Version: {0}", ada_n.Version).AppendLine();
+            ada_sb0.AppendFormat("Location: {0}", ada_l).AppendLine();
+            ada_sb0.AppendFormat("Code base: {0}", ada_a.CodeBase).AppendLine();
+            ada_sb0.AppendFormat("Entry point: {0}.{1}", ada_a.EntryPoint.DeclaringType, ada_a.EntryPoint.Name).AppendLine();
+            ada_info.Add(ada_sb0.ToString());
+            ada_sb0 = new StringBuilder();
+
+            // dump appdomain info
+            ada_sb0.AppendLine("**ADA APPDOMAIN INFO**");
+            ada_sb0.AppendFormat("Name: {0}", ada_d.FriendlyName).AppendLine();
+            ada_sb0.AppendFormat("Base directory: {0}", ada_d.BaseDirectory).AppendLine();
+            ada_info.Add(ada_sb0.ToString());
+            ada_sb0 = new StringBuilder();
+
+            // dump appdomain assembly info
+            ada_sb0.AppendLine("**ADA APPDOMAIN ASSEMBLY INFO**");
+            foreach (var ada_xa in ada_s)
+            {
+                ada_sb1 = new StringBuilder();
+                ada_sb1.AppendFormat("Name: {0}", ada_xa.FullName).AppendLine();
+                ada_sb1.AppendFormat("Version: {0}", ada_xa.GetName().Version).AppendLine();
+                if (!ada_xa.IsDynamic)
+                {
+                    ada_sb1.AppendFormat("Location: {0}", ada_xa.Location).AppendLine();
+                    ada_sb1.AppendFormat("Code base: {0}", ada_xa.CodeBase).AppendLine();
+                }
+                if (ada_xa.EntryPoint != null)
+                    ada_sb1.AppendFormat("Entry point: {0}.{1}", ada_xa.EntryPoint.DeclaringType, ada_xa.EntryPoint.Name).AppendLine();
+                ada_sb1.AppendLine("---");
+
+                if (ada_sb0.Length + ada_sb1.Length >= 2000)
+                {
+                    ada_info.Add(ada_sb0.ToString());
+                    ada_sb0 = new StringBuilder();
+                }
+                ada_sb0.Append(ada_sb1.ToString());
+            }
+            ada_info.Add(ada_sb0.ToString());
+            ada_sb0 = null;
+            ada_sb1 = null;
+
+            foreach (var ada_data in ada_info)
+                await chn.SendMessage(ada_data);
         }
     }
 }

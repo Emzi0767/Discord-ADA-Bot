@@ -143,6 +143,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         private void Cmds_CommandErrored(object sender, CommandErrorEventArgs e)
         {
             L.W("DSC CMD", "User '{0}' failed to execute command '{1}' on server '{2}' ({3}); reason: {4} ({5})", e.User.Name, e.Command != null ? e.Command.Text : "<unknown>", e.Server.Name, e.Server.Id, e.Exception != null ? e.Exception.GetType().ToString() : e.ErrorType.ToString(), e.Exception != null ? e.Exception.Message : "N/A");
+            if (e.Exception != null)
+                L.X("DSC CMD", e.Exception);
             e.Channel.SendMessage(string.Format("**ADA**: {0} failed to execute '{1}', reason: *{2}*", e.User.Mention, e.Command != null ? e.Command.Text : "<unknown>", e.Exception != null ? e.Exception.Message : "N/A")).Wait();
         }
 

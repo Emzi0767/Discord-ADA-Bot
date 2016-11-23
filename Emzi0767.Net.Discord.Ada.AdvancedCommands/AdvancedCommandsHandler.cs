@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Drawing;
-using d = System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
-using s = Discord;
 using Discord.Commands;
 using Emzi0767.Net.Discord.AdaBot.Attributes;
 using Emzi0767.Net.Discord.AdaBot.Core;
-using System.IO;
+using d = System.Drawing;
+using s = Discord;
 
 namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
 {

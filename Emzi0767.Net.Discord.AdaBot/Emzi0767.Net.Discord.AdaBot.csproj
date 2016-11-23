@@ -88,10 +88,12 @@
     <Compile Include="Core\AdaChecker.cs" />
     <Compile Include="Core\AdaCommands.cs" />
     <Compile Include="AdaBotCore.cs" />
+    <Compile Include="Core\AdaDebugChecker.cs" />
     <Compile Include="Core\AdaDiscord.cs" />
     <Compile Include="Core\AdaPermission.cs" />
     <Compile Include="Core\AdaPlugin.cs" />
     <Compile Include="Core\AdaPluginManager.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
