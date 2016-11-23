@@ -11,6 +11,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
     internal class AdaPluginManager
     {
         private Dictionary<string, AdaPlugin> RegisteredPlugins { get; set; }
+        public int PluginCount { get { return this.RegisteredPlugins.Count; } }
 
         public AdaPluginManager()
         {

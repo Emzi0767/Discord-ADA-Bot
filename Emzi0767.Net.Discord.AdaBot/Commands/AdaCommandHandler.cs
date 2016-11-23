@@ -19,6 +19,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
     {
         private Dictionary<string, AdaCommand> RegisteredCommands { get; set; }
         private Dictionary<string, IPermissionChecker> RegisteredCheckers { get; set; }
+        public int CommandCount { get { return this.RegisteredCommands.Count; } }
+        public int CheckerCount { get { return this.RegisteredCheckers.Count; } }
 
         /// <summary>
         /// Initializes the command handler.
@@ -141,7 +143,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         private void Cmds_CommandErrored(object sender, CommandErrorEventArgs e)
         {
             L.W("DSC CMD", "User '{0}' failed to execute command '{1}' on server '{2}' ({3}); reason: {4} ({5})", e.User.Name, e.Command != null ? e.Command.Text : "<unknown>", e.Server.Name, e.Server.Id, e.Exception != null ? e.Exception.GetType().ToString() : e.ErrorType.ToString(), e.Exception != null ? e.Exception.Message : "N/A");
-            e.Channel.SendMessage(string.Format("**ADA**: {0} failed to execute '{1}', reason: *{2}*", e.User.Mention, e.Command.Text, e.Exception != null ? e.Exception.Message : "N/A")).Wait();
+            e.Channel.SendMessage(string.Format("**ADA**: {0} failed to execute '{1}', reason: *{2}*", e.User.Mention, e.Command != null ? e.Command.Text : "<unknown>", e.Exception != null ? e.Exception.Message : "N/A")).Wait();
         }
 
         private void Cmds_CommandExecuted(object sender, CommandEventArgs e)

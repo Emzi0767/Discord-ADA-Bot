@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Drawing;
+using d = System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using s = Discord;
 using Discord.Commands;
 using Emzi0767.Net.Discord.AdaBot.Attributes;
 using Emzi0767.Net.Discord.AdaBot.Core;
+using System.IO;
 
 namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
 {
@@ -29,7 +35,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
                 url = await srv.CreateRole(usr.Id.ToString(), srv.EveryoneRole.Permissions, null, false, false);
                 await usr.AddRoles(url);
             }
-            await url.Edit(null, null, new Color(clr), null, null, null);
+            await url.Edit(null, null, new s.Color(clr), null, null, null);
 
             await chn.SendMessage(string.Format("**ADA**: {0}'s color is now {1:X6}.", usr.Mention, clr));
         }
@@ -99,6 +105,37 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var ascii = utf8.GetString(dat);
 
             await chn.SendMessage(string.Format("{0}: ASCII representation of your message is {1}", usr.Mention, ascii));
+        }
+
+        [Command("color", "Creates a colored square, used for color previewing. This command can be disabled by server administrators.", Aliases = "clr;colour;colorsquare;coloursquare;clrsq", CheckerId = "ACPChecker", CheckPermissions = true)]
+        public static async Task ColorSquare(CommandEventArgs ea)
+        {
+            var srv = ea.Server;
+            var chn = ea.Channel;
+            var msg = ea.Message;
+            var usr = ea.User;
+
+            await msg.Delete();
+
+            using (var ms = new MemoryStream())
+            using (var bmp = new Bitmap(64, 64, PixelFormat.Format32bppPArgb))
+            using (var g = Graphics.FromImage(bmp))
+            {
+                g.CompositingMode = CompositingMode.SourceOver;
+                g.CompositingQuality = CompositingQuality.HighSpeed;
+
+                var cli = Convert.ToInt32(ea.Args[0], 16);
+                var clr = d.Color.FromArgb(cli);
+                var csb = new SolidBrush(clr);
+
+                g.Clear(d.Color.Transparent);
+                g.FillRectangle(csb, new Rectangle(Point.Empty, bmp.Size));
+                g.Flush();
+
+                bmp.Save(ms, ImageFormat.Png);
+
+                await chn.SendFile("color_square.png", ms);
+            }
         }
 
         [Command("enableadvancedcommand", "Enables an Advanced Commands command. This command can only be used by server administrators.", Aliases = "enableac;enableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]

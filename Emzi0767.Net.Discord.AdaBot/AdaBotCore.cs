@@ -11,6 +11,7 @@ namespace Emzi0767.Net.Discord.AdaBot
     {
         public static AdaCommandHandler Handler { get; internal set; }
         public static AdaDiscord AdaClient { get; internal set; }
+        public static int PluginCount { get { return PluginManager.PluginCount; } }
         internal static AdaPluginManager PluginManager { get; set; }
         internal static UTF8Encoding UTF8 { get; set; }
         private static bool KeepRunning { get; set; }

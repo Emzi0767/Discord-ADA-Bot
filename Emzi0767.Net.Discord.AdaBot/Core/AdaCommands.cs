@@ -103,64 +103,64 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             
             var sb = new StringBuilder();
             sb.AppendLine("**ADA**: Dumping all properties of a role");
-            sb.AppendFormat("Group name: {0}", grp.Name).AppendLine();
-            sb.AppendFormat("Group ID: {0}", grp.Id).AppendLine();
-            sb.AppendFormat("Group color: {0:X6}", grp.Color.RawValue).AppendLine();
-            sb.AppendFormat("Is everyone: {0}", grp.IsEveryone ? "Yes" : "No").AppendLine();
-            sb.AppendFormat("Is hoisted: {0}", grp.IsHoisted ? "Yes" : "No").AppendLine();
-            sb.AppendFormat("Is mentionable: {0}", grp.IsMentionable ? "Yes" : "No").AppendLine();
+            sb.AppendFormat("**Name**: {0}", grp.Name).AppendLine();
+            sb.AppendFormat("**ID**: {0}", grp.Id).AppendLine();
+            sb.AppendFormat("**Color**: {0:X6}", grp.Color.RawValue).AppendLine();
+            sb.AppendFormat("**Is everyone**: {0}", grp.IsEveryone ? "Yes" : "No").AppendLine();
+            sb.AppendFormat("**Is hoisted**: {0}", grp.IsHoisted ? "Yes" : "No").AppendLine();
+            sb.AppendFormat("**Is mentionable**: {0}", grp.IsMentionable ? "Yes" : "No").AppendLine();
             if (grp.IsMentionable)
-                sb.AppendFormat("Mention: {0}", grp.Mention).AppendLine();
-            sb.AppendFormat("Position: {0}", grp.Position).AppendLine();
-            sb.AppendFormat("Total members: {0:#,##0}", grp.Members.Count()).AppendLine();
-            sb.AppendLine("Permissions:");
-            sb.AppendFormat("Raw value: {0}", grp.Permissions.RawValue).AppendLine();
+                sb.AppendFormat("**Mention**: {0}", grp.Mention).AppendLine();
+            sb.AppendFormat("**Position**: {0}", grp.Position).AppendLine();
+            sb.AppendFormat("**Total members**: {0:#,##0}", grp.Members.Count()).AppendLine();
+            sb.AppendLine("**Permissions**:");
+            sb.AppendFormat("**Raw value**: {0}", grp.Permissions.RawValue).AppendLine();
             if (grp.Permissions.Administrator)
-                sb.AppendLine("* Administrator");
+                sb.AppendLine("+ Administrator");
             if (grp.Permissions.AttachFiles)
-                sb.AppendLine("* Can attach files");
+                sb.AppendLine("+ Can attach files");
             if (grp.Permissions.BanMembers)
-                sb.AppendLine("* Can ban members");
+                sb.AppendLine("+ Can ban members");
             if (grp.Permissions.ChangeNickname)
-                sb.AppendLine("* Can change nickname");
+                sb.AppendLine("+ Can change nickname");
             if (grp.Permissions.Connect)
-                sb.AppendLine("* Can use voice chat");
+                sb.AppendLine("+ Can use voice chat");
             if (grp.Permissions.CreateInstantInvite)
-                sb.AppendLine("* Can create instant invites");
+                sb.AppendLine("+ Can create instant invites");
             if (grp.Permissions.DeafenMembers)
-                sb.AppendLine("* Can deafen members");
+                sb.AppendLine("+ Can deafen members");
             if (grp.Permissions.EmbedLinks)
-                sb.AppendLine("* Can embed links");
+                sb.AppendLine("+ Can embed links");
             if (grp.Permissions.KickMembers)
-                sb.AppendLine("* Can kick members");
+                sb.AppendLine("+ Can kick members");
             if (grp.Permissions.ManageChannels)
-                sb.AppendLine("* Can manage channels");
+                sb.AppendLine("+ Can manage channels");
             if (grp.Permissions.ManageMessages)
-                sb.AppendLine("* Can manage messages");
+                sb.AppendLine("+ Can manage messages");
             if (grp.Permissions.ManageNicknames)
-                sb.AppendLine("* Can manage nicknames");
+                sb.AppendLine("+ Can manage nicknames");
             if (grp.Permissions.ManageRoles)
-                sb.AppendLine("* Can manage roles");
+                sb.AppendLine("+ Can manage roles");
             if (grp.Permissions.ManageServer)
-                sb.AppendLine("* Can manage server");
+                sb.AppendLine("+ Can manage server");
             if (grp.Permissions.MentionEveryone)
-                sb.AppendLine("* Can mention everyone group");
+                sb.AppendLine("+ Can mention everyone group");
             if (grp.Permissions.MoveMembers)
-                sb.AppendLine("* Can move members between voice channels");
+                sb.AppendLine("+ Can move members between voice channels");
             if (grp.Permissions.MuteMembers)
-                sb.AppendLine("* Can mute members");
+                sb.AppendLine("+ Can mute members");
             if (grp.Permissions.ReadMessageHistory)
-                sb.AppendLine("* Can read message history");
+                sb.AppendLine("+ Can read message history");
             if (grp.Permissions.ReadMessages)
-                sb.AppendLine("* Can read messages");
+                sb.AppendLine("+ Can read messages");
             if (grp.Permissions.SendMessages)
-                sb.AppendLine("* Can send messages");
+                sb.AppendLine("+ Can send messages");
             if (grp.Permissions.SendTTSMessages)
-                sb.AppendLine("* Can send TTS messages");
+                sb.AppendLine("+ Can send TTS messages");
             if (grp.Permissions.Speak)
-                sb.AppendLine("* Can speak");
+                sb.AppendLine("+ Can speak");
             if (grp.Permissions.UseVoiceActivation)
-                sb.AppendLine("* Can use voice activation");
+                sb.AppendLine("+ Can use voice activation");
 
             await chn.SendMessage(sb.ToString());
         }
@@ -381,6 +381,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
                 msb.AppendFormat("**Nickname**: {0}", xus.Nickname).AppendLine();
                 msb.AppendFormat("**Roles**: {0}", string.Join(", ", xus.Roles)).AppendLine();
                 msb.AppendFormat("**Joined**: {0:yyyy-MM-dd HH:mm:ss} UTC", xus.JoinedAt.ToUniversalTime()).AppendLine();
+                msb.AppendFormat("**Avatar URL**: {0}", xus.AvatarUrl).AppendLine();
                 msb.AppendLine("------");
                 if (msb.Length + sb.Length >= 2000)
                 {
@@ -399,6 +400,31 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             {
                 await chn.SendMessage(xmsg);
             }
+        }
+
+        [Command("serverinfo", "Displays information about current server. This command can only be used by server administrators.", Aliases = "sinfo;guildinfo;ginfo", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageGuild)]
+        public static async Task ServerInfo(CommandEventArgs ea)
+        {
+            var srv = ea.Server;
+            var chn = ea.Channel;
+            var msg = ea.Message;
+            var usr = ea.User;
+
+            await msg.Delete();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("**ADA**: guild info").AppendLine();
+            sb.AppendFormat("**Name**: '{0}'", srv.Name).AppendLine();
+            sb.AppendFormat("**ID**: {0}", srv.Id).AppendLine();
+            sb.AppendFormat("**Region**: {0}", srv.Region.Name).AppendLine();
+            sb.AppendFormat("**Owner**: {0} ({1})", srv.Owner.Mention, srv.Owner.Id).AppendLine();
+            sb.AppendFormat("**Channel count**: {0:#,##0}", srv.ChannelCount).AppendLine();
+            sb.AppendFormat("**Role count**: {0:#,##0}", srv.RoleCount).AppendLine();
+            sb.AppendFormat("**Member count**: {0:#,##0}", srv.UserCount).AppendLine();
+            sb.AppendFormat("**Default channel**: {0}", srv.DefaultChannel.Mention).AppendLine();
+            sb.AppendFormat("**Features**: {0}", string.Join(", ", srv.Features.Select(xs => string.Concat("'", xs, "'")))).AppendLine();
+            sb.AppendFormat("**Icon URL**: {0}", srv.IconUrl).AppendLine();
+            await chn.SendMessage(sb.ToString());
         }
 
         [Command("purgechannel", "Purges a channel. Removes up to 100 messages. This command can only be used by server administrators.", Aliases = "purgech;chpurge;chanpurge;purgechan", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
@@ -498,6 +524,9 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
 
             await msg.Delete();
 
+            var a = Assembly.GetExecutingAssembly();
+            var n = a.GetName();
+
             var sb = new StringBuilder();
             sb.AppendLine("Hi! I am ADA, or Advanced (although Automatic is also applicable) Discord Administrator. A bot created by Emzi0767 to simplify several administrative tasks for discord servers.");
             sb.AppendLine();
@@ -506,6 +535,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             sb.AppendLine("You can see the list of currently available commands by typing /adahelp. Note that some of these commands might not be available to you, depending on this server's policy.");
             sb.AppendLine();
             sb.AppendFormat("I currently run on {0:#,##0} servers. If you want to add me to your server, contact <@181875147148361728>.", srv.Client.Servers.Count()).AppendLine();
+            sb.AppendLine();
+            sb.AppendFormat("Current ADA version is {0}. There are {1:#,##0} plugins loaded, and {2:#,##0} commands registered.", n.Version, AdaBotCore.PluginManager.PluginCount, AdaBotCore.Handler.CommandCount);
 
             await chn.SendMessage(sb.ToString());
         }
