@@ -61,8 +61,11 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
         public void SendMessage(string message, ulong channel)
         {
             var ch = (Channel)null;
-            while (ch == null)
+            var tg = DateTime.Now;
+            while (ch == null && (DateTime.Now - tg).TotalSeconds < 10)
                 ch = this.DiscordClient.GetChannel(channel);
+            if (ch == null)
+                return;
             this.SendMessage(message, ch);
         }
 
