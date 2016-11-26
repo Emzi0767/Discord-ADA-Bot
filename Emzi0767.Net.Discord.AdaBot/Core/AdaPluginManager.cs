@@ -11,6 +11,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
     internal class AdaPluginManager
     {
         private Dictionary<string, AdaPlugin> RegisteredPlugins { get; set; }
+        private Dictionary<string, Assembly> LoadedAssemblies { get; set; }
         public int PluginCount { get { return this.RegisteredPlugins.Count; } }
 
         public AdaPluginManager()
@@ -24,6 +25,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
         {
             L.W("ADA PLG", "Registering and initializing plugins");
 
+            this.LoadedAssemblies = new Dictionary<string, Assembly>();
             var a = Assembly.GetExecutingAssembly();
             var l = a.Location;
             l = Path.GetDirectoryName(l);
@@ -34,9 +36,11 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
                 foreach (var xx in x)
                 {
                     L.W("ADA PLG", "Loaded file '{0}'", xx);
-                    Assembly.Load(File.ReadAllBytes(xx));
+                    var xa = Assembly.Load(File.ReadAllBytes(xx));
+                    this.LoadedAssemblies.Add(xa.FullName, xa);
                 }
             }
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
             var @as = AppDomain.CurrentDomain.GetAssemblies();
             var ts = @as.SelectMany(xa => xa.DefinedTypes);
@@ -74,6 +78,13 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
                 L.W("ADA PLG", "Plugin '{0}' initialized", xpt.Name);
             }
             L.W("ADA PLG", "Registered and initialized {0:#,##0} plugins", this.RegisteredPlugins.Count);
+        }
+
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            if (this.LoadedAssemblies.ContainsKey(args.Name))
+                return this.LoadedAssemblies[args.Name];
+            return null;
         }
     }
 }
