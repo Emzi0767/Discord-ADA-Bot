@@ -580,7 +580,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             ada_sb0.AppendLine("**ADA PROCESS**");
             ada_sb0.AppendFormat("PID: {0}", ada_p.Id).AppendLine();
             ada_sb0.AppendFormat("Name: '{0}'", ada_p.ProcessName).AppendLine();
-            ada_sb0.AppendFormat("Is 64-bit: {0}", Environment.Is64BitProcess ? "Yes" : "No");
+            ada_sb0.AppendFormat("Is 64-bit: {0}", Environment.Is64BitProcess ? "Yes" : "No").AppendLine();
             ada_sb0.AppendFormat("Command line: {0} {1}", ada_p.StartInfo.FileName, ada_p.StartInfo.Arguments).AppendLine();
             ada_sb0.AppendFormat("Started: {0:yyyy-MM-dd HH:mm:ss} UTC", ada_p.StartTime.ToUniversalTime()).AppendLine();
             ada_sb0.AppendFormat("Thread count: {0:#,##0}", ada_p.Threads.Count).AppendLine();
