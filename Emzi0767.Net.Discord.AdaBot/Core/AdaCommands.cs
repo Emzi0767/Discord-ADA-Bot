@@ -631,9 +631,9 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
 
             // dump environment info
             ada_sb0.AppendLine("**ADA OS/.NET INFO**");
-            ada_sb0.AppendFormat("OS platform: {0}", Environment.OSVersion.Platform.ToString());
-            ada_sb0.AppendFormat("OS version: {0} ({1}); Service Pack: {2}", Environment.OSVersion.Version, Environment.OSVersion.VersionString, Environment.OSVersion.ServicePack);
-            ada_sb0.AppendFormat("OS is 64-bit: {0}", Environment.Is64BitOperatingSystem ? "Yes" : "No");
+            ada_sb0.AppendFormat("OS platform: {0}", Environment.OSVersion.Platform.ToString()).AppendLine();
+            ada_sb0.AppendFormat("OS version: {0} ({1}); Service Pack: {2}", Environment.OSVersion.Version, Environment.OSVersion.VersionString, Environment.OSVersion.ServicePack).AppendLine();
+            ada_sb0.AppendFormat("OS is 64-bit: {0}", Environment.Is64BitOperatingSystem ? "Yes" : "No").AppendLine();
             ada_sb0.AppendFormat(".NET environment version: {0}", Environment.Version).AppendLine();
             ada_sb0.AppendFormat(".NET is Mono: {0}", Type.GetType("Mono.Runtime") != null ? "Yes" : "No");
             ada_info.Add(ada_sb0.ToString());
