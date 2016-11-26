@@ -600,7 +600,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             {
                 ada_sb1 = new StringBuilder();
                 ada_sb1.AppendFormat("Name: {0}", ada_xm.ModuleName).AppendLine();
-                //ada_sb1.AppendFormat("File name: {0}", ada_xm.FileName).AppendLine();
+                ada_sb1.AppendFormat("File name: {0}", ada_xm.FileName).AppendLine();
                 ada_sb1.AppendFormat("File version: {0}", ada_xm.FileVersionInfo.FileVersion).AppendLine();
                 ada_sb1.AppendFormat("Product version: {0}", ada_xm.FileVersionInfo.ProductVersion).AppendLine();
                 ada_sb1.AppendFormat("Product name: {0}", ada_xm.FileVersionInfo.ProductName).AppendLine();
