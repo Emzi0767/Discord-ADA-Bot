@@ -194,6 +194,25 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             {
                 var mrl = msg.MentionedRoles.First();
                 mnt = mrl.Mention;
+                var chs = msg.MentionedChannels;
+                var maxm = 100;
+                var lstm = -1;
+                //var msgs = new Message[maxm];
+                var msgs = new List<Message>(maxm);
+                var msgt = (Message[])null;
+                while (msgs.Count < maxm && lstm != 0)
+                {
+                    foreach (var xch in chs)
+                    {
+                        if ((msgt = await xch.DownloadMessages(Math.Min(100, maxm - msgs.Count), msgs.OrderByDescending(xm => xm != null ? xm.Timestamp : new DateTime(2000, 1, 1, 0, 0, 0)).FirstOrDefault() == null ? null : (ulong?)msgs.OrderByDescending(xm => xm != null ? xm.Timestamp : new DateTime(2000, 1, 1, 0, 0, 0)).FirstOrDefault().Id)).Length > 0)
+                        {
+                            lstm = Math.Max(msgt.Length, lstm);
+                            msgs.AddRange(msgt.Where(xmsg => xmsg.User != null && xmsg.User.HasRole(mrl)));
+                        }
+                    }
+                }
+                foreach (var xmsg in msgs)
+                    chain.Add(xmsg.Text.Split(' '), 1);
             }
             else if (msg.MentionedChannels.Count() > 0)
             {
