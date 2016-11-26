@@ -580,6 +580,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             ada_sb0.AppendLine("**ADA PROCESS**");
             ada_sb0.AppendFormat("PID: {0}", ada_p.Id).AppendLine();
             ada_sb0.AppendFormat("Name: '{0}'", ada_p.ProcessName).AppendLine();
+            ada_sb0.AppendFormat("Is 64-bit: {0}", Environment.Is64BitProcess ? "Yes" : "No");
             ada_sb0.AppendFormat("Command line: {0} {1}", ada_p.StartInfo.FileName, ada_p.StartInfo.Arguments).AppendLine();
             ada_sb0.AppendFormat("Started: {0:yyyy-MM-dd HH:mm:ss} UTC", ada_p.StartTime.ToUniversalTime()).AppendLine();
             ada_sb0.AppendFormat("Thread count: {0:#,##0}", ada_p.Threads.Count).AppendLine();
@@ -625,6 +626,16 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             ada_sb0.AppendFormat("Location: {0}", ada_l).AppendLine();
             ada_sb0.AppendFormat("Code base: {0}", ada_a.CodeBase).AppendLine();
             ada_sb0.AppendFormat("Entry point: {0}.{1}", ada_a.EntryPoint.DeclaringType, ada_a.EntryPoint.Name).AppendLine();
+            ada_info.Add(ada_sb0.ToString());
+            ada_sb0 = new StringBuilder();
+
+            // dump environment info
+            ada_sb0.AppendLine("**ADA OS/.NET INFO**");
+            ada_sb0.AppendFormat("OS platform: {0}", Environment.OSVersion.Platform.ToString());
+            ada_sb0.AppendFormat("OS version: {0} ({1}); Service Pack: {2}", Environment.OSVersion.Version, Environment.OSVersion.VersionString, Environment.OSVersion.ServicePack);
+            ada_sb0.AppendFormat("OS is 64-bit: {0}", Environment.Is64BitOperatingSystem ? "Yes" : "No");
+            ada_sb0.AppendFormat(".NET environment version: {0}", Environment.Version).AppendLine();
+            ada_sb0.AppendFormat(".NET is Mono: {0}", Type.GetType("Mono.Runtime") != null ? "Yes" : "No");
             ada_info.Add(ada_sb0.ToString());
             ada_sb0 = new StringBuilder();
 
