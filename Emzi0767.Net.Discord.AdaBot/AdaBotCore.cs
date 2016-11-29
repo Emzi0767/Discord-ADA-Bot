@@ -3,14 +3,15 @@ using System.Diagnostics;
 using System.Text;
 using Emzi0767.Net.Discord.AdaBot.Commands;
 using Emzi0767.Net.Discord.AdaBot.Core;
+using Emzi0767.Net.Discord.AdaBot.Plugins;
 using Emzi0767.Tools.MicroLogger;
 
 namespace Emzi0767.Net.Discord.AdaBot
 {
     public static class AdaBotCore
     {
-        public static AdaCommandHandler Handler { get; internal set; }
-        public static AdaDiscord AdaClient { get; internal set; }
+        public static AdaCommandManager CommandManager { get; internal set; }
+        public static AdaClient AdaClient { get; internal set; }
         public static int PluginCount { get { return PluginManager.PluginCount; } }
         internal static AdaPluginManager PluginManager { get; set; }
         internal static UTF8Encoding UTF8 { get; set; }
@@ -26,7 +27,7 @@ namespace Emzi0767.Net.Discord.AdaBot
 
             // init discord
             L.W("ADA", "Initializing ADA Discord module");
-            AdaClient = new AdaDiscord();
+            AdaClient = new AdaClient();
             AdaClient.Initialize();
             L.W("ADA", "ADA Discord module initialized");
 
@@ -38,8 +39,8 @@ namespace Emzi0767.Net.Discord.AdaBot
 
             // init commands
             L.W("ADA", "Initializing ADA Command module");
-            Handler = new AdaCommandHandler();
-            Handler.Initialize();
+            CommandManager = new AdaCommandManager();
+            CommandManager.Initialize();
             L.W("ADA", "ADA Command module initialized");
 
             // run

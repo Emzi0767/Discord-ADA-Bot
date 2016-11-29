@@ -16,7 +16,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Emzi0767.Net.Discord.Ada.Feedle
 {
-    [Plugin("ADA RSS Plugin")]
+    [AdaPlugin("ADA RSS Plugin")]
     public class FeedlePlugin
     {
         private static List<Feed> ActiveFeeds { get; set; }

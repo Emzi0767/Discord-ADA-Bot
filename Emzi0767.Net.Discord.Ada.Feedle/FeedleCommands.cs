@@ -9,10 +9,10 @@ using Emzi0767.Net.Discord.AdaBot.Core;
 
 namespace Emzi0767.Net.Discord.Ada.Feedle
 {
-    [CommandHandler]
+    [AdaCommandHandler]
     public class FeedleCommands
     {
-        [Command("addrss", "Adds an RSS feed to a specified channel. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("addrss", "Adds an RSS feed to a specified channel. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public static async Task AddRss(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -35,7 +35,7 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
             await chn.SendMessage(string.Format("**ADA**: added RSS feed **<{0}>** to channel **{1}**{2}", uri, cha.Name, tag == null ? "" : string.Concat(" using tag **[", tag, "]**")));
         }
 
-        [Command("rmrss", "Removes an RSS feed from a specified channel. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("rmrss", "Removes an RSS feed from a specified channel. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public static async Task RemoveRss(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -58,7 +58,7 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
             await chn.SendMessage(string.Format("**ADA**: removed RSS feed **<{0}>** from channel **{1}**{2}", uri, cha.Name, tag == null ? "" : string.Concat(" using tag **[", tag, "]**")));
         }
 
-        [Command("listrss", "Lists RSS feeds active on the current server. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("listrss", "Lists RSS feeds active on the current server. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public static async Task ListRss(CommandEventArgs ea)
         {
             var srv = ea.Server;

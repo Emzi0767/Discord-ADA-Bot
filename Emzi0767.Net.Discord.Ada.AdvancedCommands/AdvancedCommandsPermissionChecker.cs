@@ -5,7 +5,7 @@ using Emzi0767.Net.Discord.AdaBot.Attributes;
 
 namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
 {
-    [Checker("ACPChecker")]
+    [AdaPermissionChecker("ACPChecker")]
     public class AdvancedCommandsPermissionChecker : IPermissionChecker
     {
         public bool CanRun(Command command, User user, Channel channel, out string error)

@@ -17,10 +17,10 @@ using s = Discord;
 
 namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
 {
-    [CommandHandler]
+    [AdaCommandHandler]
     public class AdvancedCommandsHandler
     {
-        [Command("colorme", "Sets your own color. This command can be disabled by server administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommand("colorme", "Sets your own color. This command can be disabled by server administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
         public static async Task SetColor(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -42,7 +42,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             await chn.SendMessage(string.Format("**ADA**: {0}'s color is now {1:X6}.", usr.Mention, clr));
         }
 
-        [Command("generateid", "Generates a random ID. This command can be disabled by server administrators.", Aliases = "genid;makeid;mkid", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommand("generateid", "Generates a random ID. This command can be disabled by server administrators.", Aliases = "genid;makeid;mkid", CheckerId = "ACPChecker", CheckPermissions = true)]
         public static async Task CreateId(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -60,7 +60,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             await chn.SendMessage(string.Format("{0}: the ID you requested is {1}", usr.Mention, n1));
         }
 
-        [Command("generateuuid", "Generates a random UUID. This command can be disabled by server administrators.", Aliases = "genuuid;makeuuid;mkuuid;generateguid;genguid;makeguid;mkguid", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommand("generateuuid", "Generates a random UUID. This command can be disabled by server administrators.", Aliases = "genuuid;makeuuid;mkuuid;generateguid;genguid;makeguid;mkguid", CheckerId = "ACPChecker", CheckPermissions = true)]
         public static async Task CreateUuid(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -75,7 +75,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             await chn.SendMessage(string.Format("{0}: the UUID you requested is {1}", usr.Mention, n1));
         }
 
-        [Command("asciitobase64", "Converts an ASCII string to a Base64 string. This command can be disabled by server administrators.", Aliases = "ascii2base64;ascii2b64;2b64;b64;base64;tobase64;2base64", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommand("asciitobase64", "Converts an ASCII string to a Base64 string. This command can be disabled by server administrators.", Aliases = "ascii2base64;ascii2b64;2b64;b64;base64;tobase64;2base64", CheckerId = "ACPChecker", CheckPermissions = true)]
         public static async Task AsciiToBase64(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -92,7 +92,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             await chn.SendMessage(string.Format("{0}: Base64 representation of your message is {1}", usr.Mention, b64));
         }
 
-        [Command("base64toascii", "Converts a Base64 string to an ASCII string. This command can be disabled by server administrators.", Aliases = "base642ascii;b642ascii;2ascii;ascii;toascii", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommand("base64toascii", "Converts a Base64 string to an ASCII string. This command can be disabled by server administrators.", Aliases = "base642ascii;b642ascii;2ascii;ascii;toascii", CheckerId = "ACPChecker", CheckPermissions = true)]
         public static async Task Base64ToAscii(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -109,7 +109,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             await chn.SendMessage(string.Format("{0}: ASCII representation of your message is {1}", usr.Mention, ascii));
         }
 
-        [Command("color", "Creates a colored square, used for color previewing. This command can be disabled by server administrators.", Aliases = "clr;colour;colorsquare;coloursquare;clrsq", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommand("color", "Creates a colored square, used for color previewing. This command can be disabled by server administrators.", Aliases = "clr;colour;colorsquare;coloursquare;clrsq", CheckerId = "ACPChecker", CheckPermissions = true)]
         public static async Task ColorSquare(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -141,7 +141,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             }
         }
 
-        [Command("markov", "Creates a markov chain sentence out of messages from specified source. This command can be disabled by server administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommand("markov", "Creates a markov chain sentence out of messages from specified source. This command can be disabled by server administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
         public static async Task Markov(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -236,7 +236,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             await chn.SendMessage(string.Concat("**ADA**: markov chain of ", mnt, ": ", sentence));
         }
 
-        [Command("enableadvancedcommand", "Enables an Advanced Commands command. This command can only be used by server administrators.", Aliases = "enableac;enableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("enableadvancedcommand", "Enables an Advanced Commands command. This command can only be used by server administrators.", Aliases = "enableac;enableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public static async Task EnableAdvancedCommand(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -255,7 +255,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             await chn.SendMessage(string.Format("{0}: the following commands are now enabled: {1}", usr.Mention, string.Join(", ", cmds)));
         }
 
-        [Command("disableadvancedcommand", "Disables an Advanced Commands command. This command can only be used by server administrators.", Aliases = "disableac;disableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("disableadvancedcommand", "Disables an Advanced Commands command. This command can only be used by server administrators.", Aliases = "disableac;disableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public static async Task DisableAdvancedCommand(CommandEventArgs ea)
         {
             var srv = ea.Server;

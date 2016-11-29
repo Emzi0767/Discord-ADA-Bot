@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
 {
-    [Plugin("Advanced Commands Plugin")]
+    [AdaPlugin("Advanced Commands Plugin")]
     public class AdvancedCommandsPlugin
     {
         private static Dictionary<ulong, Dictionary<string, bool>> CommandConfiguration { get; set; }

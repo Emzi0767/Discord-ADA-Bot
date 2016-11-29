@@ -1,5 +1,5 @@
 ﻿using System;
-using Emzi0767.Net.Discord.AdaBot.Core;
+using Emzi0767.Net.Discord.AdaBot.Commands.Permissions;
 
 namespace Emzi0767.Net.Discord.AdaBot.Attributes
 {
@@ -7,7 +7,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Attributes
     /// Indicates that this method is a discord command.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class CommandAttribute : Attribute
+    public class AdaCommandAttribute : Attribute
     {
         /// <summary>
         /// Gets the command's name.
@@ -45,7 +45,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Attributes
         /// </summary>
         /// <param name="name">Command's name.</param>
         /// <param name="description">Command's description.</param>
-        public CommandAttribute(string name, string description)
+        public AdaCommandAttribute(string name, string description)
         {
             this.Name = name;
             this.Description = description;

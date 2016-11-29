@@ -9,7 +9,7 @@ using Emzi0767.Tools.MicroLogger;
 
 namespace Emzi0767.Net.Discord.Ada.Dispatch
 {
-    [Plugin("ADA Dispatch", InitializerMethod = "InitDispatch")]
+    [AdaPlugin("ADA Dispatch", InitializerMethod = "InitDispatch")]
     public static class AdaDispatchPlugin
     {
         private static AutoResetEvent are;

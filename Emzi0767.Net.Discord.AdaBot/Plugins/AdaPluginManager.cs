@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Emzi0767.Net.Discord.AdaBot.Attributes;
 using Emzi0767.Tools.MicroLogger;
 
-namespace Emzi0767.Net.Discord.AdaBot.Core
+namespace Emzi0767.Net.Discord.AdaBot.Plugins
 {
     internal class AdaPluginManager
     {
@@ -44,38 +43,19 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
 
             var @as = AppDomain.CurrentDomain.GetAssemblies();
             var ts = @as.SelectMany(xa => xa.DefinedTypes);
-            var pt = typeof(PluginAttribute);
+            var pt = typeof(IAdaPlugin);
             foreach (var t in ts)
             {
-                var xpt = (PluginAttribute)Attribute.GetCustomAttribute(t, pt);
-                if (xpt == null)
+                if (!pt.IsAssignableFrom(t) || !t.IsClass || t.IsAbstract)
                     continue;
 
                 L.W("ADA PLG", "Type {0} is a plugin", t.ToString());
-
-                string initm = "Initialize";
-                if (!string.IsNullOrWhiteSpace(xpt.InitializerMethod))
-                    initm = xpt.InitializerMethod;
-
-                var mtd = (MethodInfo)null;
-                foreach (var m in t.GetMethods(BindingFlags.Static | BindingFlags.Public))
-                {
-                    if (m.Name == initm)
-                    {
-                        mtd = m;
-                        break;
-                    }
-                }
-                if (mtd == null)
-                {
-                    L.W("ADA PLG", "Plugin '{0}' failed to provide valid initializer method; skipping...", xpt.Name);
-                }
-
-                var plg = new AdaPlugin { Name = xpt.Name, Initializer = mtd, DeclaringAssembly = t.Assembly, EntryType = t };
-                this.RegisteredPlugins.Add(xpt.Name, plg);
-                L.W("ADA PLG", "Registered plugin {0} with initializer {1}", xpt.Name, initm);
-                mtd.Invoke(null, null);
-                L.W("ADA PLG", "Plugin '{0}' initialized", xpt.Name);
+                var iplg = (IAdaPlugin)Activator.CreateInstance(t);
+                var plg = new AdaPlugin { Plugin = iplg };
+                this.RegisteredPlugins.Add(plg.Name, plg);
+                L.W("ADA PLG", "Registered plugin '{0}'", plg.Name);
+                plg.Plugin.Initialize();
+                L.W("ADA PLG", "Plugin '{0}' initialized", plg.Name);
             }
             L.W("ADA PLG", "Registered and initialized {0:#,##0} plugins", this.RegisteredPlugins.Count);
         }
