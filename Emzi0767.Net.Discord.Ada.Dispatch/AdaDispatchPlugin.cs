@@ -4,21 +4,26 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using Emzi0767.Net.Discord.AdaBot;
-using Emzi0767.Net.Discord.AdaBot.Attributes;
+using Emzi0767.Net.Discord.AdaBot.Config;
+using Emzi0767.Net.Discord.AdaBot.Plugins;
 using Emzi0767.Tools.MicroLogger;
 
 namespace Emzi0767.Net.Discord.Ada.Dispatch
 {
-    [AdaPlugin("ADA Dispatch", InitializerMethod = "InitDispatch")]
-    public static class AdaDispatchPlugin
+    public class AdaDispatchPlugin : IAdaPlugin
     {
-        private static AutoResetEvent are;
-        private static UTF8Encoding utf8;
+        public string Name { get { return "ADA Dispatch Plugin"; } }
+        public IAdaPluginConfig Config { get { return this.conf; } }
 
-        public static void InitDispatch()
+        private AutoResetEvent are;
+        private UTF8Encoding utf8;
+        private AdaDispatchPluginConfig conf;
+
+        public void Initialize()
         {
             L.W("ADA-Disp", "Initializing ADA Dispatch socket");
-            utf8 = new UTF8Encoding(false);
+            this.conf = new AdaDispatchPluginConfig();
+            this.utf8 = new UTF8Encoding(false);
             var ip = new IPEndPoint(IPAddress.Any, 64000);
             var listener = new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             listener.Bind(ip);
@@ -27,7 +32,14 @@ namespace Emzi0767.Net.Discord.Ada.Dispatch
             L.W("ADA-Disp", "Done; listening at {0}:{1}", ip.Address, ip.Port);
         }
 
-        private static void RunSocket(object _)
+        public void LoadConfig(IAdaPluginConfig config)
+        {
+            var cfg = config as AdaDispatchPluginConfig;
+            if (cfg != null)
+                this.conf = cfg;
+        }
+
+        private void RunSocket(object _)
         {
             var listener = (Socket)_;
             are = new AutoResetEvent(false);
@@ -39,9 +51,9 @@ namespace Emzi0767.Net.Discord.Ada.Dispatch
             }
         }
         
-        private static void AcceptConnection(IAsyncResult ar)
+        private void AcceptConnection(IAsyncResult ar)
         {
-            are.Set();
+            this.are.Set();
             var listener = (Socket)ar.AsyncState;
             var handler = listener.EndAccept(ar);
 
