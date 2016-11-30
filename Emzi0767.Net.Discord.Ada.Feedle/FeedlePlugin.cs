@@ -1,120 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
+using Discord;
 using Emzi0767.Net.Discord.AdaBot;
-using Emzi0767.Net.Discord.AdaBot.Attributes;
+using Emzi0767.Net.Discord.AdaBot.Config;
+using Emzi0767.Net.Discord.AdaBot.Plugins;
 using Emzi0767.Tools.MicroLogger;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Emzi0767.Net.Discord.Ada.Feedle
 {
-    [AdaPlugin("ADA RSS Plugin")]
-    public class FeedlePlugin
+    public class FeedlePlugin : IAdaPlugin
     {
-        private static List<Feed> ActiveFeeds { get; set; }
+        public IAdaPluginConfig Config { get { return this.conf; } }
+        public string Name { get { return "ADA RSS Plugin"; } }
+        private FeedlePluginConfig conf;
 
-        public static void Initialize()
+        public static FeedlePlugin Instance { get; private set; }
+
+        public void Initialize()
         {
             L.W("ADA RSS", "Initializing Feedle");
-            ActiveFeeds = new List<Feed>();
-
-            var a = Assembly.GetEntryAssembly();
-            var l = a.Location;
-            l = Path.GetDirectoryName(l);
-            l = Path.Combine(l, "feedle.json");
-            if (File.Exists(l))
-            {
-                var jo = JObject.Parse(File.ReadAllText(l, new UTF8Encoding(false)));
-                var ja = (JArray)jo["feedle_config"];
-                foreach (var xjt in ja)
-                {
-                    var xjo = (JObject)xjt;
-
-                    var tag = (string)xjo["tag"];
-                    var uri_ = (string)xjo["uri"];
-                    var uri = new Uri(uri_);
-                    var chn = (ulong)xjo["channel"];
-                    var ris = (JArray)xjo["recent"];
-                    ActiveFeeds.Add(new Feed(uri, chn, tag) { RecentUris = ris.Select(xjv => (string)xjv).ToList() });
-                }
-            }
-
+            Instance = this;
+            this.conf = new FeedlePluginConfig();
             var tmr = new Timer(new TimerCallback(FeedleTick), null, 0, 300000);
             L.W("ADA RSS", "Done");
         }
 
-        public static void AddFeed(Uri uri, ulong channel)
+        public void LoadConfig(IAdaPluginConfig config)
+        {
+            var cfg = config as FeedlePluginConfig;
+            if (cfg != null)
+                this.conf = cfg;
+        }
+
+        public void AddFeed(Uri uri, ulong channel)
         {
             AddFeed(uri, channel, null);
         }
 
-        public static void AddFeed(Uri uri, ulong channel, string tag)
+        public void AddFeed(Uri uri, ulong channel, string tag)
         {
-            ActiveFeeds.Add(new Feed(uri, channel, tag));
+            this.conf.Feeds.Add(new Feed(uri, channel, tag));
             L.W("ADA RSS", "Added RSS feed for {0}: {1} with tag [{2}]", channel, uri, tag == null ? "<null>" : tag);
 
             UpdateConfig();
         }
 
-        public static void RemoveFeed(Uri uri, ulong channel)
+        public void RemoveFeed(Uri uri, ulong channel)
         {
             RemoveFeed(uri, channel, null);
         }
 
-        public static void RemoveFeed(Uri uri, ulong channel, string tag)
+        public void RemoveFeed(Uri uri, ulong channel, string tag)
         {
-            var feed = ActiveFeeds.FirstOrDefault(xf => xf.FeedUri == uri && xf.ChannelId == channel && xf.Tag == tag);
-            ActiveFeeds.Remove(feed);
+            var feed = this.conf.Feeds.FirstOrDefault(xf => xf.FeedUri == uri && xf.ChannelId == channel && xf.Tag == tag);
+            this.conf.Feeds.Remove(feed);
             L.W("ADA RSS", "Removed RSS feed for {0}: {1} with tag [{2}]", channel, uri, tag == null ? "<null>" : tag);
 
             UpdateConfig();
         }
 
-        internal static IEnumerable<Feed> GetFeeds(ulong[] channels)
+        internal IEnumerable<Feed> GetFeeds(ulong[] channels)
         {
-            foreach (var feed in ActiveFeeds)
+            foreach (var feed in this.conf.Feeds)
                 if (channels.Contains(feed.ChannelId))
                     yield return feed;
         }
 
-        private static void UpdateConfig()
+        private void UpdateConfig()
         {
             L.W("ADA RSS", "Updating config");
 
-            var jo = new JObject();
-            var ja = new JArray();
-            jo.Add("feedle_config", ja);
-            foreach (var feed in ActiveFeeds)
-            {
-                var xjo = new JObject();
-                ja.Add(xjo);
-
-                xjo.Add("uri", feed.FeedUri.ToString());
-                xjo.Add("channel", feed.ChannelId);
-                xjo.Add("tag", feed.Tag);
-                xjo.Add("recent", new JArray(feed.RecentUris));
-            }
-            var a = Assembly.GetEntryAssembly();
-            var l = a.Location;
-            l = Path.GetDirectoryName(l);
-            l = Path.Combine(l, "feedle.json");
-            File.WriteAllText(l, jo.ToString(Formatting.None), new UTF8Encoding(false));
+            AdaBotCore.ConfigManager.UpdateConfig(this);
         }
 
-        private static void FeedleTick(object _)
+        private void FeedleTick(object _)
         {
             var wc = new WebClient();
             wc.Encoding = new UTF8Encoding(false);
             bool changed = false;
-            foreach (var feed in ActiveFeeds)
+            foreach (var feed in this.conf.Feeds)
             {
                 var rec = feed.RecentUris;
                 feed.RecentUris = new List<string>();
@@ -140,11 +110,15 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
                     if (!rec.Contains(itu.ToString()))
                     {
                         changed = true;
-                        var sb = new StringBuilder();
-                        sb.AppendFormat("{0}**{1}**", feed.Tag == null ? "" : string.Concat("[", feed.Tag, "] "), itt).AppendLine();
-                        sb.AppendFormat("Published on {0:yyyy-MM-dd HH:mm} UTC", itd.ToUniversalTime()).AppendLine();
-                        sb.AppendLine(itu.ToString());
-                        AdaBotCore.AdaClient.SendMessage(sb.ToString(), feed.ChannelId);
+                        var embed = new EmbedBuilder();
+                        embed.Title = string.Concat(feed.Tag != null ? string.Concat("[**", feed.Tag, "**] ") : "", itt);
+                        embed.Url = itu.ToString();
+                        embed.Timestamp = new DateTimeOffset(itd.ToUniversalTime());
+                        embed.Author = new EmbedAuthorBuilder();
+                        embed.Author.IconUrl = AdaBotCore.AdaClient.CurrentUser.AvatarUrl;
+                        embed.Author.Name = "ADA, a bot by Emzi0767";
+                        embed.Color = new Color(255, 127, 0);
+                        AdaBotCore.AdaClient.SendEmbed(embed, feed.ChannelId);
                     }
                 }
             }

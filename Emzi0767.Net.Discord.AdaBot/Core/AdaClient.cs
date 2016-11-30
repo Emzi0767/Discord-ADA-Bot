@@ -15,10 +15,11 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
 {
     public sealed class AdaClient
     {
+        public IUser CurrentUser { get { return this.DiscordClient.CurrentUser; } }
         internal DiscordSocketClient DiscordClient { get; private set; }
+        internal JObject ConfigJson { get; private set; }
         private Timer BanHammer { get; set; }
         private string Token { get; set; }
-        internal JObject ConfigJson { get; private set; }
 
         internal AdaClient()
         {
@@ -62,7 +63,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
         }
 
         /// <summary>
-        /// Sends a message to a specified channel
+        /// Sends a message to a specified channel.
         /// </summary>
         /// <param name="message">Message to send.</param>
         /// <param name="channel">Channel to send the message to.</param>
@@ -75,6 +76,22 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             if (ch == null)
                 return;
             this.SendMessage(message, ch);
+        }
+
+        /// <summary>
+        /// Sends an embed to a sepcified channel.
+        /// </summary>
+        /// <param name="embed">Embed to send.</param>
+        /// <param name="channel">Channel to send the embed to.</param>
+        public void SendEmbed(EmbedBuilder embed, ulong channel)
+        {
+            var ch = (SocketTextChannel)null;
+            var tg = DateTime.Now;
+            while (ch == null && (DateTime.Now - tg).TotalSeconds < 10)
+                ch = this.DiscordClient.GetChannel(channel) as SocketTextChannel;
+            if (ch == null)
+                return;
+            this.SendEmbed(embed, ch);
         }
 
         /// <summary>
@@ -110,6 +127,11 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
 
             foreach (var ms in msg)
                 channel.SendMessageAsync(ms).Wait();
+        }
+
+        public void SendEmbed(EmbedBuilder embed, SocketTextChannel channel)
+        {
+            channel.SendMessageAsync("", false, embed).Wait();
         }
 
         internal void WriteConfig()
