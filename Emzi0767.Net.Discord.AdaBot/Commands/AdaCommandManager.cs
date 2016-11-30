@@ -157,10 +157,36 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         private void CommandError(AdaCommandErrorContext ctxe)
         {
             var ctx = ctxe.Context;
-            L.W("DSC CMD", "User '{0}#{1}' failed to execute command '{2}' on server '{3}' ({4}); reason: {5} ({6})", ctx.User.Username, ctx.User.Discriminator, ctx.Command != null ? ctx.Command.Name : "<unknown>", ctx.Guild.Name, ctx.Guild.IconId, ctxe.Exception != null ? ctxe.Exception.GetType().ToString() : "<unknown exception type>", ctxe.Exception != null ? ctxe.Exception.Message : "N/A");
+            L.W("DSC CMD", "User '{0}#{1}' failed to execute command '{2}' in guild '{3}' ({4}); reason: {5} ({6})", ctx.User.Username, ctx.User.Discriminator, ctx.Command != null ? ctx.Command.Name : "<unknown>", ctx.Guild.Name, ctx.Guild.IconId, ctxe.Exception != null ? ctxe.Exception.GetType().ToString() : "<unknown exception type>", ctxe.Exception != null ? ctxe.Exception.Message : "N/A");
             if (ctxe.Exception != null)
                 L.X("DSC CMD", ctxe.Exception);
-            ctx.Channel.SendMessageAsync(string.Format("**ADA**: {0} failed to execute '{1}', reason: *{2}*", ctx.User.Mention, ctx.Command != null ? ctx.Command.Name : "<unknown>", ctxe.Exception != null ? ctxe.Exception.Message : "N/A")).Wait();
+            
+            var embed = new EmbedBuilder();
+            embed.Title = "Error executing command";
+            embed.Description = string.Format("User {0} failed to execute command **{1}**.", ctx.User.Mention, ctx.Command != null ? ctx.Command.Name : "<unknown>");
+            embed.Author = new EmbedAuthorBuilder();
+            embed.Author.IconUrl = AdaBotCore.AdaClient.DiscordClient.CurrentUser.AvatarUrl;
+            embed.Author.Name = "ADA, a bot by Emzi0767";
+            embed.Color = new Color(255, 127, 0);
+
+            embed.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "Reason";
+                x.Value = ctxe.Exception != null ? ctxe.Exception.Message : "<unknown>";
+            });
+
+            if (ctxe.Exception != null)
+            {
+                embed.AddField(x =>
+                {
+                    x.IsInline = false;
+                    x.Name = "Exception details";
+                    x.Value = string.Format("**{0}**: {1}", ctxe.Exception.GetType().ToString(), ctxe.Exception.Message);
+                });
+            }
+
+            ctx.Channel.SendMessageAsync("", false, embed).Wait();
         }
 
         private void CommandExecuted(AdaCommandContext ctx)

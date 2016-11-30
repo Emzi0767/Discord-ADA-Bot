@@ -22,8 +22,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
 
         public string Name { get { return "ADA Core Commands"; } }
 
-        [AdaCommand("mkrole", "Creates a new role with specified name. This command can only be used by server administrators.", Aliases = "makerole;createrole;mkgroup;makegroup;creategroup;gmk;gmake;gcreate", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        public async Task CreateGroup(AdaCommandContext ctx)
+        [AdaCommand("mkrole", "Creates a new role. This command can only be used by server administrators.", Aliases = "makerole;createrole;mkgroup;makegroup;creategroup;gmk;gmake;gcreate", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        public async Task CreateRole(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
@@ -33,12 +33,12 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
 
             var nam = ctx.RawArguments[0];
             await gld.CreateRoleAsync(nam, new GuildPermissions(0x0635CC01u), null, false);
-            var embed = this.PrepareEmbed("Success", string.Format("Role \"{0}\" was created successfully.", nam));
+            var embed = this.PrepareEmbed("Success", string.Format("Role **{0}** was created successfully.", nam), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("rmrole", "Removes a role with specified name. This command can only be used by server administrators.", Aliases = "removerole;deleterole;delrole;rmgroup;removegroup;deletegroup;delgroup;gdel;gdelete;grm;gremove", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        public async Task DeleteGroup(AdaCommandContext ctx)
+        [AdaCommand("rmrole", "Removes a role. This command can only be used by server administrators.", Aliases = "removerole;deleterole;delrole;rmgroup;removegroup;deletegroup;delgroup;gdel;gdelete;grm;gremove", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        public async Task DeleteRole(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
@@ -57,15 +57,15 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                 grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
             }
             if (grp == null)
-                return;
+                throw new ArgumentException("You must supply a role.");
 
             await grp.DeleteAsync();
-            var embed = this.PrepareEmbed("Success", string.Format("Role \"{0}\" was deleted successfully.", grp.Name));
+            var embed = this.PrepareEmbed("Success", string.Format("Role **{0}** was deleted successfully.", grp.Name), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("modrole", "Edits a role with specified name. This command can only be used by server administrators.", Aliases = "modifyrole;editrole;modgroup;modifygroup;editgroup;gmod;gmodify;gedit", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        public async Task ModifyGroup(AdaCommandContext ctx)
+        [AdaCommand("modrole", "Edits a role. This command can only be used by server administrators.", Aliases = "modifyrole;editrole;modgroup;modifygroup;editgroup;gmod;gmodify;gedit", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        public async Task ModifyRole(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
@@ -84,7 +84,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                 grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
             }
             if (grp == null)
-                return;
+                throw new ArgumentException("You must supply a role.");
 
             var raw = ctx.RawArguments[0];
             var par = ctx.RawArguments
@@ -111,12 +111,12 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                     x.Position = gps;
             });
 
-            var embed = this.PrepareEmbed("Success", string.Format("Role \"{0}\" was edited successfully.", grp.Name));
+            var embed = this.PrepareEmbed("Success", string.Format("Role **{0}** was edited successfully.", grp.Name), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("dumprole", "Dumps all properties of a role. This command can only be used by server administrators.", Aliases = "printrole;dumpgroup;printgroup;gdump", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        public async Task DumpGroup(AdaCommandContext ctx)
+        [AdaCommand("roleinfo", "Dumps all properties of a role. This command can only be used by server administrators.", Aliases = "rinfo;dumprole;printrole;dumpgroup;printgroup;gdump", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        public async Task RoleInfo(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
@@ -124,16 +124,26 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
 
             await msg.DeleteAsync();
 
-            var nam = ctx.RawArguments[0];
-            var grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
-            var grl = grp as SocketRole;
-            if (grl == null)
-                return;
+            var grp = (IRole)null;
+            if (msg.MentionedRoleIds.Count > 0)
+            {
+                grp = gld.GetRole(msg.MentionedRoleIds.First());
+            }
+            else
+            {
+                var nam = ctx.RawArguments[0];
+                grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
+            }
+            if (grp == null)
+                throw new ArgumentException("You must supply a role.");
 
-            await gld.DownloadUsersAsync();
+            var grl = grp as SocketRole;
+            //await gld.DownloadUsersAsync();
             var gls = gld as SocketGuild;
+
+            var embed = this.PrepareEmbed("Role Info", string.Format("Full information about role **{0}**", grl.Name), EmbedType.Info);
+
             var sb = new StringBuilder();
-            sb.AppendLine("**ADA**: Dumping all properties of a role");
             sb.AppendFormat("**Name**: {0}", grl.Name).AppendLine();
             sb.AppendFormat("**ID**: {0}", grl.Id).AppendLine();
             sb.AppendFormat("**Color**: {0:X6}", grl.Color.RawValue).AppendLine();
@@ -143,83 +153,137 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             if (grl.IsMentionable)
                 sb.AppendFormat("**Mention**: {0}", grl.Mention).AppendLine();
             sb.AppendFormat("**Position**: {0}", grl.Position).AppendLine();
-            sb.AppendFormat("**Total members**: {0:#,##0}", gls.Users.Where(xus => xus.RoleIds.Contains(grl.Id)).Count()).AppendLine();
-            sb.AppendLine("**Permissions**:");
-            sb.AppendFormat("**Raw value**: {0}", grl.Permissions.RawValue).AppendLine();
-            if (grl.Permissions.Administrator)
-                sb.AppendLine("+ Administrator");
-            if (grl.Permissions.AttachFiles)
-                sb.AppendLine("+ Can attach files");
-            if (grl.Permissions.BanMembers)
-                sb.AppendLine("+ Can ban members");
-            if (grl.Permissions.ChangeNickname)
-                sb.AppendLine("+ Can change nickname");
-            if (grl.Permissions.Connect)
-                sb.AppendLine("+ Can use voice chat");
-            if (grl.Permissions.CreateInstantInvite)
-                sb.AppendLine("+ Can create instant invites");
-            if (grl.Permissions.DeafenMembers)
-                sb.AppendLine("+ Can deafen members");
-            if (grl.Permissions.EmbedLinks)
-                sb.AppendLine("+ Can embed links");
-            if (grl.Permissions.KickMembers)
-                sb.AppendLine("+ Can kick members");
-            if (grl.Permissions.ManageChannels)
-                sb.AppendLine("+ Can manage channels");
-            if (grl.Permissions.ManageMessages)
-                sb.AppendLine("+ Can manage messages");
-            if (grl.Permissions.ManageNicknames)
-                sb.AppendLine("+ Can manage nicknames");
-            if (grl.Permissions.ManageRoles)
-                sb.AppendLine("+ Can manage roles");
-            if (grl.Permissions.ManageGuild)
-                sb.AppendLine("+ Can manage guild");
-            if (grl.Permissions.MentionEveryone)
-                sb.AppendLine("+ Can mention everyone group");
-            if (grl.Permissions.MoveMembers)
-                sb.AppendLine("+ Can move members between voice channels");
-            if (grl.Permissions.MuteMembers)
-                sb.AppendLine("+ Can mute members");
-            if (grl.Permissions.ReadMessageHistory)
-                sb.AppendLine("+ Can read message history");
-            if (grl.Permissions.ReadMessages)
-                sb.AppendLine("+ Can read messages");
-            if (grl.Permissions.SendMessages)
-                sb.AppendLine("+ Can send messages");
-            if (grl.Permissions.SendTTSMessages)
-                sb.AppendLine("+ Can send TTS messages");
-            if (grl.Permissions.Speak)
-                sb.AppendLine("+ Can speak");
-            if (grl.Permissions.UseVAD)
-                sb.AppendLine("+ Can use voice activation");
+            //sb.AppendFormat("**Total members**: {0:#,##0}", gls.Users.Where(xus => xus.RoleIds.Contains(grl.Id)).Count()).AppendLine();
+            sb.AppendFormat("**Raw permissions**: {0}", grl.Permissions.RawValue).AppendLine();
+            embed.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "Role Information";
+                x.Value = sb.ToString();
+            });
 
-            await chn.SendMessageAsync(sb.ToString());
+            sb = new StringBuilder();
+            if (grl.Permissions.Administrator)
+                sb.AppendLine("- Administrator");
+            if (grl.Permissions.AttachFiles)
+                sb.AppendLine("- Can attach files");
+            if (grl.Permissions.BanMembers)
+                sb.AppendLine("- Can ban members");
+            if (grl.Permissions.ChangeNickname)
+                sb.AppendLine("- Can change nickname");
+            if (grl.Permissions.Connect)
+                sb.AppendLine("- Can use voice chat");
+            if (grl.Permissions.CreateInstantInvite)
+                sb.AppendLine("- Can create instant invites");
+            if (grl.Permissions.DeafenMembers)
+                sb.AppendLine("- Can deafen members");
+            if (grl.Permissions.EmbedLinks)
+                sb.AppendLine("- Can embed links");
+            if (grl.Permissions.KickMembers)
+                sb.AppendLine("- Can kick members");
+            if (grl.Permissions.ManageChannels)
+                sb.AppendLine("- Can manage channels");
+            if (grl.Permissions.ManageMessages)
+                sb.AppendLine("- Can manage messages");
+            if (grl.Permissions.ManageNicknames)
+                sb.AppendLine("- Can manage nicknames");
+            if (grl.Permissions.ManageRoles)
+                sb.AppendLine("- Can manage roles");
+            if (grl.Permissions.ManageGuild)
+                sb.AppendLine("- Can manage guild");
+            if (grl.Permissions.MentionEveryone)
+                sb.AppendLine("- Can mention everyone group");
+            if (grl.Permissions.MoveMembers)
+                sb.AppendLine("- Can move members between voice channels");
+            if (grl.Permissions.MuteMembers)
+                sb.AppendLine("- Can mute members");
+            if (grl.Permissions.ReadMessageHistory)
+                sb.AppendLine("- Can read message history");
+            if (grl.Permissions.ReadMessages)
+                sb.AppendLine("- Can read messages");
+            if (grl.Permissions.SendMessages)
+                sb.AppendLine("- Can send messages");
+            if (grl.Permissions.SendTTSMessages)
+                sb.AppendLine("- Can send TTS messages");
+            if (grl.Permissions.Speak)
+                sb.AppendLine("- Can speak");
+            if (grl.Permissions.UseVAD)
+                sb.AppendLine("- Can use voice activation");
+            embed.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "Permissions";
+                x.Value = sb.ToString();
+            });
+
+            await chn.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("listroles", "Lists all roles on the server. This command can only be used by server administrators.", Aliases = "lsroles;lsgroups;listgroups;glist;gls", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        public async Task ListGroups(AdaCommandContext ctx)
+        public async Task ListRoles(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
             await msg.DeleteAsync();
-
-            var nam = ctx.RawArguments[0];
+            
             var grp = gld.Roles;
             if (grp == null)
                 return;
 
-            var sb = new StringBuilder();
-            sb.AppendFormat("**ADA**: All roles ({0:#,##0}):", grp.Count()).AppendLine();
-            foreach (var xgrp in grp)
-                sb.AppendLine(xgrp.IsMentionable ? xgrp.Mention : xgrp.Name);
-
-            await chn.SendMessageAsync(sb.ToString());
+            var embed = this.PrepareEmbed("Role List", string.Format("Listing of all {0:#,##0} role{1} in this Guild.", grp.Count, grp.Count > 1 ? "s" : ""), EmbedType.Info);
+            embed.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "Role list";
+                x.Value = string.Join(", ", grp.Select(xr => string.Concat("**", xr.Name, "**")));
+            });
+            await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("roleadd", "Adds a user to a role. This command can only be used by server administrators.", Aliases = "groupadd;ugadd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        public async Task GroupAdd(AdaCommandContext ctx)
+        [AdaCommand("roleadd", "Adds users to a role. This command can only be used by server administrators.", Aliases = "groupadd;ugadd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        public async Task RoleAdd(AdaCommandContext ctx)
+        {
+            var gld = ctx.Guild;
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+
+            await msg.DeleteAsync();
+            
+            var grp = (IRole)null;
+            if (msg.MentionedRoleIds.Count > 0)
+            {
+                grp = gld.GetRole(msg.MentionedRoleIds.First());
+            }
+            else
+            {
+                var nam = ctx.RawArguments[0];
+                grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
+            }
+            if (grp == null)
+                throw new ArgumentException("You must supply a role.");
+            
+            var gls = gld as SocketGuild;
+            await gls.DownloadUsersAsync();
+            var usrs = msg.MentionedUserIds.Select(xid => gls.Users.FirstOrDefault(xusr => xusr.Id == xid));
+            if (usrs.Count() == 0)
+                throw new ArgumentException("You must mention users you want to add to a role.");
+
+            foreach (var usr in usrs)
+                await usr.AddRolesAsync(grp);
+            var embed = this.PrepareEmbed("Success", string.Concat("User", usrs.Count() > 1 ? "s were" : " was", " added to the role."), EmbedType.Success);
+            embed.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "Details";
+                x.Value = string.Concat("The following user", usrs.Count() > 1 ? "s were" : " was", " added to role **", grp.Name, "**: ", string.Join(", ", usrs.Select(xusr => xusr.Mention)));
+            });
+            await chn.SendMessageAsync("", false, embed);
+        }
+
+        [AdaCommand("roleremove", "Removes users from a role. This command can only be used by server administrators.", Aliases = "groupremove;ugremove;ugrm", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        public async Task RoleRemove(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
@@ -227,129 +291,91 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
 
             await msg.DeleteAsync();
 
-            var raw = ctx.RawArguments[0];
-            var par = raw.Split(';')
-                .Select(xrs => xrs.Split('='))
-                .ToDictionary(xrs => xrs[0], xrs => xrs[1]);
-
-            var usn = par.ContainsKey("user") ? par["user"] : null;
-            var grn = par.ContainsKey("role") ? par["role"] : null;
-
-            var gls = gld as SocketGuild;
-            await gls.DownloadUsersAsync();
-            var usg = gls.Users;
-            var gru = gld.Roles.FirstOrDefault(xr => xr.Name == grn);
-            if (usg.Count() != 1 || gru == null)
-                return;
-
-            await usg.FirstOrDefault().AddRolesAsync(gru);
-            await chn.SendMessageAsync(string.Format("**ADA**: Added {0} to {1}", usg.FirstOrDefault().Username, gru.Name));
-        }
-
-        [AdaCommand("roleremove", "Removes user from a role. This command can only be used by server administrators.", Aliases = "groupremove;ugremove;ugrm", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        public async Task GroupRemove(AdaCommandContext ctx)
-        {
-            var gld = ctx.Guild;
-            var chn = ctx.Channel;
-            var msg = ctx.Message;
-
-            await msg.DeleteAsync();
-
-            var raw = ctx.RawArguments[0];
-            var par = raw.Split(';')
-                .Select(xrs => xrs.Split('='))
-                .ToDictionary(xrs => xrs[0], xrs => xrs[1]);
-
-            var usn = par.ContainsKey("user") ? par["user"] : null;
-            var grn = par.ContainsKey("role") ? par["role"] : null;
+            var grp = (IRole)null;
+            if (msg.MentionedRoleIds.Count > 0)
+            {
+                grp = gld.GetRole(msg.MentionedRoleIds.First());
+            }
+            else
+            {
+                var nam = ctx.RawArguments[0];
+                grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
+            }
+            if (grp == null)
+                throw new ArgumentException("You must supply a role.");
 
             var gls = gld as SocketGuild;
             await gls.DownloadUsersAsync();
-            var usg = gls.Users.Where(xus => xus.Username == usn);
-            var gru = gls.Roles.FirstOrDefault(xr => xr.Name == grn);
-            if (usg.Count() != 1 || gru == null)
-                return;
+            var usrs = msg.MentionedUserIds.Select(xid => gls.Users.FirstOrDefault(xusr => xusr.Id == xid));
+            if (usrs.Count() == 0)
+                throw new ArgumentException("You must mention users you want to remove from a role.");
 
-            await usg.FirstOrDefault().RemoveRolesAsync(gru);
-            await chn.SendMessageAsync(string.Format("**ADA**: Removed {0} from {1}", usg.FirstOrDefault().Username, gru.Name));
+            foreach (var usr in usrs)
+                await usr.RemoveRolesAsync(grp);
+            var embed = this.PrepareEmbed("Success", string.Concat("User", usrs.Count() > 1 ? "s were" : " was", " removed from the role."), EmbedType.Success);
+            embed.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "Details";
+                x.Value = string.Concat("The following user", usrs.Count() > 1 ? "s were" : " was", " removed from role **", grp.Name, "**: ", string.Join(", ", usrs.Select(xusr => xusr.Mention)));
+            });
+            await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("kick", "Kicks a user by name. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
+        [AdaCommand("kick", "Kicks users. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
         public async Task Kick(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
-            var nam = ctx.RawArguments[0];
 
             await msg.DeleteAsync();
 
             var gls = gld as SocketGuild;
-            await gls.DownloadUsersAsync();
-            var uss = gls.Users.Where(xus => xus.Username == nam);
-            if (uss.Count() > 1)
+            var uss = msg.MentionedUserIds.Select(xid => gls.GetUser(xid));
+            if (uss.Count() < 1)
+                throw new ArgumentException("You must mention users you want to kick.");
+            
+            foreach (var usr in uss)
+                await usr.KickAsync();
+
+            var embed = this.PrepareEmbed("Success", string.Concat(uss.Count().ToString("#,##0"), " user", uss.Count() > 1 ? "s were" : " was", " kicked."), EmbedType.Success);
+            embed.AddField(x =>
             {
-                await chn.SendMessageAsync(string.Format("**ADA**: Query for user '{0}' returned more than one user, try to be more specific.", nam));
-                return;
-            }
+                x.IsInline = false;
+                x.Name = "Details";
+                x.Value = string.Concat("The following user", uss.Count() > 1 ? "s were" : " was" , " kicked: ", string.Join(", ", uss.Select(xusr => xusr.Mention)));
+            });
 
-            var usk = uss.First();
-            await usk.KickAsync();
-            await chn.SendMessageAsync(string.Format("**ADA**: Kicked user '{0}'", usk.Username));
+            await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("kickid", "Kicks a user by id. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
-        public async Task KickId(AdaCommandContext ctx)
-        {
-            var gld = ctx.Guild;
-            var chn = ctx.Channel;
-            var msg = ctx.Message;
-            var nam = ctx.RawArguments[0];
-
-            await msg.DeleteAsync();
-
-            var uss = await gld.GetUserAsync(ulong.Parse(nam));
-            await uss.KickAsync();
-            await chn.SendMessageAsync(string.Format("**ADA**: Kicked user '{0}'", uss.Username));
-        }
-
-        [AdaCommand("ban", "Bans a user by name. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.BanMembers)]
+        [AdaCommand("ban", "Bans users. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.BanMembers)]
         public async Task Ban(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
-            var nam = ctx.RawArguments[0];
 
             await msg.DeleteAsync();
 
             var gls = gld as SocketGuild;
-            await gls.DownloadUsersAsync();
-            var uss = gls.Users.Where(xus => xus.Username == nam);
-            if (uss.Count() > 1)
+            var uss = msg.MentionedUserIds.Select(xid => gls.GetUser(xid));
+            if (uss.Count() < 1)
+                throw new ArgumentException("You must mention users you want to ban.");
+
+            foreach (var usr in uss)
+                await gls.AddBanAsync(usr);
+
+            var embed = this.PrepareEmbed("Success", string.Concat(uss.Count().ToString("#,##0"), " user", uss.Count() > 1 ? "s were" : " was", " banned."), EmbedType.Success);
+            embed.AddField(x =>
             {
-                await chn.SendMessageAsync(string.Format("**ADA**: Query for user '{0}' returned more than one user, try to be more specific.", nam));
-                return;
-            }
+                x.IsInline = false;
+                x.Name = "Details";
+                x.Value = string.Concat("The following user", uss.Count() > 1 ? "s were" : " was", " banned: ", string.Join(", ", uss.Select(xusr => xusr.Mention)));
+            });
 
-            var usb = uss.First();
-            await gld.AddBanAsync(usb);
-            await chn.SendMessageAsync(string.Format("**ADA**: Banned user '{0}'", usb.Username));
-        }
-
-        [AdaCommand("banid", "Bans a user by id. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.BanMembers)]
-        public async Task BanId(AdaCommandContext ctx)
-        {
-            var gld = ctx.Guild;
-            var chn = ctx.Channel;
-            var msg = ctx.Message;
-            var nam = ctx.RawArguments[0];
-
-            await msg.DeleteAsync();
-
-            var uss = await gld.GetUserAsync(ulong.Parse(nam));
-            await gld.AddBanAsync(uss);
-            await chn.SendMessageAsync(string.Format("**ADA**: Banned user '{0}'", uss.Username));
+            await chn.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("prune", "Prunes inactive users. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
@@ -363,7 +389,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             await msg.DeleteAsync();
 
             var usp = await gld.PruneUsersAsync();
-            await chn.SendMessageAsync(string.Format("**ADA**: Pruned {0:#,##0} users", usp));
+            var embed = this.PrepareEmbed("Success", string.Concat(usp.ToString("#,##0"), " user", usp > 1 ? "s were" : " was" , " pruned."), EmbedType.Success);
         }
 
         [AdaCommand("userinfo", "Displays information about users matching given name. This command can only be used by server administrators.", Aliases = "uinfo;userlist;ulist;userfind;ufind", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
@@ -372,82 +398,125 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
-            var nam = ctx.RawArguments[0].ToLower();
 
             await msg.DeleteAsync();
 
-            var gls = gld as SocketGuild;
-            await gls.DownloadUsersAsync();
-            var usf = gls.Users;
-            var uss = new List<SocketGuildUser>();
-            foreach (var xus in usf)
-            {
-                var xusn = xus.Username;
-                var xusm = xus.Nickname;
+            var usrs = msg.MentionedUserIds;
+            if (usrs.Count == 0)
+                throw new ArgumentException("You need to mention a user whose information you want to see.");
 
-                if ((!string.IsNullOrWhiteSpace(xusn) && xusn.ToLower().Contains(nam)) || (!string.IsNullOrWhiteSpace(xusm) && xusm.ToLower().Contains(nam)))
-                    uss.Add(xus);
-            }
+            var usr = await gld.GetUserAsync(usrs.First()) as SocketGuildUser;
+            if (usr == null)
+                throw new ArgumentNullException("Specified user is invalid.");
+            var embed = this.PrepareEmbed("User Info", string.Format("All information about **{0}**.", usr.Nickname ?? string.Concat(usr.Username, "#", usr.Discriminator)), EmbedType.Info);
 
-            var msgs = new List<string>();
             var sb = new StringBuilder();
-            var msb = new StringBuilder();
-            sb.AppendFormat("**ADA**: found {0:#,##0} users matching this query ('{1}'):", uss.Count(), nam).AppendLine().AppendLine();
-            foreach (var xus in uss)
+            sb.AppendFormat("**ID**: {0}", usr.Id).AppendLine();
+            sb.AppendFormat("**Username**: {0}", usr.Username).AppendLine();
+            sb.AppendFormat("**Discriminator**: {0}", usr.Discriminator).AppendLine();
+            sb.AppendFormat("**Full username**: {0}#{1}", usr.Username, usr.Discriminator).AppendLine();
+            if (!string.IsNullOrWhiteSpace(usr.Nickname))
+                sb.AppendFormat("**Nickname**: {0}", usr.Nickname);
+            sb.AppendFormat("**Mention**: {0}", usr.Mention).AppendLine();
+            sb.AppendFormat("**Account created**: {0:yyyy-MM-dd HH:mm:ss} UTC", usr.CreatedAt.UtcDateTime).AppendLine();
+            sb.AppendFormat("**Is a bot**: {0}", usr.IsBot ? "Yes" : "No");
+            embed.AddField(x =>
             {
-                msb = new StringBuilder();
-                msb.AppendFormat("**User**: {0}#{1}", xus.Username, xus.Discriminator).AppendLine();
-                msb.AppendFormat("**ID**: {0}", xus.Id).AppendLine();
-                msb.AppendFormat("**Nickname**: {0}", xus.Nickname).AppendLine();
-                msb.AppendFormat("**Roles**: {0}", string.Join(", ", xus.RoleIds.Select(xid => gls.GetRole(xid)))).AppendLine();
-                if (xus.JoinedAt != null)
-                    msb.AppendFormat("**Joined**: {0:yyyy-MM-dd HH:mm:ss} UTC", xus.JoinedAt.Value.UtcDateTime).AppendLine();
-                msb.AppendFormat("**Avatar URL**: {0}", xus.AvatarUrl).AppendLine();
-                msb.AppendLine("------");
-                if (msb.Length + sb.Length >= 2000)
-                {
-                    msgs.Add(sb.ToString());
-                    sb = new StringBuilder();
-                    sb.Append(msb.ToString());
-                }
-                else
-                {
-                    sb.Append(msb.ToString());
-                }
-            }
-            msgs.Add(sb.ToString());
+                x.IsInline = false;
+                x.Name = "Basic Info";
+                x.Value = sb.ToString();
+            });
 
-            foreach (var xmsg in msgs)
+            sb = new StringBuilder();
+            sb.AppendFormat("**Status**: {0}", usr.Status).AppendLine();
+            if (usr.Game != null)
+                sb.AppendFormat("**Current game**: {0}", usr.Game.Value.Name);
+            embed.AddField(x =>
             {
-                await chn.SendMessageAsync(xmsg);
+                x.IsInline = false;
+                x.Name = "Status";
+                x.Value = sb.ToString();
+            });
+
+            if (usr.VoiceState != null)
+            {
+                sb = new StringBuilder();
+                sb.AppendFormat("**Channel**: {0}", usr.VoiceState.Value.VoiceChannel.Name).AppendLine();
+                sb.AppendFormat("**Is Muted**: {0}", usr.VoiceState.Value.IsMuted ? "Yes" : "No");
+                sb.AppendFormat("**Is Self Muted**: {0}", usr.VoiceState.Value.IsSelfMuted ? "Yes" : "No");
+                sb.AppendFormat("**Is Deafened**: {0}", usr.VoiceState.Value.IsDeafened ? "Yes" : "No");
+                sb.AppendFormat("**Is Self Deafe**: {0}", usr.VoiceState.Value.IsSelfDeafened ? "Yes" : "No");
+                embed.AddField(x =>
+                {
+                    x.IsInline = false;
+                    x.Name = "Voice";
+                    x.Value = sb.ToString();
+                });
             }
+
+            sb = new StringBuilder();
+            sb.AppendFormat("**Roles**: {0}", string.Join(", ", usr.RoleIds.Select(xid => string.Concat("**", gld.GetRole(xid).Name, "**")))).AppendLine();
+            embed.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "Guild Info";
+                x.Value = sb.ToString();
+            });
+
+            if (!string.IsNullOrWhiteSpace(usr.AvatarUrl))
+            {
+                embed.AddField(x =>
+                {
+                    x.IsInline = false;
+                    x.Name = "Avatar";
+                    x.Value = string.Concat("**ID**: ", usr.AvatarId);
+                });
+                embed.ImageUrl = usr.AvatarUrl;
+            }
+
+            await chn.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("guildinfo", "Displays information about current guild. This command can only be used by server administrators.", Aliases = "ginfo", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageGuild)]
-        public async Task ServerInfo(AdaCommandContext ctx)
+        public async Task GuildInfo(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
-            var usr = ctx.User;
 
             await msg.DeleteAsync();
 
+            var embed = this.PrepareEmbed("Guild Info", string.Format("All information about **{0}** Guild.", gld.Name), EmbedType.Info);
+            
             var gls = gld as SocketGuild;
-            await gls.DownloadUsersAsync();
             var sb = new StringBuilder();
-            sb.AppendLine("**ADA**: guild info").AppendLine();
-            sb.AppendFormat("**Name**: '{0}'", gls.Name).AppendLine();
+            sb.AppendFormat("**Name**: {0}", gls.Name).AppendLine();
             sb.AppendFormat("**ID**: {0}", gls.Id).AppendLine();
             sb.AppendFormat("**Voice Region ID**: {0}", gls.VoiceRegionId).AppendLine();
             sb.AppendFormat("**Owner**: {0} ({1})", (await gls.GetOwnerAsync()).Mention, gls.OwnerId).AppendLine();
             sb.AppendFormat("**Channel count**: {0:#,##0}", gls.Channels.Count).AppendLine();
             sb.AppendFormat("**Role count**: {0:#,##0}", gls.Roles.Count).AppendLine();
-            sb.AppendFormat("**Member count**: {0:#,##0}", gls.Users.Count).AppendLine();
             sb.AppendFormat("**Default channel**: {0}", (await gls.GetDefaultChannelAsync()).Mention).AppendLine();
             sb.AppendFormat("**Features**: {0}", string.Join(", ", gls.Features.Select(xs => string.Concat("'", xs, "'")))).AppendLine();
-            sb.AppendFormat("**Icon URL**: {0}", gls.IconUrl).AppendLine();
-            await chn.SendMessageAsync(sb.ToString());
+            embed.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "Information";
+                x.Value = sb.ToString();
+            });
+
+            if (!string.IsNullOrWhiteSpace(gls.IconUrl))
+            {
+                embed.AddField(x =>
+                {
+                    x.IsInline = false;
+                    x.Name = "Guild Icon";
+                    x.Value = string.Concat("**ID**: ", gls.IconId);
+                });
+                embed.ImageUrl = gls.IconUrl;
+            }
+
+            await chn.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("purgechannel", "Purges a channel. Removes up to 100 messages. This command can only be used by server administrators.", Aliases = "purgech;chpurge;chanpurge;purgechan", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
@@ -456,16 +525,18 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
-            var nam = ctx.RawArguments[0];
 
             await msg.DeleteAsync();
 
+            if (msg.MentionedChannelIds.Count == 0)
+                throw new ArgumentException("You need to mention a channel you want to purge");
             var gls = gld as SocketGuild;
-            var chp = gls.Channels.FirstOrDefault(xch => xch.Name == nam) as SocketTextChannel;
+            var chp = gls.Channels.FirstOrDefault(xch => xch.Id == msg.MentionedChannelIds.First()) as SocketTextChannel;
             var msgs = await chp.GetMessagesAsync(100).Flatten();
             await chp.DeleteMessagesAsync(msgs);
-
-            await chn.SendMessageAsync(string.Format("**ADA**: Deleted {0:#,##0} messages", msgs.Count()));
+            
+            var embed = this.PrepareEmbed("Success", string.Format("Deleted {0:#,##0} message{2} from channel {1}.", msgs.Count(), chp.Mention, msgs.Count() > 1 ? "s" : ""), EmbedType.Success);
+            await chn.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("adahelp", "Shows command list. Add command name to learn more.", CheckPermissions = false)]
@@ -481,25 +552,19 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var embed = (EmbedBuilder)null;
             if (ctx.RawArguments.Count == 0)
             {
-                embed = this.PrepareEmbed("ADA Help", string.Format("List of all ADA commands, with aliases, and descriptions. All commands use the **{0}** prefix. Run **{0}adahelp** command to learn more about a specific command.", AdaBotCore.CommandManager.Prefix));
+                embed = this.PrepareEmbed("ADA Help", string.Format("List of all ADA commands, with aliases, and descriptions. All commands use the **{0}** prefix. Run **{0}adahelp** command to learn more about a specific command.", AdaBotCore.CommandManager.Prefix), EmbedType.Info);
                 foreach (var cmdg in AdaBotCore.CommandManager.GetCommands().GroupBy(xcmd => xcmd.Module))
                 {
-                    var sb = new StringBuilder();
-                    foreach (var cmd in cmdg.OrderBy(xcmd => xcmd.Name))
-                    {
-                        var str0 = (string)null;
-                        if (cmd.Checker != null && !cmd.Checker.CanRun(cmd, usr, msg, chn, gld, out str0))
-                            continue;
-
-                        sb.AppendFormat("**{0}**", cmd.Name).AppendLine();
-                    }
-                    sb.AppendLine();
+                    var err = "";
+                    var xcmds = cmdg.Where(xcmd => xcmd.Checker != null && xcmd.Checker.CanRun(xcmd, usr, msg, chn, gld, out err))
+                        .OrderBy(xcmd => xcmd.Name)
+                        .Select(xcmd => string.Concat("**", xcmd.Name, "**"));
 
                     embed.AddField(x =>
                     {
                         x.IsInline = false;
                         x.Name = string.Format("Commands registered by {0}", cmdg.Key.Name);
-                        x.Value = sb.ToString();
+                        x.Value = string.Join(", ", xcmds);
                     });
                 }
             }
@@ -508,9 +573,12 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                 var cmdn = ctx.RawArguments[0];
                 var cmd = AdaBotCore.CommandManager.GetCommand(cmdn);
                 if (cmd == null)
-                    throw new InvalidOperationException(string.Format("Command '{0}' does not exist", cmdn));
+                    throw new InvalidOperationException(string.Format("Command **{0}** does not exist", cmdn));
+                var err = (string)null;
+                if (cmd.Checker != null && !cmd.Checker.CanRun(cmd, usr, msg, chn, gld, out err))
+                    throw new ArgumentException("You can't run this command.");
 
-                embed = this.PrepareEmbed("ADA Help", string.Format("{0} Command help", cmd.Name));
+                embed = this.PrepareEmbed("ADA Help", string.Format("**{0}** Command help", cmd.Name), EmbedType.Info);
                 
                 embed.AddField(x =>
                 {
@@ -519,14 +587,17 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                     x.Value = cmd.Description;
                 });
 
-                embed.AddField(x =>
+                if (cmd.Aliases != null && cmd.Aliases.Count > 0)
                 {
-                    x.IsInline = false;
-                    x.Name = "Aliases";
-                    x.Value = string.Join(", ", cmd.Aliases.Select(xa => string.Concat("**", xa, "**")));
-                });
+                    embed.AddField(x =>
+                    {
+                        x.IsInline = false;
+                        x.Name = "Aliases";
+                        x.Value = string.Join(", ", cmd.Aliases.Select(xa => string.Concat("**", xa, "**")));
+                    });
+                }
             }
-
+            
             await chn.SendMessageAsync("", false, embed);
         }
 
@@ -543,7 +614,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var n = a.GetName();
 
             var gls = gld as SocketGuild;
-            var embed = this.PrepareEmbed("About ADA", "Hi! I am ADA, or Advanced (although Automatic is also applicable) Discord Administrator. A bot created by Emzi0767 to simplify several administrative tasks for discord servers. I first went live on 2016-11-17.");
+            var embed = this.PrepareEmbed("About ADA", "Hi! I am ADA, or Advanced (although Automatic is also applicable) Discord Administrator. A bot created by Emzi0767 to simplify several administrative tasks for discord servers. I first went live on 2016-11-17.", EmbedType.Info);
             embed.ImageUrl = "http://i.imgur.com/Nykuwgj.jpg";
 
             embed.AddField(x =>
@@ -583,7 +654,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                 x.Name = "What do you look like in real life?";
                 x.Value = "I am hosted on a Raspberry Pi 2, model B. The device is enclosed in a black case, and is connected to local network using a yellow Cat5 cord. Additionally, there is a silver monoblock USB thumb drive attached to it at all times, it serves as external storage for various purposes. Pi draws power from a nearby extension cord through a black USB cable plugged into its power connector. It's stacked on top of a dormant Raspberry Pi, model B, revision 2.0. If you have trouble imagining that, here's what it looks like:";
             });
-
+            
             await chn.SendMessageAsync("", false, embed);
         }
 
@@ -613,7 +684,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var ada_sb0 = (StringBuilder)null;
 
             // create the dump
-            var embed = this.PrepareEmbed("ADA Diagnostic Information", "Full dump of all diagnostic information about this ADA instance.");
+            var embed = this.PrepareEmbed("ADA Diagnostic Information", "Full dump of all diagnostic information about this ADA instance.", EmbedType.Warning);
 
             // dump process info
             ada_sb0 = new StringBuilder();
@@ -722,11 +793,11 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             //    x.Value = ada_sb0.ToString();
             //});
             //ada_sb0 = null;
-
+            
             await chn.SendMessageAsync("", false, embed);
         }
 
-        private EmbedBuilder PrepareEmbed(string title, string desc)
+        private EmbedBuilder PrepareEmbed(string title, string desc, EmbedType type)
         {
             var embed = new EmbedBuilder();
             embed.Title = title;
@@ -734,9 +805,36 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             embed.Author = new EmbedAuthorBuilder();
             embed.Author.IconUrl = AdaBotCore.AdaClient.DiscordClient.CurrentUser.AvatarUrl;
             embed.Author.Name = "ADA, a bot by Emzi0767";
-            //embed.Timestamp = DateTimeOffset.UtcNow;
-            embed.Color = new Color(127, 255, 0);
+            var ecolor = new Color(255, 255, 255);
+            switch (type)
+            {
+                case EmbedType.Info:
+                    ecolor = new Color(0, 127, 255);
+                    break;
+
+                case EmbedType.Success:
+                    ecolor = new Color(127, 255, 0);
+                    break;
+
+                case EmbedType.Warning:
+                    ecolor = new Color(255, 255, 0);
+                    break;
+
+                case EmbedType.Error:
+                    ecolor = new Color(255, 127, 0);
+                    break;
+            }
+            embed.Color = ecolor;
             return embed;
+        }
+
+        private enum EmbedType : uint
+        {
+            Unknown,
+            Success,
+            Error,
+            Warning,
+            Info
         }
     }
 }
