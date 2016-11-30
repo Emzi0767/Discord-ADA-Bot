@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.Commands.Builders;
 using Discord.WebSocket;
 using Emzi0767.Net.Discord.AdaBot.Attributes;
 using Emzi0767.Net.Discord.AdaBot.Commands.Permissions;

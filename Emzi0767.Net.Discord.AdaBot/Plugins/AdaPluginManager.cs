@@ -20,10 +20,9 @@ namespace Emzi0767.Net.Discord.AdaBot.Plugins
             L.W("ADA PLG", "Initializer");
         }
 
-        public void Initialize()
+        public void LoadAssemblies()
         {
-            L.W("ADA PLG", "Registering and initializing plugins");
-
+            L.W("ADA PLG", "Loading all plugin assemblies");
             this.LoadedAssemblies = new Dictionary<string, Assembly>();
             var a = Assembly.GetExecutingAssembly();
             var l = a.Location;
@@ -39,7 +38,14 @@ namespace Emzi0767.Net.Discord.AdaBot.Plugins
                     this.LoadedAssemblies.Add(xa.FullName, xa);
                 }
             }
+            L.W("ADA PLG", "Registering dependency resolver");
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            L.W("ADA PLG", "Done");
+        }
+
+        public void Initialize()
+        {
+            L.W("ADA PLG", "Registering and initializing plugins");
 
             var @as = AppDomain.CurrentDomain.GetAssemblies();
             var ts = @as.SelectMany(xa => xa.DefinedTypes);

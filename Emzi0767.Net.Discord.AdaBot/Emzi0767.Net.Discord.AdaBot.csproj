@@ -184,6 +184,8 @@
     <Compile Include="AdaBotCore.cs" />
     <Compile Include="Commands\Permissions\AdaDebugChecker.cs" />
     <Compile Include="Commands\Permissions\IAdaPermissionChecker.cs" />
+    <Compile Include="Config\AdaConfigManager.cs" />
+    <Compile Include="Config\IAdaPluginConfig.cs" />
     <Compile Include="Core\AdaClient.cs" />
     <Compile Include="Commands\Permissions\AdaPermission.cs" />
     <Compile Include="Plugins\AdaPlugin.cs" />
