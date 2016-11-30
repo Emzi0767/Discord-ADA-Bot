@@ -18,6 +18,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
         internal DiscordSocketClient DiscordClient { get; private set; }
         private Timer BanHammer { get; set; }
         private string Token { get; set; }
+        internal JObject ConfigJson { get; private set; }
 
         internal AdaClient()
         {
@@ -40,6 +41,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var sp = Path.Combine(l, "config.json");
             var sjson = File.ReadAllText(sp, AdaBotCore.UTF8);
             var sjo = JObject.Parse(sjson);
+            this.ConfigJson = sjo;
             this.Token = (string)sjo["token"];
             L.W("ADA DSC", "Discord initialized");
         }
@@ -108,6 +110,15 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
 
             foreach (var ms in msg)
                 channel.SendMessageAsync(ms).Wait();
+        }
+
+        internal void WriteConfig()
+        {
+            var a = Assembly.GetExecutingAssembly();
+            var n = a.GetName();
+            var l = Path.GetDirectoryName(a.Location);
+            var sp = Path.Combine(l, "config.json");
+            File.WriteAllText(sp, this.ConfigJson.ToString(), AdaBotCore.UTF8);
         }
 
         private Task Client_Log(LogMessage e)

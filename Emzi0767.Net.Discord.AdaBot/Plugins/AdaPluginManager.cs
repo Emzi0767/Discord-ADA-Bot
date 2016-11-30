@@ -46,7 +46,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Plugins
         public void Initialize()
         {
             L.W("ADA PLG", "Registering and initializing plugins");
-
             var @as = AppDomain.CurrentDomain.GetAssemblies();
             var ts = @as.SelectMany(xa => xa.DefinedTypes);
             var pt = typeof(IAdaPlugin);
@@ -61,6 +60,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Plugins
                 this.RegisteredPlugins.Add(plg.Name, plg);
                 L.W("ADA PLG", "Registered plugin '{0}'", plg.Name);
                 plg.Plugin.Initialize();
+                plg.Plugin.LoadConfig(AdaBotCore.ConfigManager.GetConfig(iplg));
                 L.W("ADA PLG", "Plugin '{0}' initialized", plg.Name);
             }
             L.W("ADA PLG", "Registered and initialized {0:#,##0} plugins", this.RegisteredPlugins.Count);
