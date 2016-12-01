@@ -42,8 +42,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         /// <returns>All registered commands.</returns>
         public IEnumerable<AdaCommand> GetCommands()
         {
-            foreach (var cmd in this.RegisteredCommands)
-                yield return cmd.Value;
+            foreach (var cmd in this.RegisteredCommands.GroupBy(xkvp => xkvp.Value))
+                yield return cmd.Key;
         }
 
         internal AdaCommand GetCommand(string name)
@@ -93,19 +93,33 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                     if (xct == null)
                         continue;
 
-                    var cmd = new AdaCommand(xct.Name, xct.Aliases != null ? xct.Aliases.Split(';') : new string[] { }, xct.Description, xct.CheckPermissions && this.RegisteredCheckers.ContainsKey(xct.CheckerId) ? this.RegisteredCheckers[xct.CheckerId] : null, m, ch, xct.RequiredPermission);
-                    this.RegisteredCommands.Add(cmd.Name, cmd);
-                    L.W("ADA CMD", "Registered command '{0}' for handler '{1}'", cmd.Name, ch.Name);
+                    var aliases = xct.Aliases != null ? xct.Aliases.Split(';') : new string[] { };
+                    var cmd = new AdaCommand(xct.Name, aliases, xct.Description, xct.CheckPermissions && this.RegisteredCheckers.ContainsKey(xct.CheckerId) ? this.RegisteredCheckers[xct.CheckerId] : null, m, ch, xct.RequiredPermission);
+                    var names = new string[1 + aliases.Length];
+                    names[0] = cmd.Name;
+                    if (aliases.Length > 0)
+                        Array.Copy(aliases, 0, names, 1, aliases.Length);
+                    if (!this.RegisteredCommands.ContainsKey(cmd.Name))
+                    {
+                        foreach (var name in names)
+                        {
+                            if (!this.RegisteredCommands.ContainsKey(name))
+                                this.RegisteredCommands.Add(name, cmd);
+                            else
+                                L.W("ADA CMD", "Alias '{0}' for command '{1}' already taken, skipping", name, cmd.Name);
+                        }
+                        L.W("ADA CMD", "Registered command '{0}' for handler '{1}'", cmd.Name, ch.Name);
+                    }
+                    else
+                        L.W("ADA CMD", "Command name '{0}' is already registered, skipping", cmd.Name);
                 }
                 L.W("ADA CMD", "Registered command module '{0}' for type {1}", ch.Name, t.ToString());
             }
-            L.W("ADA CMD", "Registered {0:#,##0} commands", this.RegisteredCommands.Count);
+            L.W("ADA CMD", "Registered {0:#,##0} commands", this.RegisteredCommands.GroupBy(xkvp => xkvp.Value).Count());
         }
 
         private void InitCommands()
         {
-
-
             L.W("ADA CMD", "Registering command handler");
             AdaBotCore.AdaClient.DiscordClient.MessageReceived += HandleCommand;
             L.W("ADA CMD", "Done");

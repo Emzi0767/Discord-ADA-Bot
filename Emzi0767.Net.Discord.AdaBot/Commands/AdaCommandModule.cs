@@ -538,7 +538,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("adahelp", "Shows command list. Add command name to learn more.", CheckPermissions = false)]
+        [AdaCommand("adahelp", "Shows command list. Add command name to learn more.", Aliases = "help", CheckPermissions = false)]
         public async Task Help(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;

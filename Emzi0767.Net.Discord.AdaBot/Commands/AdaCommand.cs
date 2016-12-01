@@ -81,8 +81,41 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         internal async Task Execute(AdaCommandContext context)
         {
             var error = (string)null;
-            if ((this.Checker != null && this.Checker.CanRun(this, context.User, context.Message, context.Channel, context.Guild, out error)) || this.Checker == null)
+            var canrun = false;
+            if (this.Checker == null)
+                canrun = true;
+            else
+                canrun = this.Checker.CanRun(this, context.User, context.Message, context.Channel, context.Guild, out error);
+            if (canrun)
                 await this.Function(context);
+            else
+                throw new UnauthorizedAccessException(error);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is AdaCommand))
+                return false;
+            return this == (obj as AdaCommand);
+        }
+
+        public static bool operator ==(AdaCommand cmd1, AdaCommand cmd2)
+        {
+            var ocmd1 = (object)cmd1;
+            var ocmd2 = (object)cmd2;
+            if (ocmd1 == null && ocmd2 != null)
+                return false;
+            if (ocmd1 != null && ocmd2 == null)
+                return false;
+            if (ocmd1 == null && ocmd2 == null)
+                return true;
+
+            return cmd1.Name == cmd2.Name && cmd1.Module.Name == cmd2.Module.Name;
+        }
+
+        public static bool operator !=(AdaCommand cmd1, AdaCommand cmd2)
+        {
+            return !(cmd1 == cmd2);
         }
     }
 }

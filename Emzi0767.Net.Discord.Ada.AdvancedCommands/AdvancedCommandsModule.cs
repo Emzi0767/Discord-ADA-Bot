@@ -65,7 +65,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var n1 = BitConverter.ToString(n2).Replace("-", "").ToLower().Insert(4, "-");
             
             var embed = this.PrepareEmbed("Generated ID", string.Concat(usr.Mention, ", the ID you requested is ", n1), EmbedType.Info);
-            await chn.SendMessageAsync("", false, null);
+            await chn.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("generateuuid", "Generates a random UUID. This command can be disabled by server administrators.", Aliases = "genuuid;makeuuid;mkuuid;generateguid;genguid;makeguid;mkguid", CheckerId = "ACPChecker", CheckPermissions = true)]
@@ -81,7 +81,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var n1 = Guid.NewGuid().ToString();
             
             var embed = this.PrepareEmbed("Generated UUID", string.Concat(usr.Mention, ", the UUID you requested is ", n1), EmbedType.Info);
-            await chn.SendMessageAsync("", false, null);
+            await chn.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("asciitobase64", "Converts an ASCII string to a Base64 string. This command can be disabled by server administrators.", Aliases = "ascii2base64;ascii2b64;2b64;b64;base64;tobase64;2base64", CheckerId = "ACPChecker", CheckPermissions = true)]
@@ -99,7 +99,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var b64 = Convert.ToBase64String(dat);
 
             var embed = this.PrepareEmbed("ASCII to Base64", string.Concat(usr.Mention, ": ", b64), EmbedType.Info);
-            await chn.SendMessageAsync("", false, null);
+            await chn.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("base64toascii", "Converts a Base64 string to an ASCII string. This command can be disabled by server administrators.", Aliases = "base642ascii;b642ascii;2ascii;ascii;toascii", CheckerId = "ACPChecker", CheckPermissions = true)]
@@ -117,7 +117,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var ascii = utf8.GetString(dat);
 
             var embed = this.PrepareEmbed("Base64 to ASCII", string.Concat(usr.Mention, ": ", ascii), EmbedType.Info);
-            await chn.SendMessageAsync("", false, null);
+            await chn.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("color", "Creates a colored square, used for color previewing. This command can be disabled by server administrators.", Aliases = "clr;colour;colorsquare;coloursquare;clrsq", CheckerId = "ACPChecker", CheckPermissions = true)]
@@ -186,7 +186,12 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
                     foreach (var xch in chs)
                     {
                         var xcn = xch as SocketTextChannel;
-                        if ((msgt = await xcn.GetMessagesAsync(msgs.OrderByDescending(xm => xm != null ? xm.Timestamp : new DateTimeOffset(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Local))).FirstOrDefault() == null ? null : msgs.OrderByDescending(xm => xm != null ? xm.Timestamp : new DateTimeOffset(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Local))).FirstOrDefault(), Direction.Before, Math.Min(100, maxm - msgs.Count)).Flatten()).Count() > 0)
+                        if (msgs.Count == 0)
+                        {
+                            msgt = await xcn.GetMessagesAsync(100).Flatten();
+                            msgs.AddRange(msgt.Where(xmsg => xmsg.Author != null && xmsg.Author.Id == mus.Id));
+                        }
+                        if ((await xcn.GetMessagesAsync(msgs.OrderByDescending(xm => xm != null ? xm.Timestamp : DateTimeOffset.MinValue).FirstOrDefault(), Direction.Before, Math.Min(100, maxm - msgs.Count)).Flatten()).Count() > 0)
                         {
                             lstm = Math.Max(msgt.Count(), lstm);
                             msgs.AddRange(msgt.Where(xmsg => xmsg.Author != null && xmsg.Author.Id == mus.Id));
@@ -210,7 +215,12 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
                     foreach (var xch in chs)
                     {
                         var xcn = xch as SocketTextChannel;
-                        if ((msgt = await xcn.GetMessagesAsync(msgs.OrderByDescending(xm => xm != null ? xm.Timestamp : new DateTimeOffset(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Local))).FirstOrDefault() == null ? null : msgs.OrderByDescending(xm => xm != null ? xm.Timestamp : new DateTimeOffset(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Local))).FirstOrDefault(), Direction.Before, Math.Min(100, maxm - msgs.Count)).Flatten()).Count() > 0)
+                        if (msgs.Count == 0)
+                        {
+                            msgt = await xcn.GetMessagesAsync(100).Flatten();
+                            msgs.AddRange(msgt.Where(xmsg => xmsg.Author as SocketGuildUser != null && (xmsg.Author as SocketGuildUser).RoleIds.Contains(mrl.Id)));
+                        }
+                        if ((await xcn.GetMessagesAsync(msgs.OrderByDescending(xm => xm != null ? xm.Timestamp : DateTimeOffset.MinValue).FirstOrDefault(), Direction.Before, Math.Min(100, maxm - msgs.Count)).Flatten()).Count() > 0)
                         {
                             lstm = Math.Max(msgt.Count(), lstm);
                             msgs.AddRange(msgt.Where(xmsg => xmsg.Author as SocketGuildUser != null && (xmsg.Author as SocketGuildUser).RoleIds.Contains(mrl.Id)));
@@ -228,7 +238,9 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
                 var msgs = new IMessage[maxm];
                 var msgi = 0;
                 var msgt = (IEnumerable<IMessage>)null;
-                while (msgi < maxm && (msgt = await mch.GetMessagesAsync(msgs.OrderByDescending(xm => xm != null ? xm.Timestamp : new DateTimeOffset(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Local))).FirstOrDefault() == null ? null : msgs.OrderByDescending(xm => xm != null ? xm.Timestamp : new DateTimeOffset(new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Local))).FirstOrDefault(), Direction.Before, Math.Min(100, maxm - msgs.Count())).Flatten()).Count() > 0)
+                msgt = await mch.GetMessagesAsync(100).Flatten();
+                Array.Copy(msgt.ToArray(), 0, msgs, msgi, msgt.Count());
+                while (msgi < maxm && (msgt = await mch.GetMessagesAsync(msgs.OrderByDescending(xm => xm != null ? xm.Timestamp : DateTimeOffset.MinValue).FirstOrDefault(), Direction.Before, Math.Min(100, maxm - msgi)).Flatten()).Count() > 0)
                 {
                     Array.Copy(msgt.ToArray(), 0, msgs, msgi, msgt.Count());
                     msgi += msgt.Count();
@@ -270,6 +282,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
                 x.Name = "Enabled commands";
                 x.Value = string.Join(", ", cmds);
             });
+            await chn.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("disableadvancedcommand", "Disables an Advanced Commands command. This command can only be used by server administrators.", Aliases = "disableac;disableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
@@ -294,6 +307,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
                 x.Name = "Disabled commands";
                 x.Value = string.Join(", ", cmds);
             });
+            await chn.SendMessageAsync("", false, embed);
         }
 
         private EmbedBuilder PrepareEmbed(string title, string desc, EmbedType type)
