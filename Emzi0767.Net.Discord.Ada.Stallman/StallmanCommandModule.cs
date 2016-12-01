@@ -16,10 +16,11 @@ namespace Emzi0767.Net.Discord.Ada.Stallman
         {
             var gld = ctx.Guild;
 
+            await ctx.Message.DeleteAsync();
             StallmanPlugin.Instance.Enable(gld.Id);
 
             var embed = this.PrepareEmbed("Success", "GNU/Stallman plugin was enabled for this guild.", EmbedType.Success);
-            await ctx.Channel.SendMessageAsync("", false, null);
+            await ctx.Channel.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("stallmandisable", "Disables the GNU/Stallman plugin for this guild. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageGuild)]
@@ -27,10 +28,11 @@ namespace Emzi0767.Net.Discord.Ada.Stallman
         {
             var gld = ctx.Guild;
 
+            await ctx.Message.DeleteAsync();
             StallmanPlugin.Instance.Disable(gld.Id);
 
             var embed = this.PrepareEmbed("Success", "GNU/Stallman plugin was disabled for this guild.", EmbedType.Success);
-            await ctx.Channel.SendMessageAsync("", false, null);
+            await ctx.Channel.SendMessageAsync("", false, embed);
         }
 
         private EmbedBuilder PrepareEmbed(string title, string desc, EmbedType type)
