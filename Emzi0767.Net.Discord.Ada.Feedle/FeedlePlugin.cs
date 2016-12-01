@@ -87,8 +87,7 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
             bool changed = false;
             foreach (var feed in this.conf.Feeds)
             {
-                var rec = feed.RecentUris;
-                feed.RecentUris = new List<string>();
+                var rec = new List<string>();
 
                 var uri_root_builder = new UriBuilder(feed.FeedUri);
                 var ctx = wc.DownloadString(feed.FeedUri);
@@ -107,8 +106,8 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
                     var itu = uri_root_builder.Uri;
                     var itd = DateTime.Parse(itp, CultureInfo.InvariantCulture);
 
-                    feed.RecentUris.Add(itu.ToString());
-                    if (!rec.Contains(itu.ToString()))
+                    rec.Add(itu.ToString());
+                    if (!feed.RecentUris.Contains(itu.ToString()))
                     {
                         changed = true;
                         var embed = new EmbedBuilder();
@@ -122,6 +121,9 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
                         AdaBotCore.AdaClient.SendEmbed(embed, feed.ChannelId);
                     }
                 }
+
+                if (changed)
+                    feed.RecentUris = rec;
             }
             if (changed)
                 UpdateConfig();
