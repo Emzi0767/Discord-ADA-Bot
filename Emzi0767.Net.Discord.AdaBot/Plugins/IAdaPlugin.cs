@@ -1,4 +1,5 @@
-﻿using Emzi0767.Net.Discord.AdaBot.Config;
+﻿using System;
+using Emzi0767.Net.Discord.AdaBot.Config;
 
 namespace Emzi0767.Net.Discord.AdaBot.Plugins
 {
@@ -6,6 +7,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Plugins
     {
         string Name { get; }
         IAdaPluginConfig Config { get; }
+        Type ConfigType { get; }
         void Initialize();
         void LoadConfig(IAdaPluginConfig config);
     }

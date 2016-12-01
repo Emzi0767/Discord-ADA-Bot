@@ -1,4 +1,5 @@
-﻿using Emzi0767.Net.Discord.AdaBot.Config;
+﻿using System;
+using Emzi0767.Net.Discord.AdaBot.Config;
 using Emzi0767.Net.Discord.AdaBot.Plugins;
 using Emzi0767.Tools.MicroLogger;
 
@@ -10,6 +11,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
         
         public string Name { get { return "Advanced Commands Plugin"; } }
         public IAdaPluginConfig Config { get { return this.conf; } }
+        public Type ConfigType { get { return typeof(AdvancedCommandsPluginConfig); } }
 
         private AdvancedCommandsPluginConfig conf;
 

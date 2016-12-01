@@ -20,7 +20,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Config
 
         public void UpdateConfig(IAdaPlugin plugin)
         {
-            this.DeclaredConfigs[plugin.Config.GetType()] = plugin.Config;
+            this.DeclaredConfigs[plugin.ConfigType] = plugin.Config;
             this.WriteConfigs();
         }
 
@@ -57,8 +57,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Config
 
         internal IAdaPluginConfig GetConfig(IAdaPlugin plugin)
         {
-            if (this.DeclaredConfigs.ContainsKey(plugin.Config.GetType()))
-                return this.DeclaredConfigs[plugin.Config.GetType()];
+            if (this.DeclaredConfigs.ContainsKey(plugin.ConfigType))
+                return this.DeclaredConfigs[plugin.ConfigType];
             return null;
         }
 

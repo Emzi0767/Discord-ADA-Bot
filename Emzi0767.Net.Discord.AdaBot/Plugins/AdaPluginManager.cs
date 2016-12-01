@@ -63,7 +63,16 @@ namespace Emzi0767.Net.Discord.AdaBot.Plugins
                 plg.Plugin.LoadConfig(AdaBotCore.ConfigManager.GetConfig(iplg));
                 L.W("ADA PLG", "Plugin '{0}' initialized", plg.Name);
             }
+            this.UpdateAllConfigs();
             L.W("ADA PLG", "Registered and initialized {0:#,##0} plugins", this.RegisteredPlugins.Count);
+        }
+
+        internal void UpdateAllConfigs()
+        {
+            foreach (var plg in this.RegisteredPlugins)
+            {
+                AdaBotCore.ConfigManager.UpdateConfig(plg.Value.Plugin);
+            }
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)

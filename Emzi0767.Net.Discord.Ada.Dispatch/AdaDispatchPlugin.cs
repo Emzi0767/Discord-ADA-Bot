@@ -14,6 +14,7 @@ namespace Emzi0767.Net.Discord.Ada.Dispatch
     {
         public string Name { get { return "ADA Dispatch Plugin"; } }
         public IAdaPluginConfig Config { get { return this.conf; } }
+        public Type ConfigType { get { return typeof(AdaDispatchPluginConfig); } }
 
         private AutoResetEvent are;
         private UTF8Encoding utf8;

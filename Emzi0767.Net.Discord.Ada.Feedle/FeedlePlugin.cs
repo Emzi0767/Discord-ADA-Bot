@@ -17,6 +17,7 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
     public class FeedlePlugin : IAdaPlugin
     {
         public IAdaPluginConfig Config { get { return this.conf; } }
+        public Type ConfigType { get { return typeof(FeedlePluginConfig); } }
         public string Name { get { return "ADA RSS Plugin"; } }
         private FeedlePluginConfig conf;
 

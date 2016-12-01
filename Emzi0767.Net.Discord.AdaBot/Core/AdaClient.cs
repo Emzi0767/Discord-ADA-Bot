@@ -57,6 +57,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
 
         internal void Deinitialize()
         {
+            L.W("ADA DSC", "Saving configs");
+            AdaBotCore.PluginManager.UpdateAllConfigs();
             L.W("ADA DSC", "Disconnecting");
             this.DiscordClient.DisconnectAsync().Wait();
             L.W("ADA DSC", "Disconnected");
