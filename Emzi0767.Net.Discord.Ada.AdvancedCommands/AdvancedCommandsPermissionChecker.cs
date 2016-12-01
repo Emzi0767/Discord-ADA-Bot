@@ -1,17 +1,17 @@
 ﻿using Discord;
-using Discord.Commands;
-using Discord.Commands.Permissions;
-using Emzi0767.Net.Discord.AdaBot.Attributes;
+using Emzi0767.Net.Discord.AdaBot.Commands;
+using Emzi0767.Net.Discord.AdaBot.Commands.Permissions;
 
 namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
 {
-    [AdaPermissionChecker("ACPChecker")]
-    public class AdvancedCommandsPermissionChecker : IPermissionChecker
+    public class AdvancedCommandsPermissionChecker : IAdaPermissionChecker
     {
-        public bool CanRun(Command command, User user, Channel channel, out string error)
+        public string Id { get { return "ACPChecker"; } }
+
+        public bool CanRun(AdaCommand cmd, IGuildUser user, IMessage message, IMessageChannel channel, IGuild guild, out string error)
         {
-            var srv = channel.Server.Id;
-            var can = AdvancedCommandsPlugin.GetEnabledState(command.Text, srv);
+            var srv = guild.Id;
+            var can = AdvancedCommandsPlugin.Instance.IsEnabled(cmd.Name, srv);
             error = "";
             if (can)
                 return true;

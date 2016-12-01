@@ -174,9 +174,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdvancedCommandsHandler.cs" />
+    <Compile Include="AdvancedCommandsModule.cs" />
     <Compile Include="AdvancedCommandsPermissionChecker.cs" />
     <Compile Include="AdvancedCommandsPlugin.cs" />
+    <Compile Include="AdvancedCommandsPluginConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
