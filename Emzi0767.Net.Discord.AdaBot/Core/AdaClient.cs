@@ -65,6 +65,15 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
         }
 
         /// <summary>
+        /// Registers a message received handler.
+        /// </summary>
+        /// <param name="handler">Handler to register.</param>
+        public void RegisterMessageHandler(Func<SocketMessage, Task> handler)
+        {
+            this.DiscordClient.MessageReceived += handler;
+        }
+
+        /// <summary>
         /// Sends a message to a specified channel.
         /// </summary>
         /// <param name="message">Message to send.</param>
@@ -131,7 +140,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
                 channel.SendMessageAsync(ms).Wait();
         }
 
-        public void SendEmbed(EmbedBuilder embed, SocketTextChannel channel)
+        internal void SendEmbed(EmbedBuilder embed, SocketTextChannel channel)
         {
             channel.SendMessageAsync("", false, embed).Wait();
         }
