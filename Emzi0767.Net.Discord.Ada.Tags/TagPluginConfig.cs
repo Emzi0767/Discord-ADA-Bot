@@ -47,7 +47,7 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             if (!this.Tags.ContainsKey(channel))
                 return false;
 
-            if (!this.Tags[channel].ContainsKey(tag.Id))
+            if (!this.Tags[channel].ContainsKey(Id))
                 return false;
 
             this.Tags[channel].Remove(id);
