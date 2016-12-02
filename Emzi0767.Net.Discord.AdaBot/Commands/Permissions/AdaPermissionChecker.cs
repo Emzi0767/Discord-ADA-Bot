@@ -14,7 +14,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands.Permissions
             if (chn == null)
                 return false;
             var chp = user.GetPermissions(chn);
-            if (prm == AdaPermission.None)
+            if (prm == AdaPermission.None && user.GuildPermissions.Administrator)
                 return true;
             if ((chp.RawValue & (uint)prm) == (uint)prm)
                 return true;
