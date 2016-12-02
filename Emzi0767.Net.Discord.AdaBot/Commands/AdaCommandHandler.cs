@@ -18,7 +18,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
     {
         private Dictionary<string, AdaCommand> RegisteredCommands { get; set; }
         private Dictionary<string, IPermissionChecker> RegisteredCheckers { get; set; }
-        public int CommandCount { get { return this.RegisteredCommands.Count; } }
+        public int CommandCount { get { return this.GetCommands().Count(); } }
         public int CheckerCount { get { return this.RegisteredCheckers.Count; } }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                         L.W("ADA CMD", "Command name '{0}' is already registered, skipping", cmd.Name);
                 }
             }
-            L.W("ADA CMD", "Registered {0:#,##0} commands", this.RegisteredCommands.Count);
+            L.W("ADA CMD", "Registered {0:#,##0} commands", this.RegisteredCommands.GroupBy(xkvp => xkvp.Value).Count());
         }
 
         private void InitCommands()
