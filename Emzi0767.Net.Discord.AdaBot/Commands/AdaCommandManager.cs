@@ -20,7 +20,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
     {
         private Dictionary<string, AdaCommand> RegisteredCommands { get; set; }
         private Dictionary<string, IAdaPermissionChecker> RegisteredCheckers { get; set; }
-        public int CommandCount { get { return this.RegisteredCommands.Count; } }
+        public int CommandCount { get { return this.GetCommands().Count(); } }
         public int CheckerCount { get { return this.RegisteredCheckers.Count; } }
         public string Prefix { get; private set; }
 
