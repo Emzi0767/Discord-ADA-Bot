@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ADA Bot")]
-[assembly: AssemblyDescription("ADA stands for Automatic or Advanced Discord Administrator. It's a bot designed to fulfill certain administrative tasks on Discord servers.")]
+[assembly: AssemblyTitle("Emzi0767.Net.Discord.Ada.Tags")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Emzi0767")]
-[assembly: AssemblyProduct("Emzi0767.Net.Discord.AdaBot")]
-[assembly: AssemblyCopyright("Copyright © Emzi0767 2016")]
-[assembly: AssemblyTrademark("Emzi0767 2016")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Emzi0767.Net.Discord.Ada.Tags")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("f92fdb02-9a4b-44e5-ae91-2b5845debc76")]
+[assembly: Guid("e0028241-6de6-4ce7-9dd8-e163dc58c65e")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.1.0.0")]
-[assembly: AssemblyFileVersion("3.1.0.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

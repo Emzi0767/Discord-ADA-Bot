@@ -14,11 +14,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
 {
     internal class AdaCommandModule : IAdaCommandModule
     {
-        //var gld = ctx.Guild;
-        //var chn = ctx.Channel;
-        //var msg = ctx.Message;
-        //var usr = ctx.User;
-
         public string Name { get { return "ADA Core Commands"; } }
 
         [AdaCommand("mkrole", "Creates a new role. This command can only be used by guild administrators.", Aliases = "makerole;createrole;mkgroup;makegroup;creategroup;gmk;gmake;gcreate", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
@@ -837,7 +832,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             embed.Title = title;
             embed.Description = desc;
             embed.Author = new EmbedAuthorBuilder();
-            embed.Author.IconUrl = AdaBotCore.AdaClient.DiscordClient.CurrentUser.AvatarUrl;
+            embed.Author.IconUrl = AdaBotCore.AdaClient.CurrentUser.AvatarUrl;
             embed.Author.Name = "ADA, a bot by Emzi0767";
             var ecolor = new Color(255, 255, 255);
             switch (type)
