@@ -33,7 +33,7 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             if (!wrk)
                 throw new ArgumentException("Failed to create a tag, a tag with given name already exists for this channel.");
 
-            var embed = this.PrepareEmbed("Success", string.Format("Created tag **", nam, "** for this channel."), EmbedType.Success);
+            var embed = this.PrepareEmbed("Success", string.Concat("Created tag **", nam, "** for this channel."), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
 
@@ -56,7 +56,7 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             if (!wrk)
                 throw new ArgumentException("Failed to edit the tag, a tag with given name does not exist for this channel.");
 
-            var embed = this.PrepareEmbed("Success", string.Format("Edited tag **", nam, "** for this channel."), EmbedType.Success);
+            var embed = this.PrepareEmbed("Success", string.Concat("Edited tag **", nam, "** for this channel."), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
 
@@ -77,7 +77,7 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             if (!wrk)
                 throw new ArgumentException("Invalid tag specified.");
 
-            var embed = this.PrepareEmbed("Success", string.Format("Removed tag **", nam, "** for this channel."), EmbedType.Success);
+            var embed = this.PrepareEmbed("Success", string.Concat("Removed tag **", nam, "** for this channel."), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
 
