@@ -125,7 +125,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             L.W("ADA CMD", "Initializing all commands");
             var cscb = new CommandServiceConfigBuilder();
             cscb.PrefixChar = '/';
-            cscb.HelpMode = HelpMode.Public;
+            cscb.HelpMode = HelpMode.Disabled;
             cscb.ErrorHandler = new EventHandler<CommandErrorEventArgs>(Cmds_Error);
             AdaBotCore.AdaClient.DiscordClient.UsingCommands(cscb.Build());
             var cmds = AdaBotCore.AdaClient.DiscordClient.GetService<CommandService>();

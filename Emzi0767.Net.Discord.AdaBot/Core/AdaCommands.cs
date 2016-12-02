@@ -360,7 +360,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             await chn.SendMessage(string.Format("**ADA**: Deleted {0:#,##0} messages", msgs.Length));
         }
 
-        [Command("adahelp", "Shows command list.", CheckPermissions = false)]
+        [Command("adahelp", "Shows command list.", Aliases = "help", CheckPermissions = false)]
         public static async Task Help(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -379,7 +379,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             sb.AppendFormat("Created by Emzi0767 (<@181875147148361728>)").AppendLine();
             sb.AppendLine();
             var str0 = "";
-            if (ea.Args.Length == 0)
+            if (ea.Args.Length == 0 || string.IsNullOrWhiteSpace(ea.Args[0]))
             {
                 foreach (var cmdg in AdaBotCore.Handler.GetCommands().GroupBy(xcmd => xcmd.Handler))
                 {
@@ -400,7 +400,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
                     throw new ArgumentException("You cannot run that command.");
 
                 sb.AppendFormat("/**{0}**", cmd.Name).AppendLine();
-                sb.AppendFormat("Aliases: {0}", string.Join(", ", cmd.Aliases)).AppendLine();
+                sb.AppendFormat("Aliases: {0}", string.Join(", ", cmd.Aliases.Select(xs => string.Concat("**", xs, "**")))).AppendLine();
                 sb.AppendLine(cmd.Description);
             }
 
