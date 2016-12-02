@@ -22,6 +22,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         public string Name { get { return "ADA Core Commands"; } }
 
         [AdaCommand("mkrole", "Creates a new role. This command can only be used by guild administrators.", Aliases = "makerole;createrole;mkgroup;makegroup;creategroup;gmk;gmake;gcreate", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommandParameter(0, "name", "Name of the new role.", true)]
         public async Task CreateRole(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -37,6 +38,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         }
 
         [AdaCommand("rmrole", "Removes a role. This command can only be used by guild administrators.", Aliases = "removerole;deleterole;delrole;rmgroup;removegroup;deletegroup;delgroup;gdel;gdelete;grm;gremove", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommandParameter(0, "name", "Name or mention of the role to delete.", true)]
         public async Task DeleteRole(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -64,6 +66,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         }
 
         [AdaCommand("modrole", "Edits a role. This command can only be used by guild administrators.", Aliases = "modifyrole;editrole;modgroup;modifygroup;editgroup;gmod;gmodify;gedit", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommandParameter(0, "name", "Name or mention of the role to modify.", true)]
+        [AdaCommandParameter(1, "properties", "Properties to set. Format is property=value.", true, IsCatchAll = true)]
         public async Task ModifyRole(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -115,6 +119,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         }
 
         [AdaCommand("roleinfo", "Dumps all properties of a role. This command can only be used by guild administrators.", Aliases = "rinfo;dumprole;printrole;dumpgroup;printgroup;gdump", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommandParameter(0, "name", "Name or mention of the role to display.", true)]
         public async Task RoleInfo(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -242,6 +247,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         }
 
         [AdaCommand("roleadd", "Adds users to a role. This command can only be used by guild administrators.", Aliases = "groupadd;ugadd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommandParameter(0, "role", "Name or mention of the role to add to.", true)]
+        [AdaCommandParameter(1, "users", "Mentions of users to add to the role.", true, IsCatchAll = true)]
         public async Task RoleAdd(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -282,6 +289,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         }
 
         [AdaCommand("roleremove", "Removes users from a role. This command can only be used by guild administrators.", Aliases = "groupremove;ugremove;ugrm", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommandParameter(0, "role", "Name or mention of the role to remove from.", true)]
+        [AdaCommandParameter(1, "users", "Mentions of users to remove from the role.", true, IsCatchAll = true)]
         public async Task RoleRemove(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -322,6 +331,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         }
 
         [AdaCommand("kick", "Kicks users. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
+        [AdaCommandParameter(0, "users", "Mentions of users to kick.", true, IsCatchAll = true)]
         public async Task Kick(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -350,6 +360,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         }
 
         [AdaCommand("ban", "Bans users. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.BanMembers)]
+        [AdaCommandParameter(0, "users", "Mentions of users to ban.", true, IsCatchAll = true)]
         public async Task Ban(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -392,6 +403,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         }
 
         [AdaCommand("userinfo", "Displays information about users matching given name. This command can only be used by guild administrators.", Aliases = "uinfo;userlist;ulist;userfind;ufind", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommandParameter(0, "user", "Mention of user to display.", true)]
         public async Task UserInfo(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -519,6 +531,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         }
 
         [AdaCommand("purgechannel", "Purges a channel. Removes up to 100 messages. This command can only be used by guild administrators.", Aliases = "purgech;chpurge;chanpurge;purgechan", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [AdaCommandParameter(0, "channel", "Mention of channel to purge.", true)]
         public async Task PurgeChannel(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -539,6 +552,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         }
 
         [AdaCommand("adahelp", "Shows command list. Add command name to learn more.", Aliases = "help", CheckPermissions = false)]
+        [AdaCommandParameter(0, "command", "Command to display details of.", false)]
         public async Task Help(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -593,6 +607,27 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                         x.IsInline = false;
                         x.Name = "Aliases";
                         x.Value = string.Join(", ", cmd.Aliases.Select(xa => string.Concat("**", xa, "**")));
+                    });
+                }
+
+                if (cmd.Parameters.Count > 0)
+                {
+                    var sb1 = new StringBuilder();
+                    var sb2 = new StringBuilder();
+                    sb1.Append(AdaBotCore.CommandManager.Prefix).Append(cmd.Name).Append(' ');
+                    foreach (var param in cmd.Parameters.OrderBy(xp => xp.Order))
+                    {
+                        sb1.Append(param.IsRequired ? '<' : '[').Append(param.Name).Append(param.IsCatchAll ? "..." : "").Append(param.IsRequired ? '>' : ']').Append(' ');
+                        sb2.Append("**").Append(param.Name).Append("**: ").AppendLine(param.Description);
+                    }
+                    sb1.AppendLine();
+                    sb1.Append(sb2.ToString());
+
+                    embed.AddField(x =>
+                    {
+                        x.IsInline = false;
+                        x.Name = "Usage";
+                        x.Value = sb1.ToString();
                     });
                 }
             }

@@ -24,6 +24,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
         public string Name { get { return "ADA Advanced Commands"; } }
 
         [AdaCommand("colorme", "Sets your own color. This command can be disabled by guild administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommandParameter(0, "color", "Color to set, in RRGGBB format.", true)]
         public async Task SetColor(AdaCommandContext ctx)
         {
             var gld = ctx.Guild as SocketGuild;
@@ -85,6 +86,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
         }
 
         [AdaCommand("asciitobase64", "Converts an ASCII string to a Base64 string. This command can be disabled by guild administrators.", Aliases = "ascii2base64;ascii2b64;2b64;b64;base64;tobase64;2base64", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommandParameter(0, "ascii text", "ASCII text to convert to Base64.", true, IsCatchAll = true)]
         public async Task AsciiToBase64(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -103,6 +105,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
         }
 
         [AdaCommand("base64toascii", "Converts a Base64 string to an ASCII string. This command can be disabled by guild administrators.", Aliases = "base642ascii;b642ascii;2ascii;ascii;toascii", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommandParameter(0, "base64 text", "Base64 text to convert to ASCII.", true, IsCatchAll = true)]
         public async Task Base64ToAscii(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -121,6 +124,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
         }
 
         [AdaCommand("color", "Creates a colored square, used for color previewing. This command can be disabled by guild administrators.", Aliases = "clr;colour;colorsquare;coloursquare;clrsq", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommandParameter(0, "color", "Color in AARRGGBB format.", true)]
         public async Task ColorSquare(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -153,6 +157,8 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
         }
 
         [AdaCommand("markov", "Creates a markov chain sentence out of messages from specified source. This command can be disabled by guild administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [AdaCommandParameter(0, "channels", "Channels to create the chain from. Specify single if not mentioning roles or users.", true, IsCatchAll = true)]
+        [AdaCommandParameter(1, "user or role", "User or role whose messages to create the chain from.", true)]
         public async Task Markov(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -255,6 +261,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
         }
 
         [AdaCommand("enableadvancedcommand", "Enables an Advanced Commands command. This command can only be used by guild administrators.", Aliases = "enableac;enableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommandParameter(0, "commands", "Commands to enable. Consult adahelp for list of available commands to enable.", true, IsCatchAll = true)]
         public async Task EnableAdvancedCommand(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -280,6 +287,7 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
         }
 
         [AdaCommand("disableadvancedcommand", "Disables an Advanced Commands command. This command can only be used by guild administrators.", Aliases = "disableac;disableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommandParameter(0, "commands", "Commands to disable. Consult adahelp for list of available commands to disable.", true, IsCatchAll = true)]
         public async Task DisableAdvancedCommand(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;

@@ -16,6 +16,9 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
         public string Name { get { return "ADA RSS Commands"; } }
 
         [AdaCommand("addrss", "Adds an RSS feed to a specified channel. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommandParameter(0, "channel", "Mention of a channel to add the feed to.", true)]
+        [AdaCommandParameter(1, "url", "URL of the RSS feed.", true)]
+        [AdaCommandParameter(2, "tag", "Tag of the feed to use as title prefix.", false)]
         public async Task AddRss(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -43,6 +46,9 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
         }
 
         [AdaCommand("rmrss", "Removes an RSS feed from a specified channel. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommandParameter(0, "channel", "Mention of a channel to remove the feed from.", true)]
+        [AdaCommandParameter(1, "url", "URL of the RSS feed.", true)]
+        [AdaCommandParameter(2, "tag", "Tag used as the feed's title prefix.", false)]
         public async Task RemoveRss(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -69,7 +75,7 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("listrss", "Lists RSS feeds active on the current server. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("listrss", "Lists RSS feeds active in the current guild. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public async Task ListRss(AdaCommandContext ctx)
         {
             var gld = ctx.Guild as SocketGuild;

@@ -80,6 +80,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var ts = @as.SelectMany(xa => xa.DefinedTypes);
             var ht = typeof(IAdaCommandModule);
             var ct = typeof(AdaCommandAttribute);
+            var pt = typeof(AdaCommandParameterAttribute);
             foreach (var t in ts)
             {
                 if (!ht.IsAssignableFrom(t) || !t.IsClass || t.IsAbstract)
@@ -93,8 +94,13 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                     if (xct == null)
                         continue;
 
+                    var xps = Attribute.GetCustomAttributes(m).OfType<AdaCommandParameterAttribute>().ToArray();
+                    var ats = new List<AdaCommandParameter>();
+                    foreach (var xp in xps)
+                        ats.Add(new AdaCommandParameter(xp.Order, xp.Name, xp.Description, xp.IsRequired, xp.IsCatchAll));
+
                     var aliases = xct.Aliases != null ? xct.Aliases.Split(';') : new string[] { };
-                    var cmd = new AdaCommand(xct.Name, aliases, xct.Description, xct.CheckPermissions && this.RegisteredCheckers.ContainsKey(xct.CheckerId) ? this.RegisteredCheckers[xct.CheckerId] : null, m, ch, xct.RequiredPermission);
+                    var cmd = new AdaCommand(xct.Name, aliases, xct.Description, xct.CheckPermissions && this.RegisteredCheckers.ContainsKey(xct.CheckerId) ? this.RegisteredCheckers[xct.CheckerId] : null, m, ch, xct.RequiredPermission, ats);
                     var names = new string[1 + aliases.Length];
                     names[0] = cmd.Name;
                     if (aliases.Length > 0)

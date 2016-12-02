@@ -174,10 +174,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\AdaCommandAttribute.cs" />
+    <Compile Include="Attributes\AdaCommandParameterAttribute.cs" />
     <Compile Include="Commands\AdaCommand.cs" />
     <Compile Include="Commands\AdaCommandErrorContext.cs" />
     <Compile Include="Commands\AdaCommandContext.cs" />
     <Compile Include="Commands\AdaCommandManager.cs" />
+    <Compile Include="Commands\AdaCommandParameter.cs" />
     <Compile Include="Commands\IAdaCommandModule.cs" />
     <Compile Include="Commands\Permissions\AdaPermissionChecker.cs" />
     <Compile Include="Commands\AdaCommandModule.cs" />

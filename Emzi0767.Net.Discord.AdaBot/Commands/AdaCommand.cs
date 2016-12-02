@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -26,6 +27,11 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         /// Gets the description of the command.
         /// </summary>
         public string Description { get; private set; }
+
+        /// <summary>
+        /// Gets the command's parameter definitions.
+        /// </summary>
+        public ReadOnlyCollection<AdaCommandParameter> Parameters { get; private set; }
 
         /// <summary>
         /// Gets the permission checker for the command.
@@ -62,7 +68,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         /// <param name="method">Method executed when command is called.</param>
         /// <param name="handler">Command's registering handler.</param>
         /// <param name="permission">Command's required permission.</param>
-        public AdaCommand(string name, string[] aliases, string description, IAdaPermissionChecker checker, MethodInfo method, IAdaCommandModule module, AdaPermission permission)
+        public AdaCommand(string name, string[] aliases, string description, IAdaPermissionChecker checker, MethodInfo method, IAdaCommandModule module, AdaPermission permission, IList<AdaCommandParameter> @params)
         {
             this.Name = name;
             this.Aliases = new ReadOnlyCollection<string>(aliases);
@@ -71,6 +77,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             this.Method = method;
             this.Module = module;
             this.RequiredPermission = permission;
+            this.Parameters = new ReadOnlyCollection<AdaCommandParameter>(@params);
 
             var mtd = method;
             var mtp = Expression.Parameter(typeof(AdaCommandContext));
