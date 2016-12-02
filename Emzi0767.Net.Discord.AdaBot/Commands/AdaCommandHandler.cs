@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -40,12 +39,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
         /// <returns>All registered commands.</returns>
         public IEnumerable<AdaCommand> GetCommands()
         {
-            var st = new StackTrace();
-            var stf = st.GetFrame(1);
-            var stm = stf.GetMethod();
-            L.W("ADA CMD", "Method {0}/{1} requested full list of commands", stm.DeclaringType.ToString(), stm.ToString());
-            foreach (var cmd in this.RegisteredCommands)
-                yield return cmd.Value;
+            foreach (var cmd in this.RegisteredCommands.GroupBy(xkvp => xkvp.Value))
+                yield return cmd.Key;
         }
 
         internal AdaCommand GetCommand(string name)
@@ -101,9 +96,25 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                         continue;
 
                     L.W("ADA CMD", "Method {0} in type {1} is a command", m.Name, t.ToString());
-                    var cmd = new AdaCommand(xct.Name, xct.Aliases != null ? xct.Aliases.Split(';') : new string[] { }, xct.Description, xct.CheckPermissions && this.RegisteredCheckers.ContainsKey(xct.CheckerId) ? this.RegisteredCheckers[xct.CheckerId] : null, m, t, xct.RequiredPermission);
-                    this.RegisteredCommands.Add(cmd.Name, cmd);
-                    L.W("ADA CMD", "Registered command {0}", cmd.Name);
+                    var aliases = xct.Aliases != null ? xct.Aliases.Split(';') : new string[] { };
+                    var cmd = new AdaCommand(xct.Name, aliases, xct.Description, xct.CheckPermissions && this.RegisteredCheckers.ContainsKey(xct.CheckerId) ? this.RegisteredCheckers[xct.CheckerId] : null, m, t, xct.RequiredPermission);
+                    var names = new string[1 + aliases.Length];
+                    names[0] = cmd.Name;
+                    if (aliases.Length > 0)
+                        Array.Copy(aliases, 0, names, 1, aliases.Length);
+                    if (!this.RegisteredCommands.ContainsKey(cmd.Name))
+                    {
+                        foreach (var name in names)
+                        {
+                            if (!this.RegisteredCommands.ContainsKey(name))
+                                this.RegisteredCommands.Add(name, cmd);
+                            else
+                                L.W("ADA CMD", "Alias '{0}' for command '{1}' already taken, skipping", name, cmd.Name);
+                        }
+                        L.W("ADA CMD", "Registered command '{0}' for handler '{1}'", cmd.Name, xct.Name);
+                    }
+                    else
+                        L.W("ADA CMD", "Command name '{0}' is already registered, skipping", cmd.Name);
                 }
             }
             L.W("ADA CMD", "Registered {0:#,##0} commands", this.RegisteredCommands.Count);

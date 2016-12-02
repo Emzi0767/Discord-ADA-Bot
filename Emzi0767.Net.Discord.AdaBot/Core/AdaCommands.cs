@@ -22,13 +22,15 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-            var prm = usr.ServerPermissions;
 
             await msg.Delete();
 
-            var nam = ea.Args[0];
+            var nam = ea.Args.Length > 0 ? ea.Args[0] : null;
+            if (string.IsNullOrWhiteSpace(nam))
+                throw new ArgumentException("Name must not be null.");
+
             await srv.CreateRole(nam, new ServerPermissions(0x0635CC01u), null, false, false);
-            await chn.SendMessage(string.Format("**ADA**: Created new role named '{0}'.", nam));
+            await chn.SendMessage(string.Format("**ADA**: Created new role named **{0}**.", nam));
         }
 
         [Command("rmgroup", "Removes a role with specified name. This command can only be used by server administrators.", Aliases = "removegroup;deletegroup;delgroup;rmrole;removerole;deleterole;delrole;gdel;gdelete;grm;gremove", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
@@ -38,18 +40,27 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-            var prm = usr.ServerPermissions;
 
             await msg.Delete();
-
-            var nam = ea.Args[0];
-            var grp = srv.Roles.FirstOrDefault(xr => xr.Name == nam);
+            
+            var grp = (Role)null;
+            if (msg.MentionedRoles.Count() > 0)
+            {
+                grp = msg.MentionedRoles.First();
+            }
+            else
+            {
+                var nam = ea.Args.Length > 0 ? ea.Args[0] : null;
+                if (string.IsNullOrWhiteSpace(nam))
+                    throw new ArgumentException("Name must not be null.");
+                grp = srv.Roles.FirstOrDefault(xr => xr.Name == nam);
+            }
 
             if (grp == null)
-                return;
+                throw new ArgumentException("Specified role does not exist.");
 
             await grp.Delete();
-            await chn.SendMessage(string.Format("**ADA**: Deleted role named '{0}'.", nam));
+            await chn.SendMessage(string.Format("**ADA**: Deleted role named '{0}'.", grp.Name));
         }
 
         [Command("modgroup", "Edits a role with specified name. This command can only be used by server administrators.", Aliases = "modifygroup;editgroup;modrole;modifyrole;editrole;gmod;gmodify;gedit", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
@@ -76,11 +87,11 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
 
             var gnm = par.ContainsKey("name") ? par["name"] : null;
             if (gnm == null)
-                return;
+                throw new ArgumentException("You need to specify a role to edit.");
 
             var grp = srv.Roles.FirstOrDefault(xr => xr.Name == gnm);
             if (grp == null)
-                return;
+                throw new ArgumentException("Specified role does not exist.");
 
             await grp.Edit(gnm, gpr, gcl, ghs, gps, gmt);
             await chn.SendMessage(string.Format("**ADA**: Edited role named '{0}'.", gnm));
@@ -93,15 +104,13 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-            var prm = usr.ServerPermissions;
 
             await msg.Delete();
-
-            var nam = ea.Args[0];
-            var grp = srv.Roles.FirstOrDefault(xr => xr.Name == nam);
+            
+            var grp = msg.MentionedRoles.FirstOrDefault() ?? srv.Roles.FirstOrDefault(xr => xr.Name == ea.Args[0]);
 
             if (grp == null)
-                return;
+                throw new ArgumentException("Specified role does not exist.");
             
             var sb = new StringBuilder();
             sb.AppendLine("**ADA**: Dumping all properties of a role");
@@ -174,7 +183,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-            var prm = usr.ServerPermissions;
 
             await msg.Delete();
 
@@ -185,7 +193,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
                 return;
 
             var sb = new StringBuilder();
-            sb.AppendFormat("**ADA**: All groups ({0:#,##0}):", grp.Count()).AppendLine();
+            sb.AppendFormat("**ADA**: All roles ({0:#,##0}):", grp.Count()).AppendLine();
             foreach (var xgrp in grp)
             {
                 sb.AppendLine(xgrp.IsMentionable ? xgrp.Mention : xgrp.Name);
@@ -201,25 +209,16 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-            var prm = usr.ServerPermissions;
 
             await msg.Delete();
+            
+            var usg = msg.MentionedUsers.FirstOrDefault();
+            var gru = msg.MentionedRoles.FirstOrDefault() ?? srv.Roles.FirstOrDefault(xr => xr.Name == ea.Args[0].Substring(ea.Args[0].IndexOf('>') + 1));
+            if (usg == null || gru == null)
+                throw new Exception("You need to specify a group (via name or mention) and mention a user you want to add.");
 
-            var raw = ea.Args[0];
-            var par = raw.Split(';')
-                .Select(xrs => xrs.Split('='))
-                .ToDictionary(xrs => xrs[0], xrs => xrs[1]);
-
-            var usn = par.ContainsKey("user") ? par["user"] : null;
-            var grn = par.ContainsKey("role") ? par["role"] : null;
-
-            var usg = srv.FindUsers(usn);
-            var gru = srv.Roles.FirstOrDefault(xr => xr.Name == grn);
-            if (usg.Count() != 1 || gru == null)
-                return;
-
-            await usg.FirstOrDefault().AddRoles(gru);
-            await chn.SendMessage(string.Format("**ADA**: Added {0} to {1}", usg.FirstOrDefault().Name, gru.Name));
+            await usg.AddRoles(gru);
+            await chn.SendMessage(string.Format("**ADA**: Added {0} to {1}", usg.NicknameMention, gru.Name));
         }
 
         [Command("groupremove", "Removes user from a role. This command can only be used by server administrators.", Aliases = "roleremove;ugremove;ugrm", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
@@ -233,21 +232,13 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
 
             await msg.Delete();
 
-            var raw = ea.Args[0];
-            var par = raw.Split(';')
-                .Select(xrs => xrs.Split('='))
-                .ToDictionary(xrs => xrs[0], xrs => xrs[1]);
+            var usg = msg.MentionedUsers.FirstOrDefault();
+            var gru = msg.MentionedRoles.FirstOrDefault() ?? srv.Roles.FirstOrDefault(xr => xr.Name == ea.Args[0].Substring(ea.Args[0].IndexOf('>') + 1));
+            if (usg == null || gru == null)
+                throw new Exception("You need to specify a group (via name or mention) and mention a user you want to remove.");
 
-            var usn = par.ContainsKey("user") ? par["user"] : null;
-            var grn = par.ContainsKey("role") ? par["role"] : null;
-
-            var usg = srv.FindUsers(usn);
-            var gru = srv.Roles.FirstOrDefault(xr => xr.Name == grn);
-            if (usg.Count() != 1 || gru == null)
-                return;
-
-            await usg.FirstOrDefault().RemoveRoles(gru);
-            await chn.SendMessage(string.Format("**ADA**: Removed {0} from {1}", usg.FirstOrDefault().Name, gru.Name));
+            await usg.RemoveRoles(gru);
+            await chn.SendMessage(string.Format("**ADA**: Removed {0} from {1}", usg.NicknameMention, gru.Name));
         }
 
         [Command("kick", "Kicks a user by name. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
@@ -257,38 +248,15 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-            var prm = usr.ServerPermissions;
-            var nam = ea.Args[0];
 
             await msg.Delete();
 
-            var uss = srv.FindUsers(nam);
-            if (uss.Count() > 1)
-            {
-                await chn.SendMessage(string.Format("**ADA**: Query for user '{0}' returned more than one user, try to be more specific.", nam));
-                return;
-            }
+            var usk = msg.MentionedUsers.FirstOrDefault();
+            if (usk == null)
+                throw new ArgumentException("You need to mention a user you want to kick.");
 
-            var usk = uss.First();
             await usk.Kick();
-            await chn.SendMessage(string.Format("**ADA**: Kicked user '{0}'", usk.Name));
-        }
-
-        [Command("kickid", "Kicks a user by id. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
-        public static async Task KickId(CommandEventArgs ea)
-        {
-            var srv = ea.Server;
-            var chn = ea.Channel;
-            var msg = ea.Message;
-            var usr = ea.User;
-            var prm = usr.ServerPermissions;
-            var nam = ea.Args[0];
-
-            await msg.Delete();
-
-            var uss = srv.GetUser(ulong.Parse(nam));
-            await uss.Kick();
-            await chn.SendMessage(string.Format("**ADA**: Kicked user '{0}'", uss.Name));
+            await chn.SendMessage(string.Format("**ADA**: Kicked user '{0}'", usk.NicknameMention));
         }
 
         [Command("ban", "Bans a user by name. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.BanMembers)]
@@ -298,38 +266,15 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-            var prm = usr.ServerPermissions;
-            var nam = ea.Args[0];
 
             await msg.Delete();
 
-            var uss = srv.FindUsers(nam);
-            if (uss.Count() > 1)
-            {
-                await chn.SendMessage(string.Format("**ADA**: Query for user '{0}' returned more than one user, try to be more specific.", nam));
-                return;
-            }
+            var usb = msg.MentionedUsers.FirstOrDefault();
+            if (usb == null)
+                throw new ArgumentException("You need to mention a user you want to kick.");
 
-            var usb = uss.First();
             await srv.Ban(usb);
-            await chn.SendMessage(string.Format("**ADA**: Banned user '{0}'", usb.Name));
-        }
-
-        [Command("banid", "Bans a user by id. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.BanMembers)]
-        public static async Task BanId(CommandEventArgs ea)
-        {
-            var srv = ea.Server;
-            var chn = ea.Channel;
-            var msg = ea.Message;
-            var usr = ea.User;
-            var prm = usr.ServerPermissions;
-            var nam = ea.Args[0];
-
-            await msg.Delete();
-
-            var uss = srv.GetUser(ulong.Parse(nam));
-            await srv.Ban(uss);
-            await chn.SendMessage(string.Format("**ADA**: Banned user '{0}'", uss.Name));
+            await chn.SendMessage(string.Format("**ADA**: Banned user '{0}'", usb.NicknameMention));
         }
 
         [Command("prune", "Prunes inactive users. This command can only be used by server administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
@@ -339,8 +284,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-            var prm = usr.ServerPermissions;
-            var nam = ea.Args[0];
 
             await msg.Delete();
 
@@ -355,53 +298,22 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-            var prm = usr.ServerPermissions;
-            var nam = ea.Args[0].ToLower();
 
             await msg.Delete();
 
-            var usf = srv.Users;
-            var uss = new List<User>();
-            foreach (var xus in usf)
-            {
-                var xusn = xus.Name;
-                var xusm = xus.Nickname;
+            var xus = msg.MentionedUsers.FirstOrDefault();
+            if (xus == null)
+                throw new ArgumentException("You need to mention a user you want to display info of.");
 
-                if ((!string.IsNullOrWhiteSpace(xusn) && xusn.ToLower().Contains(nam)) || (!string.IsNullOrWhiteSpace(xusm) && xusm.ToLower().Contains(nam)))
-                    uss.Add(xus);
-            }
-
-            var msgs = new List<string>();
             var sb = new StringBuilder();
-            var msb = new StringBuilder();
-            sb.AppendFormat("**ADA**: found {0:#,##0} users matching this query ('{1}'):", uss.Count(), nam).AppendLine().AppendLine();
-            foreach (var xus in uss)
-            {
-                msb = new StringBuilder();
-                msb.AppendFormat("**User**: {0}#{1:0000}", xus.Name, xus.Discriminator).AppendLine();
-                msb.AppendFormat("**ID**: {0}", xus.Id).AppendLine();
-                msb.AppendFormat("**Nickname**: {0}", xus.Nickname).AppendLine();
-                msb.AppendFormat("**Roles**: {0}", string.Join(", ", xus.Roles)).AppendLine();
-                msb.AppendFormat("**Joined**: {0:yyyy-MM-dd HH:mm:ss} UTC", xus.JoinedAt.ToUniversalTime()).AppendLine();
-                msb.AppendFormat("**Avatar URL**: {0}", xus.AvatarUrl).AppendLine();
-                msb.AppendLine("------");
-                if (msb.Length + sb.Length >= 2000)
-                {
-                    msgs.Add(sb.ToString());
-                    sb = new StringBuilder();
-                    sb.Append(msb.ToString());
-                }
-                else
-                {
-                    sb.Append(msb.ToString());
-                }
-            }
-            msgs.Add(sb.ToString());
-
-            foreach (var xmsg in msgs)
-            {
-                await chn.SendMessage(xmsg);
-            }
+            sb.AppendFormat("**ADA**: displaying information about {0}:", xus.NicknameMention).AppendLine().AppendLine();
+            sb.AppendFormat("**User**: {0}#{1:0000}", xus.Name, xus.Discriminator).AppendLine();
+            sb.AppendFormat("**ID**: {0}", xus.Id).AppendLine();
+            sb.AppendFormat("**Nickname**: {0}", xus.Nickname ?? "<none>").AppendLine();
+            sb.AppendFormat("**Roles**: {0}", string.Join(", ", xus.Roles)).AppendLine();
+            sb.AppendFormat("**Joined**: {0:yyyy-MM-dd HH:mm:ss} UTC", xus.JoinedAt.ToUniversalTime()).AppendLine();
+            sb.AppendFormat("**Avatar URL**: {0}", xus.AvatarUrl).AppendLine();
+            await chn.SendMessage(sb.ToString());
         }
 
         [Command("serverinfo", "Displays information about current server. This command can only be used by server administrators.", Aliases = "sinfo;guildinfo;ginfo", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageGuild)]
@@ -436,16 +348,15 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-            var prm = usr.ServerPermissions;
-            var nam = ea.Args[0];
 
             await msg.Delete();
 
-            var chp = srv.AllChannels.FirstOrDefault(xch => xch.Name == nam);
-            var msgs = await chp.DownloadMessages(100);
-            foreach (var xmsg in msgs)
-                await xmsg.Delete();
+            var chp = msg.MentionedChannels.FirstOrDefault();
+            if (chp == null)
+                throw new ArgumentException("You need to mention a channel you want to purge.");
 
+            var msgs = await chp.DownloadMessages(100);
+            await chp.DeleteMessages(msgs);
             await chn.SendMessage(string.Format("**ADA**: Deleted {0:#,##0} messages", msgs.Length));
         }
 
@@ -456,64 +367,44 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-            var nam = ea.Args[0];
 
             await msg.Delete();
 
             var a = Assembly.GetExecutingAssembly();
             var n = a.GetName();
-
-            var msgs = new List<string>();
+            
             var sb = new StringBuilder();
-            var msb = new StringBuilder();
             sb.AppendLine("**ADA**: Help");
             sb.AppendFormat("ADA Version: {0}", n.Version).AppendLine();
             sb.AppendFormat("Created by Emzi0767 (<@181875147148361728>)").AppendLine();
             sb.AppendLine();
-            foreach (var cmdg in AdaBotCore.Handler.GetCommands().GroupBy(xcmd => xcmd.Handler))
+            var str0 = "";
+            if (ea.Args.Length == 0)
             {
-                var h = string.Format("Commands registered by **{0}**:", cmdg.Key.ToString());
-                if (sb.Length + h.Length + Environment.NewLine.Length >= 2000)
+                foreach (var cmdg in AdaBotCore.Handler.GetCommands().GroupBy(xcmd => xcmd.Handler))
                 {
-                    msgs.Add(sb.ToString());
-                    sb = new StringBuilder();
+                    var h = string.Format("Commands registered by **{0}**:", cmdg.Key.ToString());
+                    sb.AppendLine(h).AppendLine();
+                    sb.AppendLine(string.Join(", ", cmdg.Where(xcmd => (xcmd.Checker != null && xcmd.Checker.CanRun(xcmd.Command, usr, chn, out str0)) || xcmd.Checker == null).Select(xcmd => string.Concat("**", xcmd.Name, "**"))));
+                    sb.AppendLine("------").AppendLine();
                 }
-                sb.AppendLine(h).AppendLine();
-                foreach (var cmd in cmdg.OrderBy(xcmd => xcmd.Name))
-                {
-                    var str0 = (string)null;
-                    if (cmd.Checker != null && !cmd.Checker.CanRun(cmd.Command, usr, chn, out str0))
-                        continue;
-
-                    msb = new StringBuilder();
-                    msb.AppendFormat("/**{0}**", cmd.Name).AppendLine();
-                    msb.AppendFormat("Aliases: {0}", string.Join(", ", cmd.Aliases)).AppendLine();
-                    msb.AppendLine(cmd.Description);
-                    msb.AppendLine();
-                    if (msb.Length + sb.Length >= 2000)
-                    {
-                        msgs.Add(sb.ToString());
-                        sb = new StringBuilder();
-                        sb.Append(msb.ToString());
-                    }
-                    else
-                    {
-                        sb.Append(msb.ToString());
-                    }
-                }
-                if (sb.Length + 6 + Environment.NewLine.Length >= 2000)
-                {
-                    msgs.Add(sb.ToString());
-                    sb = new StringBuilder();
-                }
-                sb.AppendLine("------").AppendLine();
             }
-            msgs.Add(sb.ToString());
-
-            foreach (var xmsg in msgs)
+            else
             {
-                await chn.SendMessage(xmsg);
+                var nam = ea.Args[0];
+                var cmd = AdaBotCore.Handler.GetCommand(nam);
+                if (cmd == null)
+                    throw new ArgumentException("Invalid command specified.");
+
+                if (cmd.Checker != null && !cmd.Checker.CanRun(cmd.Command, usr, chn, out str0))
+                    throw new ArgumentException("You cannot run that command.");
+
+                sb.AppendFormat("/**{0}**", cmd.Name).AppendLine();
+                sb.AppendFormat("Aliases: {0}", string.Join(", ", cmd.Aliases)).AppendLine();
+                sb.AppendLine(cmd.Description);
             }
+
+            await chn.SendMessage(sb.ToString());
         }
 
         [Command("aboutada", "Shows information about ADA.", CheckPermissions = false)]

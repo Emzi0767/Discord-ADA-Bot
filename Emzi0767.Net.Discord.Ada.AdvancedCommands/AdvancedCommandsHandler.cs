@@ -153,15 +153,6 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
 
             var chain = new MarkovChain<string>(1);
             var rnd = new Random();
-            //var mnt = msg.MentionedUsers
-            //    .Cast<IMentionable>()
-            //    .Concat(msg.MentionedRoles.Cast<IMentionable>())
-            //    .Concat(msg.MentionedChannels.Cast<IMentionable>())
-            //    .FirstOrDefault();
-
-            //var mch = mnt as Channel;
-            //var mrl = mnt as Role;
-            //var mus = mnt as User;
             var mnt = (string)null;
 
             if (msg.MentionedUsers.Count() == 0 && msg.MentionedRoles.Count() == 0 && msg.MentionedChannels.Count() == 0)
@@ -173,7 +164,6 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
                 var chs = msg.MentionedChannels;
                 var maxm = 100;
                 var lstm = -1;
-                //var msgs = new Message[maxm];
                 var msgs = new List<Message>(maxm);
                 var msgt = (Message[])null;
                 while (msgs.Count < maxm && lstm != 0)
