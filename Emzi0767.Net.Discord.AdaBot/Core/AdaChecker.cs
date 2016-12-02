@@ -20,9 +20,10 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var cmd_ = command.Text;
             var cmd = AdaBotCore.Handler.GetCommand(cmd_);
             var prm = cmd.RequiredPermission;
+            var chp = user.GetPermissions(channel);
             if (prm == AdaPermission.None && user.ServerPermissions.Administrator)
                 return true;
-            if ((user.ServerPermissions.RawValue & (uint)prm) == (uint)prm)
+            if ((chp.RawValue & (uint)prm) == (uint)prm)
                 return true;
             error = "Insufficient Permissions";
             return false;

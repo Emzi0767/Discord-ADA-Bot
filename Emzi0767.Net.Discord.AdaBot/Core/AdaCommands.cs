@@ -255,6 +255,9 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             if (usk == null)
                 throw new ArgumentException("You need to mention a user you want to kick.");
 
+            if (usk.ServerPermissions.Administrator)
+                throw new UnauthorizedAccessException("Cannot kick an Administrator.");
+
             await usk.Kick();
             await chn.SendMessage(string.Format("**ADA**: Kicked user '{0}'", usk.NicknameMention));
         }
@@ -272,6 +275,9 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var usb = msg.MentionedUsers.FirstOrDefault();
             if (usb == null)
                 throw new ArgumentException("You need to mention a user you want to kick.");
+
+            if (usb.ServerPermissions.Administrator)
+                throw new UnauthorizedAccessException("Cannot ban an Administrator.");
 
             await srv.Ban(usb);
             await chn.SendMessage(string.Format("**ADA**: Banned user '{0}'", usb.NicknameMention));
