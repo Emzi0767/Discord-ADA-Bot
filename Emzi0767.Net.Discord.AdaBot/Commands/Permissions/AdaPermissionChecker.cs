@@ -16,7 +16,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands.Permissions
             var chp = user.GetPermissions(chn);
             if (prm == AdaPermission.None && user.GuildPermissions.Administrator)
                 return true;
-            if ((chp.RawValue & (uint)prm) == (uint)prm)
+            if ((chp.RawValue & (ulong)prm) == (ulong)prm || (user.GuildPermissions.RawValue & (ulong)prm) == (ulong)prm)
                 return true;
             error = "Insufficient Permissions";
             return false;
