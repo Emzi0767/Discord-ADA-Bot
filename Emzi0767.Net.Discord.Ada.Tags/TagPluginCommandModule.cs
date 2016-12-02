@@ -14,7 +14,7 @@ namespace Emzi0767.Net.Discord.Ada.Tags
     {
         public string Name { get { return "Tag Plugin Controls"; } }
 
-        [AdaCommand("newtag", "Creates a new tag. This command can only be used by guild administrators.", Aliases = "mktag;definetag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("newtag", "Creates a new tag. This command can only be used by guild administrators.", Aliases = "mktag;definetag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         [AdaCommandParameter(0, "name", "Name of tag to create.", true)]
         [AdaCommandParameter(1, "contents", "Contents of tag to create.", true, IsCatchAll = true)]
         public async Task DefineTag(AdaCommandContext ctx)
@@ -37,7 +37,7 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("edittag", "Edits an existing tag. This command can only be used by guild administrators.", Aliases = "modtag;modifytag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("edittag", "Edits an existing tag. This command can only be used by guild administrators.", Aliases = "modtag;modifytag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         [AdaCommandParameter(0, "name", "Name of tag to edit.", true)]
         [AdaCommandParameter(1, "contents", "New contents of the tag.", true, IsCatchAll = true)]
         public async Task EditTag(AdaCommandContext ctx)
@@ -60,7 +60,7 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("removetag", "Removes an existing tag. This command can only be used by guild administrators.", Aliases = "rmtag;deletetag;deltag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("removetag", "Removes an existing tag. This command can only be used by guild administrators.", Aliases = "rmtag;deletetag;deltag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         [AdaCommandParameter(0, "name", "Name of tag to edit.", true)]
         public async Task RemoveTag(AdaCommandContext ctx)
         {
@@ -99,6 +99,26 @@ namespace Emzi0767.Net.Discord.Ada.Tags
                 throw new ArgumentException("Invalid tag specified.");
 
             await chn.SendMessageAsync(tag.Contents);
+        }
+
+        [AdaCommand("dumptag", "Displays raw contents of a specified tag.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [AdaCommandParameter(0, "name", "Name of tag to edit.", true)]
+        public async Task DumpTag(AdaCommandContext ctx)
+        {
+            var gld = ctx.Guild;
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+
+            await msg.DeleteAsync();
+
+            var nam = string.Join(" ", ctx.RawArguments);
+            if (string.IsNullOrWhiteSpace(nam))
+                throw new ArgumentException("Need to specify a tag to display.");
+            var tag = TagPlugin.Instance.GetTag(chn.Id, nam);
+            if (tag == null)
+                throw new ArgumentException("Invalid tag specified.");
+
+            await chn.SendMessageAsync(string.Concat("```\n", tag.Contents.Replace("```", "` ` `"), "\n```"));
         }
 
         [AdaCommand("tags", "Lists tags defined for this channel.", CheckPermissions = false)]

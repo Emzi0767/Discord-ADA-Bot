@@ -341,7 +341,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                 throw new ArgumentException("You must mention users you want to kick.");
             
             foreach (var usr in uss)
-                await usr.KickAsync();
+                if (!usr.GuildPermissions.Administrator)
+                    await usr.KickAsync();
 
             var embed = this.PrepareEmbed("Success", string.Concat(uss.Count().ToString("#,##0"), " user", uss.Count() > 1 ? "s were" : " was", " kicked."), EmbedType.Success);
             embed.AddField(x =>
@@ -370,7 +371,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                 throw new ArgumentException("You must mention users you want to ban.");
 
             foreach (var usr in uss)
-                await gls.AddBanAsync(usr);
+                if (!usr.GuildPermissions.Administrator)
+                    await gls.AddBanAsync(usr);
 
             var embed = this.PrepareEmbed("Success", string.Concat(uss.Count().ToString("#,##0"), " user", uss.Count() > 1 ? "s were" : " was", " banned."), EmbedType.Success);
             embed.AddField(x =>

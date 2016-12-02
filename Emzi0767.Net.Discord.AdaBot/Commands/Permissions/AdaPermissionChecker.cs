@@ -10,9 +10,13 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands.Permissions
         {
             error = "";
             var prm = command.RequiredPermission;
-            if (prm == AdaPermission.None && user.GuildPermissions.Administrator)
+            var chn = channel as IGuildChannel;
+            if (chn == null)
+                return false;
+            var chp = user.GetPermissions(chn);
+            if (prm == AdaPermission.None)
                 return true;
-            if ((user.GuildPermissions.RawValue & (uint)prm) == (uint)prm)
+            if ((chp.RawValue & (uint)prm) == (uint)prm)
                 return true;
             error = "Insufficient Permissions";
             return false;
