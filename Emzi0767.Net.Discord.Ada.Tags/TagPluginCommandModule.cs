@@ -23,6 +23,8 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
+            await msg.DeleteAsync();
+
             var nam = ctx.RawArguments[0];
             var tag = string.Join(" ", ctx.RawArguments.Skip(1));
             if (string.IsNullOrWhiteSpace(nam) || string.IsNullOrWhiteSpace(tag))
@@ -44,6 +46,8 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
+            await msg.DeleteAsync();
+
             var nam = ctx.RawArguments[0];
             var tag = string.Join(" ", ctx.RawArguments.Skip(1));
             if (string.IsNullOrWhiteSpace(nam) || string.IsNullOrWhiteSpace(tag))
@@ -64,6 +68,8 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
+            await msg.DeleteAsync();
+
             var nam = string.Join(" ", ctx.RawArguments);
             if (string.IsNullOrWhiteSpace(nam))
                 throw new ArgumentException("Need to specify a tag to remove.");
@@ -83,6 +89,8 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
+            await msg.DeleteAsync();
+
             var nam = string.Join(" ", ctx.RawArguments);
             if (string.IsNullOrWhiteSpace(nam))
                 throw new ArgumentException("Need to specify a tag to display.");
@@ -100,8 +108,9 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             var chn = ctx.Channel as SocketTextChannel;
             var msg = ctx.Message;
 
-            var tags = TagPlugin.Instance.GetTags(chn.Id);
+            await msg.DeleteAsync();
 
+            var tags = TagPlugin.Instance.GetTags(chn.Id);
             if (tags.Count() > 0)
             {
                 var embed = this.PrepareEmbed("Tag Plugin", string.Concat("List of tags defined for ", chn.Mention, "."), EmbedType.Info);

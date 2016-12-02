@@ -564,7 +564,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                 foreach (var cmdg in AdaBotCore.CommandManager.GetCommands().GroupBy(xcmd => xcmd.Module))
                 {
                     var err = "";
-                    var xcmds = cmdg.Where(xcmd => xcmd.Checker != null && xcmd.Checker.CanRun(xcmd, usr, msg, chn, gld, out err))
+                    var xcmds = cmdg.Where(xcmd => (xcmd.Checker != null && xcmd.Checker.CanRun(xcmd, usr, msg, chn, gld, out err)) || xcmd.Checker == null)
                         .OrderBy(xcmd => xcmd.Name)
                         .Select(xcmd => string.Concat("**", xcmd.Name, "**"));
 
