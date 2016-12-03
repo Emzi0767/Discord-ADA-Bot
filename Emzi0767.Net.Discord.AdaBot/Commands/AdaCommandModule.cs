@@ -325,6 +325,47 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
+        [AdaCommand("report", "Reports a user to guild moderators.", Aliases = "reportuser", CheckPermissions = false)]
+        [AdaCommandParameter(0, "user", "Mention of a user to report.", true)]
+        [AdaCommandParameter(1, "reason", "Reason for report.", true, IsCatchAll = true)]
+        public async Task Report(AdaCommandContext ctx)
+        {
+            var gld = ctx.Guild;
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+            var usr = ctx.User;
+
+            await msg.DeleteAsync();
+
+            if (msg.MentionedUserIds.Count == 0)
+                throw new ArgumentException("You need to mention the user you want to report.");
+            var rep = await gld.GetUserAsync(msg.MentionedUserIds.First());
+
+            var rsn = string.Join(" ", ctx.RawArguments.Skip(1));
+            if (string.IsNullOrWhiteSpace(rsn))
+                throw new ArgumentException("You need to supply a report reason.");
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            if (cnf.ModLogChannel == null)
+                throw new InvalidOperationException("This guild does not have moderator log configured.");
+
+            var mod = await gld.GetTextChannelAsync(cnf.ModLogChannel.Value);
+
+            var embed1 = this.PrepareEmbed("User report", string.Concat(usr.Mention, " reported ", rep.Mention, "."), EmbedType.Info);
+            embed1.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "Reason";
+                x.Value = rsn;
+            });
+
+            var embed2 = this.PrepareEmbed("Success", string.Concat("User ", rep.Mention, " was reported."), EmbedType.Success);
+
+            await mod.SendMessageAsync("", false, embed1);
+            await chn.SendMessageAsync("", false, embed2);
+        }
+
         [AdaCommand("kick", "Kicks users. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
         [AdaCommandParameter(0, "users", "Mentions of users to kick.", true, IsCatchAll = true)]
         public async Task Kick(AdaCommandContext ctx)
@@ -545,6 +586,33 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             await chp.DeleteMessagesAsync(msgs);
             
             var embed = this.PrepareEmbed("Success", string.Format("Deleted {0:#,##0} message{2} from channel {1}.", msgs.Count(), chp.Mention, msgs.Count() > 1 ? "s" : ""), EmbedType.Success);
+            await chn.SendMessageAsync("", false, embed);
+        }
+
+        [AdaCommand("modconfig", "Configures moderator log channel. This command can only be used by guild administrators.", Aliases = "modconf", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommandParameter(0, "channel", "Mention of a channel to be used as mod log.", true)]
+        public async Task ModConfig(AdaCommandContext ctx)
+        {
+            var gld = ctx.Guild;
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+
+            await msg.DeleteAsync();
+
+            if (msg.MentionedChannelIds.Count() == 0)
+                throw new ArgumentException("You need to mention a channel to use as moderator log.");
+            var mod = await gld.GetTextChannelAsync(msg.MentionedChannelIds.First());
+
+            var bot = AdaBotCore.AdaClient.CurrentUser;
+            var prm = mod.GetPermissionOverwrite(bot);
+            if (prm != null && prm.Value.SendMessages == PermValue.Deny)
+                throw new InvalidOperationException("ADA cannot write to specified channel.");
+
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gld.Id);
+            cnf.ModLogChannel = mod.Id;
+            AdaBotCore.ConfigManager.SetGuildConfig(gld.Id, cnf);
+
+            var embed = this.PrepareEmbed("Success", string.Concat("Moderator log was set to ", mod.Mention, "."), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
 
