@@ -10,7 +10,7 @@ namespace Emzi0767.Net.Discord.Ada.Tags
     [CommandHandler]
     public static class TagPluginCommands
     {
-        [Command("newtag", "Creates a new tag. This command can only be used by guild administrators.", Aliases = "mktag;definetag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [Command("newtag", "Creates a new tag. This command can only be used by channel moderators.", Aliases = "mktag;definetag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public static async Task DefineTag(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -30,7 +30,7 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             await chn.SendMessage(string.Concat("**ADA**: Tag **", nam, "** was successfully created."));
         }
 
-        [Command("edittag", "Edits an existing tag. This command can only be used by guild administrators.", Aliases = "modtag;modifytag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [Command("edittag", "Edits an existing tag. This command can only be used by channel moderators.", Aliases = "modtag;modifytag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public static async Task EditTag(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -50,7 +50,7 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             await chn.SendMessage(string.Concat("**ADA**: Tag **", nam, "** was successfully edited."));
         }
 
-        [Command("removetag", "Removes an existing tag. This command can only be used by guild administrators.", Aliases = "rmtag;deletetag;deltag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [Command("removetag", "Removes an existing tag. This command can only be used by channel moderators.", Aliases = "rmtag;deletetag;deltag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public static async Task RemoveTag(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -88,7 +88,7 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             await chn.SendMessage(tag.Contents);
         }
 
-        [Command("dumptag", "Dumps contents of a specified tag.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [Command("dumptag", "Dumps contents of a specified tag. This command can only be used by channel moderators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public static async Task DumpTag(CommandEventArgs ea)
         {
             var srv = ea.Server;

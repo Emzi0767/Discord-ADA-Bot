@@ -1,5 +1,9 @@
 #Advanced/Automatic Discord Administrator by Emzi0767
 
+##END OF LIFE
+
+ADA 2.x is now End-of-Life. While development won't cease for an unspecified amount of time, it will now be limited to just critical bug fixes only. From now on, new features will only be implemented in ADA 3.x.
+
 ##ABOUT
 
 A Discord bot built on top of [Discord.NET library](https://github.com/RogueException/Discord.Net). It's designed to simplify and automate certain administrative tasks. Supports 3rd party plugins to allow extending the functionality even further.

@@ -1,5 +1,4 @@
 {
 	"token": "discord bot token",
-	"server": server id,
-	"channel": channel id
+  "guild_config": {}
 }
