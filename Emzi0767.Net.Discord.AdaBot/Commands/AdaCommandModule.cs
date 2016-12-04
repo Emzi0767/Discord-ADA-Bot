@@ -23,12 +23,24 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
+            var usr = ctx.User;
 
             await msg.DeleteAsync();
 
             var nam = ctx.RawArguments[0];
-            await gld.CreateRoleAsync(nam, new GuildPermissions(0x0635CC01u), null, false);
-            var embed = this.PrepareEmbed("Success", string.Format("Role **{0}** was created successfully.", nam), EmbedType.Success);
+            var grl = await gld.CreateRoleAsync(nam, new GuildPermissions(0x0635CC01u), null, false);
+            
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("Role create", string.Concat(usr.Mention, " has created role **", grl.Name, "**."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+
+            var embed = this.PrepareEmbed("Success", string.Format("Role **{0}** was created successfully.", grl.Name), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
 
@@ -39,6 +51,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
+            var usr = ctx.User;
 
             await msg.DeleteAsync();
 
@@ -54,8 +67,18 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             }
             if (grp == null)
                 throw new ArgumentException("You must supply a role.");
-
             await grp.DeleteAsync();
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("Role remove", string.Concat(usr.Mention, " has removed role **", grp.Name, "**."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+
             var embed = this.PrepareEmbed("Success", string.Format("Role **{0}** was deleted successfully.", grp.Name), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
@@ -68,6 +91,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
+            var usr = ctx.User;
 
             await msg.DeleteAsync();
 
@@ -108,6 +132,16 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
                 if (par.ContainsKey("position"))
                     x.Position = gps;
             });
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("Role modify", string.Concat(usr.Mention, " has modified role **", grp.Name, "**."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
 
             var embed = this.PrepareEmbed("Success", string.Format("Role **{0}** was edited successfully.", grp.Name), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
@@ -249,6 +283,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
+            var usr = ctx.User;
 
             await msg.DeleteAsync();
             
@@ -271,8 +306,19 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             if (usrs.Count() == 0)
                 throw new ArgumentException("You must mention users you want to add to a role.");
 
-            foreach (var usr in usrs)
-                await usr.AddRolesAsync(grp);
+            foreach (var usm in usrs)
+                await usm.AddRolesAsync(grp);
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("Role Member Add", string.Concat(usr.Mention, " has added ", string.Join(", ", usrs.Select(xusr => xusr.Mention)), " to role **", grp.Name, "**."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+
             var embed = this.PrepareEmbed("Success", string.Concat("User", usrs.Count() > 1 ? "s were" : " was", " added to the role."), EmbedType.Success);
             embed.AddField(x =>
             {
@@ -291,6 +337,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
+            var usr = ctx.User;
 
             await msg.DeleteAsync();
 
@@ -313,8 +360,19 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             if (usrs.Count() == 0)
                 throw new ArgumentException("You must mention users you want to remove from a role.");
 
-            foreach (var usr in usrs)
-                await usr.RemoveRolesAsync(grp);
+            foreach (var usm in usrs)
+                await usm.RemoveRolesAsync(grp);
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("Role Member Remove", string.Concat(usr.Mention, " has removed ", string.Join(", ", usrs.Select(xusr => xusr.Mention)), " from role **", grp.Name, "**."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+
             var embed = this.PrepareEmbed("Success", string.Concat("User", usrs.Count() > 1 ? "s were" : " was", " removed from the role."), EmbedType.Success);
             embed.AddField(x =>
             {
@@ -373,6 +431,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
+            var usr = ctx.User;
 
             await msg.DeleteAsync();
 
@@ -380,10 +439,20 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var uss = msg.MentionedUserIds.Select(xid => gls.GetUser(xid));
             if (uss.Count() < 1)
                 throw new ArgumentException("You must mention users you want to kick.");
-            
-            foreach (var usr in uss)
-                if (!usr.GuildPermissions.Administrator)
-                    await usr.KickAsync();
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+
+            uss = uss.Where(xus => !xus.GuildPermissions.Administrator);
+            foreach (var usm in uss)
+                await usm.KickAsync();
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("User kicks", string.Concat(usr.Mention, " has kicked ", string.Join(", ", uss.Select(xus => xus.Mention)), "."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
 
             var embed = this.PrepareEmbed("Success", string.Concat(uss.Count().ToString("#,##0"), " user", uss.Count() > 1 ? "s were" : " was", " kicked."), EmbedType.Success);
             embed.AddField(x =>
@@ -403,6 +472,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
+            var usr = ctx.User;
 
             await msg.DeleteAsync();
 
@@ -410,11 +480,21 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var uss = msg.MentionedUserIds.Select(xid => gls.GetUser(xid));
             if (uss.Count() < 1)
                 throw new ArgumentException("You must mention users you want to ban.");
+            
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
 
-            foreach (var usr in uss)
-                if (!usr.GuildPermissions.Administrator)
-                    await gls.AddBanAsync(usr);
+            uss = uss.Where(xus => !xus.GuildPermissions.Administrator);
+            foreach (var usm in uss)
+                await gls.AddBanAsync(usm);
 
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("User bans", string.Concat(usr.Mention, " has banned ", string.Join(", ", uss.Select(xus => xus.Mention)), "."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+            
             var embed = this.PrepareEmbed("Success", string.Concat(uss.Count().ToString("#,##0"), " user", uss.Count() > 1 ? "s were" : " was", " banned."), EmbedType.Success);
             embed.AddField(x =>
             {
@@ -432,11 +512,21 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
-            var nam = ctx.RawArguments[0];
+            var usr = ctx.User;
 
             await msg.DeleteAsync();
-
             var usp = await gld.PruneUsersAsync();
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("User prune", string.Concat(usr.Mention, " has pruned ", usp.ToString("#,##0"), " users."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+
             var embed = this.PrepareEmbed("Success", string.Concat(usp.ToString("#,##0"), " user", usp > 1 ? "s were" : " was" , " pruned."), EmbedType.Success);
         }
 
@@ -575,6 +665,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
+            var usr = ctx.User;
 
             await msg.DeleteAsync();
 
@@ -584,7 +675,17 @@ namespace Emzi0767.Net.Discord.AdaBot.Commands
             var chp = gls.Channels.FirstOrDefault(xch => xch.Id == msg.MentionedChannelIds.First()) as SocketTextChannel;
             var msgs = await chp.GetMessagesAsync(100).Flatten();
             await chp.DeleteMessagesAsync(msgs);
-            
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("Channel Purge", string.Concat(usr.Mention, " has purged ", msgs.Count().ToString("#,##0"), " messages from channel ", chp.Mention, "."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+
             var embed = this.PrepareEmbed("Success", string.Format("Deleted {0:#,##0} message{2} from channel {1}.", msgs.Count(), chp.Mention, msgs.Count() > 1 ? "s" : ""), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
