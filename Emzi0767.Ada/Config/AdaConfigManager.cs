@@ -9,6 +9,7 @@ namespace Emzi0767.Ada.Config
 {
     public class AdaConfigManager
     {
+        public int ConfigCount { get { return this.DeclaredConfigs.Count; } }
         private Dictionary<ulong, AdaGuildConfig> GuildConfigs { get; set; }
         private Dictionary<Type, IAdaPluginConfig> DeclaredConfigs { get; set; }
 

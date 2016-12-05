@@ -132,6 +132,8 @@ namespace Emzi0767.Ada.Commands
 
         private async Task HandleCommand(SocketMessage arg)
         {
+            await Task.Delay(1);
+
             var msg = arg as SocketUserMessage;
             if (msg == null)
                 return;
@@ -159,15 +161,18 @@ namespace Emzi0767.Ada.Commands
                 ctx.Message = msg;
                 ctx.Command = cmd;
                 ctx.RawArguments = this.ParseArgumentList(args);
-                try
+                var t = Task.Run(async () =>
                 {
-                    await cmd.Execute(ctx);
-                    this.CommandExecuted(ctx);
-                }
-                catch (Exception ex)
-                {
-                    this.CommandError(new AdaCommandErrorContext { Context = ctx, Exception = ex });
-                }
+                    try
+                    {
+                        await cmd.Execute(ctx);
+                        this.CommandExecuted(ctx);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.CommandError(new AdaCommandErrorContext { Context = ctx, Exception = ex });
+                    }
+                });
             }
         }
 

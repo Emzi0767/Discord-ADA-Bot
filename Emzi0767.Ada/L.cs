@@ -264,10 +264,18 @@ namespace Emzi0767.Ada
         {
             var sb = new StringBuilder();
             sb.AppendLine("EXCEPTION OCCURED");
-            sb.AppendFormat("Type:          {0}", ex.GetType()).AppendLine();
-            sb.AppendFormat("Message:       {0}", ex.Message).AppendLine();
-            sb.AppendLine("Stack trace:");
-            sb.AppendLine(ex.StackTrace);
+            var x = ex.InnerException;
+            while (x != null)
+            {
+                sb.AppendFormat("Type:          {0}", ex.GetType()).AppendLine();
+                sb.AppendFormat("Message:       {0}", ex.Message).AppendLine();
+                sb.AppendLine("Stack trace:");
+                sb.AppendLine(ex.StackTrace);
+                sb.AppendLine("---");
+                x = x.InnerException;
+                if (x != null)
+                    sb.AppendLine("INNER EXCEPTION");
+            }
 
             W(tag, sb.ToString());
         }

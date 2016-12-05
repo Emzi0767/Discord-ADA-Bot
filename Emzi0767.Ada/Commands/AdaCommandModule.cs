@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -839,7 +838,7 @@ namespace Emzi0767.Ada.Commands
             {
                 x.IsInline = false;
                 x.Name = "What is your present version and status?";
-                x.Value = string.Format("Current ADA version is {0}. There are {1:#,##0} plugins loaded, and {2:#,##0} commands registered.", n.Version, AdaBotCore.PluginManager.PluginCount, AdaBotCore.CommandManager.CommandCount);
+                x.Value = string.Format("Current ADA version is {0}. There are {1:#,##0} plugins loaded, {4:#,##0} plugin configurations managed, {2:#,##0} commands registered, and {3:#,##0} checkers registered.", n.Version, AdaBotCore.PluginManager.PluginCount, AdaBotCore.CommandManager.CommandCount, AdaBotCore.CommandManager.CheckerCount, AdaBotCore.ConfigManager.ConfigCount);
             });
 
             embed.AddField(x =>
@@ -983,6 +982,26 @@ namespace Emzi0767.Ada.Commands
             //});
             //ada_sb0 = null;
             
+            await chn.SendMessageAsync("", false, embed);
+        }
+
+        [AdaCommand("hang", "Hangs current thread. This command can only be used by Emzi0767.", CheckerId = "CoreDebugChecker", CheckPermissions = true)]
+        [AdaCommandParameter(0, "timeout", "How long to hang the thread for.", false)]
+        public async Task Hang(AdaCommandContext ctx)
+        {
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+
+            await msg.DeleteAsync();
+
+            var duration = 42510;
+            if (ctx.RawArguments.Count > 0)
+                if (!int.TryParse(ctx.RawArguments[0], out duration))
+                    duration = 42510;
+
+            await Task.Delay(duration);
+
+            var embed = this.PrepareEmbed("Thread hang complete", string.Concat("Thread was hanged for ", duration.ToString("#,##0"), "ms."), EmbedType.Warning);
             await chn.SendMessageAsync("", false, embed);
         }
 
