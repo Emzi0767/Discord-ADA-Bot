@@ -4,11 +4,10 @@ using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using Emzi0767.Net.Discord.AdaBot.Commands.Permissions;
+using Emzi0767.Ada.Commands.Permissions;
 
-#pragma warning disable 661
-#pragma warning disable 659
-namespace Emzi0767.Net.Discord.AdaBot.Commands
+#pragma warning disable
+namespace Emzi0767.Ada.Commands
 {
     /// <summary>
     /// Represents a command.
