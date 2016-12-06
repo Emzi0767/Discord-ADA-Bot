@@ -14,8 +14,7 @@ namespace Emzi0767.Ada.Plugin.Stallman
         public async Task EnableStallman(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
-
-            await ctx.Message.DeleteAsync();
+            
             StallmanPlugin.Instance.Enable(gld.Id);
 
             var embed = this.PrepareEmbed("Success", "GNU/Stallman plugin was enabled for this guild.", EmbedType.Success);
@@ -27,7 +26,6 @@ namespace Emzi0767.Ada.Plugin.Stallman
         {
             var gld = ctx.Guild;
 
-            await ctx.Message.DeleteAsync();
             StallmanPlugin.Instance.Disable(gld.Id);
 
             var embed = this.PrepareEmbed("Success", "GNU/Stallman plugin was disabled for this guild.", EmbedType.Success);
