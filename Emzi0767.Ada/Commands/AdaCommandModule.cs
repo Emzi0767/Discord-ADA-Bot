@@ -1056,26 +1056,28 @@ namespace Emzi0767.Ada.Commands
         private EmbedBuilder PrepareEmbed(EmbedType type)
         {
             var embed = new EmbedBuilder();
-            var ecolor = new Color(255, 255, 255);
             switch (type)
             {
                 case EmbedType.Info:
-                    ecolor = new Color(0, 127, 255);
+                    embed.Color = new Color(0, 127, 255);
                     break;
 
                 case EmbedType.Success:
-                    ecolor = new Color(127, 255, 0);
+                    embed.Color = new Color(127, 255, 0);
                     break;
 
                 case EmbedType.Warning:
-                    ecolor = new Color(255, 255, 0);
+                    embed.Color = new Color(255, 255, 0);
                     break;
 
                 case EmbedType.Error:
-                    ecolor = new Color(255, 127, 0);
+                    embed.Color = new Color(255, 127, 0);
+                    break;
+
+                default:
+                    embed.Color = new Color(255, 255, 255);
                     break;
             }
-            embed.Color = ecolor;
             embed.ThumbnailUrl = AdaBotCore.AdaClient.CurrentUser.AvatarUrl;
             return embed;
         }
