@@ -24,8 +24,6 @@ namespace Emzi0767.Ada.Plugin.Feedle
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            await msg.DeleteAsync();
-
             if (msg.MentionedChannelIds.Count == 0)
                 throw new ArgumentException("You need to mention a channel you want to add a feed to.");
             var chf = msg.MentionedChannelIds.FirstOrDefault();
@@ -54,8 +52,6 @@ namespace Emzi0767.Ada.Plugin.Feedle
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            await msg.DeleteAsync();
-
             if (msg.MentionedChannelIds.Count == 0)
                 throw new ArgumentException("You need to mention a channel you want to remove a feed from.");
             var chf = msg.MentionedChannelIds.FirstOrDefault();
@@ -81,8 +77,6 @@ namespace Emzi0767.Ada.Plugin.Feedle
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
-
-            await msg.DeleteAsync();
             
             var feeds = FeedlePlugin.Instance.GetFeeds(gld.Channels.Select(xch => xch.Id).ToArray());
             
