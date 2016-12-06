@@ -263,7 +263,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             embed.AddField(x =>
             {
                 x.IsInline = false;
-                x.Name = "Following Commands Were Enabled";
+                x.Name = "Following commands were enabled";
                 x.Value = string.Join(", ", cmds);
             });
             await chn.SendMessageAsync("", false, embed);
@@ -287,7 +287,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             embed.AddField(x =>
             {
                 x.IsInline = false;
-                x.Name = "Following Commands Were Disabled";
+                x.Name = "Following commands were disabled";
                 x.Value = string.Join(", ", cmds);
             });
             await chn.SendMessageAsync("", false, embed);
