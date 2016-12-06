@@ -1,0 +1,18 @@
+﻿{
+  "title": "Stallman Plugin for ADA",
+  "copyright": "© Emzi0767 2016",
+  "description": "A plugin for ADA Bot, which adds Stallman Copypasta autoresponder.",
+  "language": "en-US",
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Emzi0767.Ada": "3.1.0-*",
+    "Microsoft.NETCore.App": "1.1.0"
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": "dnxcore50"
+    }
+  }
+}
