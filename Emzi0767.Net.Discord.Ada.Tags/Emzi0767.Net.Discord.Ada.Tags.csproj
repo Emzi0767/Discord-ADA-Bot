@@ -169,12 +169,6 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Emzi0767.Net.Discord.AdaBot\Emzi0767.Net.Discord.AdaBot.csproj">
-      <Project>{f92fdb02-9a4b-44e5-ae91-2b5845debc76}</Project>
-      <Name>Emzi0767.Net.Discord.AdaBot</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

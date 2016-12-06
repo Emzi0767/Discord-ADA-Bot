@@ -53,6 +53,8 @@ namespace Emzi0767.Ada.Config
 
                 var gcf = new AdaGuildConfig();
                 gcf.ModLogChannel = gconf["modlog"] != null ? (ulong?)gconf["modlog"] : null;
+                gcf.DeleteCommands = gconf["delete_commands"] != null ? (bool?)gconf["delete_commands"] : null;
+                gcf.CommandPrefix = gconf["command_prefix"] != null ? (string)gconf["command_prefix"] : null;
 
                 this.GuildConfigs[guild] = gcf;
             }
@@ -108,6 +110,10 @@ namespace Emzi0767.Ada.Config
                 var gconf = new JObject();
                 if (kvp.Value.ModLogChannel != null)
                     gconf.Add("modlog", kvp.Value.ModLogChannel.Value);
+                if (kvp.Value.DeleteCommands != null)
+                    gconf.Add("delete_commands", kvp.Value.DeleteCommands);
+                if (!string.IsNullOrWhiteSpace(kvp.Value.CommandPrefix))
+                    gconf.Add("command_prefix", kvp.Value.CommandPrefix);
 
                 gconfs.Add(kvp.Key.ToString(), gconf);
             }

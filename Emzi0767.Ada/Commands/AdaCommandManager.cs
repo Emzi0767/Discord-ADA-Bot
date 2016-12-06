@@ -21,7 +21,6 @@ namespace Emzi0767.Ada.Commands
         private Dictionary<string, IAdaPermissionChecker> RegisteredCheckers { get; set; }
         public int CommandCount { get { return this.GetCommands().Count(); } }
         public int CheckerCount { get { return this.RegisteredCheckers.Count; } }
-        public string Prefix { get; private set; }
 
         /// <summary>
         /// Initializes the command handler.
@@ -43,6 +42,18 @@ namespace Emzi0767.Ada.Commands
         {
             foreach (var cmd in this.RegisteredCommands.GroupBy(xkvp => xkvp.Value))
                 yield return cmd.Key;
+        }
+
+        public string GetPrefix(ulong guildid)
+        {
+            var prefix = "/";
+            if (AdaBotCore.AdaClient.CurrentUser.Id != 207900508562653186u)
+                prefix = "?";
+            var gconf = AdaBotCore.ConfigManager.GetGuildConfig(guildid);
+            if (gconf != null && gconf.CommandPrefix != null)
+                prefix = gconf.CommandPrefix;
+
+            return prefix;
         }
 
         internal AdaCommand GetCommand(string name)
@@ -138,14 +149,23 @@ namespace Emzi0767.Ada.Commands
             if (msg == null)
                 return;
 
+            var chn = msg.Channel as SocketTextChannel;
+            if (chn == null)
+                return;
+
+            var gld = chn.Guild;
+            if (gld == null)
+                return;
+            
             var client = AdaBotCore.AdaClient.DiscordClient;
             var argpos = 0;
-            var cprefix = '/';
+            var gconf = AdaBotCore.ConfigManager.GetGuildConfig(gld.Id);
+            var cprefix = "/";
             if (client.CurrentUser.Id != 207900508562653186u)
-                cprefix = '?';
-            this.Prefix = cprefix.ToString();
-
-            if (msg.HasCharPrefix(cprefix, ref argpos) || msg.HasMentionPrefix(client.CurrentUser, ref argpos))
+                cprefix = "?";
+            if (gconf != null && gconf.CommandPrefix != null)
+                cprefix = gconf.CommandPrefix;
+            if (msg.HasStringPrefix(cprefix, ref argpos) || msg.HasMentionPrefix(client.CurrentUser, ref argpos))
             {
                 var cmdn = msg.Content.Substring(argpos);
                 var argi = cmdn.IndexOf(' ');
@@ -165,6 +185,8 @@ namespace Emzi0767.Ada.Commands
                 {
                     try
                     {
+                        if (gconf.DeleteCommands != null && gconf.DeleteCommands.Value)
+                            await msg.DeleteAsync();
                         await cmd.Execute(ctx);
                         this.CommandExecuted(ctx);
                     }
@@ -186,10 +208,8 @@ namespace Emzi0767.Ada.Commands
             var embed = new EmbedBuilder();
             embed.Title = "Error executing command";
             embed.Description = string.Format("User {0} failed to execute command **{1}**.", ctx.User.Mention, ctx.Command != null ? ctx.Command.Name : "<unknown>");
-            embed.Author = new EmbedAuthorBuilder();
-            embed.Author.IconUrl = AdaBotCore.AdaClient.DiscordClient.CurrentUser.AvatarUrl;
-            embed.Author.Name = "ADA, a bot by Emzi0767";
             embed.Color = new Color(255, 127, 0);
+            embed.ThumbnailUrl = AdaBotCore.AdaClient.CurrentUser.AvatarUrl;
 
             embed.AddField(x =>
             {

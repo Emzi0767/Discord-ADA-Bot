@@ -20,8 +20,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emzi0767.Net.Discord.AdaBot", "Emzi0767.Net.Discord.AdaBot\Emzi0767.Net.Discord.AdaBot.csproj", "{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emzi0767.Net.Discord.Ada.Dispatch", "Emzi0767.Net.Discord.Ada.Dispatch\Emzi0767.Net.Discord.Ada.Dispatch.csproj", "{6C89D694-9F46-42DA-8DCC-76A7E2278628}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emzi0767.Net.Discord.Ada.AdvancedCommands", "Emzi0767.Net.Discord.Ada.AdvancedCommands\Emzi0767.Net.Discord.Ada.AdvancedCommands.csproj", "{B50D886A-384A-4649-A8FA-CDBFFBB8AAEA}"
@@ -34,42 +32,55 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emzi0767.Net.Discord.Ada.Ta
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada", "Emzi0767.Ada\Emzi0767.Ada.xproj", "{3B48C959-1A74-4D8E-BA04-E9B8C9039DD8}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Plugin.AdvancedCommands", "Emzi0767.Ada.Plugin.AdvancedCommands\Emzi0767.Ada.Plugin.AdvancedCommands.xproj", "{90DEC6F2-E77E-4052-B267-404E5EC05352}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "local_nuget", "local_nuget", "{0D09F3F4-3646-40C0-88EE-40F95019B45D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "markovcore", "markovcore", "{98076968-E065-42BE-95A0-324B19CFDCBE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.2.1", "1.2.1", "{D21DCA42-045B-46DF-B908-44ABEF79B1C3}"
+	ProjectSection(SolutionItems) = preProject
+		ext_lib\local_nuget\markovcore\1.2.1\markovcore.1.2.1.nupkg = ext_lib\local_nuget\markovcore\1.2.1\markovcore.1.2.1.nupkg
+		ext_lib\local_nuget\markovcore\1.2.1\markovcore.1.2.1.nupkg.sha512 = ext_lib\local_nuget\markovcore\1.2.1\markovcore.1.2.1.nupkg.sha512
+		ext_lib\local_nuget\markovcore\1.2.1\markovcore.nuspec = ext_lib\local_nuget\markovcore\1.2.1\markovcore.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F92FDB02-9A4B-44E5-AE91-2B5845DEBC76}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C89D694-9F46-42DA-8DCC-76A7E2278628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C89D694-9F46-42DA-8DCC-76A7E2278628}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C89D694-9F46-42DA-8DCC-76A7E2278628}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C89D694-9F46-42DA-8DCC-76A7E2278628}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B50D886A-384A-4649-A8FA-CDBFFBB8AAEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B50D886A-384A-4649-A8FA-CDBFFBB8AAEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B50D886A-384A-4649-A8FA-CDBFFBB8AAEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B50D886A-384A-4649-A8FA-CDBFFBB8AAEA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{14A67A73-5CD0-450F-87AE-8060CAFAC36B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{14A67A73-5CD0-450F-87AE-8060CAFAC36B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14A67A73-5CD0-450F-87AE-8060CAFAC36B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14A67A73-5CD0-450F-87AE-8060CAFAC36B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D3B05CF-A871-46F7-B391-C28F822AC657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D3B05CF-A871-46F7-B391-C28F822AC657}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D3B05CF-A871-46F7-B391-C28F822AC657}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D3B05CF-A871-46F7-B391-C28F822AC657}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E0028241-6DE6-4CE7-9DD8-E163DC58C65E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0028241-6DE6-4CE7-9DD8-E163DC58C65E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0028241-6DE6-4CE7-9DD8-E163DC58C65E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0028241-6DE6-4CE7-9DD8-E163DC58C65E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3B48C959-1A74-4D8E-BA04-E9B8C9039DD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B48C959-1A74-4D8E-BA04-E9B8C9039DD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B48C959-1A74-4D8E-BA04-E9B8C9039DD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B48C959-1A74-4D8E-BA04-E9B8C9039DD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90DEC6F2-E77E-4052-B267-404E5EC05352}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90DEC6F2-E77E-4052-B267-404E5EC05352}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90DEC6F2-E77E-4052-B267-404E5EC05352}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90DEC6F2-E77E-4052-B267-404E5EC05352}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0D09F3F4-3646-40C0-88EE-40F95019B45D} = {0F2D9783-9522-4B08-A83A-1F930CEF10FB}
+		{98076968-E065-42BE-95A0-324B19CFDCBE} = {0D09F3F4-3646-40C0-88EE-40F95019B45D}
+		{D21DCA42-045B-46DF-B908-44ABEF79B1C3} = {98076968-E065-42BE-95A0-324B19CFDCBE}
 	EndGlobalSection
 EndGlobal

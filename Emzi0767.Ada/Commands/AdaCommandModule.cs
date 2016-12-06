@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -25,8 +26,6 @@ namespace Emzi0767.Ada.Commands
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            await msg.DeleteAsync();
-
             var nam = ctx.RawArguments[0];
             var grl = await gld.CreateRoleAsync(nam, new GuildPermissions(0x0635CC01u), null, false);
             
@@ -52,8 +51,6 @@ namespace Emzi0767.Ada.Commands
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
-
-            await msg.DeleteAsync();
 
             var grp = (IRole)null;
             if (msg.MentionedRoleIds.Count > 0)
@@ -93,8 +90,6 @@ namespace Emzi0767.Ada.Commands
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            await msg.DeleteAsync();
-
             var grp = (IRole)null;
             if (msg.MentionedRoleIds.Count > 0)
             {
@@ -131,6 +126,7 @@ namespace Emzi0767.Ada.Commands
                     x.Permissions = gpr;
                 if (par.ContainsKey("position"))
                     x.Position = gps;
+                x.Permissions = par.ContainsKey("permissions") ? gpr : grp.Permissions.RawValue;
             });
 
             var gid = gld.Id;
@@ -155,8 +151,6 @@ namespace Emzi0767.Ada.Commands
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            await msg.DeleteAsync();
-
             var grp = (IRole)null;
             if (msg.MentionedRoleIds.Count > 0)
             {
@@ -164,89 +158,104 @@ namespace Emzi0767.Ada.Commands
             }
             else
             {
-                var nam = ctx.RawArguments[0];
+                var nam = string.Join(" ", ctx.RawArguments);
                 grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
             }
             if (grp == null)
                 throw new ArgumentException("You must supply a role.");
 
             var grl = grp as SocketRole;
-            //await gld.DownloadUsersAsync();
             var gls = gld as SocketGuild;
 
-            var embed = this.PrepareEmbed("Role Info", string.Format("Full information about role **{0}**", grl.Name), EmbedType.Info);
+            var embed = this.PrepareEmbed("Role Info", null, EmbedType.Info);
 
-            var sb = new StringBuilder();
-            sb.AppendFormat("**Name**: {0}", grl.Name).AppendLine();
-            sb.AppendFormat("**ID**: {0}", grl.Id).AppendLine();
-            sb.AppendFormat("**Color**: {0:X6}", grl.Color.RawValue).AppendLine();
-            sb.AppendFormat("**Is hoisted**: {0}", grl.IsHoisted ? "Yes" : "No").AppendLine();
-            sb.AppendFormat("**Is everyone**: {0}", grl.IsEveryone ? "Yes" : "No").AppendLine();
-            sb.AppendFormat("**Is mentionable**: {0}", grl.IsMentionable ? "Yes" : "No").AppendLine();
-            if (grl.IsMentionable)
-                sb.AppendFormat("**Mention**: {0}", grl.Mention).AppendLine();
-            sb.AppendFormat("**Position**: {0}", grl.Position).AppendLine();
-            //sb.AppendFormat("**Total members**: {0:#,##0}", gls.Users.Where(xus => xus.RoleIds.Contains(grl.Id)).Count()).AppendLine();
-            sb.AppendFormat("**Raw permissions**: {0}", grl.Permissions.RawValue).AppendLine();
             embed.AddField(x =>
             {
-                x.IsInline = false;
-                x.Name = "Role Information";
-                x.Value = sb.ToString();
+                x.IsInline = true;
+                x.Name = "Name";
+                x.Value = grl.Name;
             });
 
-            sb = new StringBuilder();
+            embed.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "ID";
+                x.Value = grl.Id.ToString();
+            });
+
+            embed.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Color";
+                x.Value = grl.Color.RawValue.ToString("X6");
+            });
+
+            embed.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Hoisted?";
+                x.Value = grl.IsHoisted ? "Yes" : "No";
+            });
+
+            embed.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Mentionable?";
+                x.Value = grl.IsMentionable ? "Yes" : "No";
+            });
+
+            var perms = new List<string>(23);
             if (grl.Permissions.Administrator)
-                sb.AppendLine("- Administrator");
+                perms.Add("Administrator");
             if (grl.Permissions.AttachFiles)
-                sb.AppendLine("- Can attach files");
+                perms.Add("Can attach files");
             if (grl.Permissions.BanMembers)
-                sb.AppendLine("- Can ban members");
+                perms.Add("Can ban members");
             if (grl.Permissions.ChangeNickname)
-                sb.AppendLine("- Can change nickname");
+                perms.Add("Can change nickname");
             if (grl.Permissions.Connect)
-                sb.AppendLine("- Can use voice chat");
+                perms.Add("Can use voice chat");
             if (grl.Permissions.CreateInstantInvite)
-                sb.AppendLine("- Can create instant invites");
+                perms.Add("Can create instant invites");
             if (grl.Permissions.DeafenMembers)
-                sb.AppendLine("- Can deafen members");
+                perms.Add("Can deafen members");
             if (grl.Permissions.EmbedLinks)
-                sb.AppendLine("- Can embed links");
+                perms.Add("Can embed links");
             if (grl.Permissions.KickMembers)
-                sb.AppendLine("- Can kick members");
+                perms.Add("Can kick members");
             if (grl.Permissions.ManageChannels)
-                sb.AppendLine("- Can manage channels");
+                perms.Add("Can manage channels");
             if (grl.Permissions.ManageMessages)
-                sb.AppendLine("- Can manage messages");
+                perms.Add("Can manage messages");
             if (grl.Permissions.ManageNicknames)
-                sb.AppendLine("- Can manage nicknames");
+                perms.Add("Can manage nicknames");
             if (grl.Permissions.ManageRoles)
-                sb.AppendLine("- Can manage roles");
+                perms.Add("Can manage roles");
             if (grl.Permissions.ManageGuild)
-                sb.AppendLine("- Can manage guild");
+                perms.Add("Can manage guild");
             if (grl.Permissions.MentionEveryone)
-                sb.AppendLine("- Can mention everyone group");
+                perms.Add("Can mention everyone group");
             if (grl.Permissions.MoveMembers)
-                sb.AppendLine("- Can move members between voice channels");
+                perms.Add("Can move members between voice channels");
             if (grl.Permissions.MuteMembers)
-                sb.AppendLine("- Can mute members");
+                perms.Add("Can mute members");
             if (grl.Permissions.ReadMessageHistory)
-                sb.AppendLine("- Can read message history");
+                perms.Add("Can read message history");
             if (grl.Permissions.ReadMessages)
-                sb.AppendLine("- Can read messages");
+                perms.Add("Can read messages");
             if (grl.Permissions.SendMessages)
-                sb.AppendLine("- Can send messages");
+                perms.Add("Can send messages");
             if (grl.Permissions.SendTTSMessages)
-                sb.AppendLine("- Can send TTS messages");
+                perms.Add("Can send TTS messages");
             if (grl.Permissions.Speak)
-                sb.AppendLine("- Can speak");
+                perms.Add("Can speak");
             if (grl.Permissions.UseVAD)
-                sb.AppendLine("- Can use voice activation");
+                perms.Add("Can use voice activation");
             embed.AddField(x =>
             {
                 x.IsInline = false;
                 x.Name = "Permissions";
-                x.Value = sb.ToString();
+                x.Value = string.Join(", ", perms);
             });
 
             await chn.SendMessageAsync("", false, embed);
@@ -258,8 +267,6 @@ namespace Emzi0767.Ada.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
-
-            await msg.DeleteAsync();
             
             var grp = gld.Roles;
             if (grp == null)
@@ -284,8 +291,6 @@ namespace Emzi0767.Ada.Commands
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
-
-            await msg.DeleteAsync();
             
             var grp = (IRole)null;
             if (msg.MentionedRoleIds.Count > 0)
@@ -339,8 +344,6 @@ namespace Emzi0767.Ada.Commands
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            await msg.DeleteAsync();
-
             var grp = (IRole)null;
             if (msg.MentionedRoleIds.Count > 0)
             {
@@ -393,8 +396,6 @@ namespace Emzi0767.Ada.Commands
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            await msg.DeleteAsync();
-
             if (msg.MentionedUserIds.Count == 0)
                 throw new ArgumentException("You need to mention the user you want to report.");
             var rep = await gld.GetUserAsync(msg.MentionedUserIds.First());
@@ -433,8 +434,6 @@ namespace Emzi0767.Ada.Commands
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            await msg.DeleteAsync();
-
             var gls = gld as SocketGuild;
             var uss = msg.MentionedUserIds.Select(xid => gls.GetUser(xid));
             if (uss.Count() < 1)
@@ -454,11 +453,11 @@ namespace Emzi0767.Ada.Commands
                 await mod.SendMessageAsync("", false, embedmod);
             }
 
-            var embed = this.PrepareEmbed("Success", string.Concat(uss.Count().ToString("#,##0"), " user", uss.Count() > 1 ? "s were" : " was", " kicked."), EmbedType.Success);
+            var embed = this.PrepareEmbed(EmbedType.Success);
             embed.AddField(x =>
             {
                 x.IsInline = false;
-                x.Name = "Details";
+                x.Name = "User Kicked";
                 x.Value = string.Concat("The following user", uss.Count() > 1 ? "s were" : " was" , " kicked: ", string.Join(", ", uss.Select(xusr => xusr.Mention)));
             });
 
@@ -473,8 +472,6 @@ namespace Emzi0767.Ada.Commands
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
-
-            await msg.DeleteAsync();
 
             var gls = gld as SocketGuild;
             var uss = msg.MentionedUserIds.Select(xid => gls.GetUser(xid));
@@ -495,11 +492,11 @@ namespace Emzi0767.Ada.Commands
                 await mod.SendMessageAsync("", false, embedmod);
             }
             
-            var embed = this.PrepareEmbed("Success", string.Concat(uss.Count().ToString("#,##0"), " user", uss.Count() > 1 ? "s were" : " was", " banned."), EmbedType.Success);
+            var embed = this.PrepareEmbed(EmbedType.Success);
             embed.AddField(x =>
             {
                 x.IsInline = false;
-                x.Name = "Details";
+                x.Name = "User Bans";
                 x.Value = string.Concat("The following user", uss.Count() > 1 ? "s were" : " was", " banned: ", string.Join(", ", uss.Select(xusr => xusr.Mention)));
             });
 
@@ -514,7 +511,6 @@ namespace Emzi0767.Ada.Commands
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            await msg.DeleteAsync();
             var usp = await gld.PruneUsersAsync();
 
             var gid = gld.Id;
@@ -538,8 +534,6 @@ namespace Emzi0767.Ada.Commands
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            await msg.DeleteAsync();
-
             var usrs = msg.MentionedUserIds;
             if (usrs.Count == 0)
                 throw new ArgumentException("You need to mention a user whose information you want to see.");
@@ -547,71 +541,53 @@ namespace Emzi0767.Ada.Commands
             var usr = await gld.GetUserAsync(usrs.First()) as SocketGuildUser;
             if (usr == null)
                 throw new ArgumentNullException("Specified user is invalid.");
-            var embed = this.PrepareEmbed("User Info", string.Format("All information about **{0}**.", usr.Nickname ?? string.Concat(usr.Username, "#", usr.Discriminator)), EmbedType.Info);
 
-            var sb = new StringBuilder();
-            sb.AppendFormat("**ID**: {0}", usr.Id).AppendLine();
-            sb.AppendFormat("**Username**: {0}", usr.Username).AppendLine();
-            sb.AppendFormat("**Discriminator**: {0}", usr.Discriminator).AppendLine();
-            sb.AppendFormat("**Full username**: {0}#{1}", usr.Username, usr.Discriminator).AppendLine();
-            if (!string.IsNullOrWhiteSpace(usr.Nickname))
-                sb.AppendFormat("**Nickname**: {0}", usr.Nickname);
-            sb.AppendFormat("**Mention**: {0}", usr.Mention).AppendLine();
-            sb.AppendFormat("**Account created**: {0:yyyy-MM-dd HH:mm:ss} UTC", usr.CreatedAt.UtcDateTime).AppendLine();
-            sb.AppendFormat("**Is a bot**: {0}", usr.IsBot ? "Yes" : "No");
-            embed.AddField(x =>
-            {
-                x.IsInline = false;
-                x.Name = "Basic Info";
-                x.Value = sb.ToString();
-            });
-
-            sb = new StringBuilder();
-            sb.AppendFormat("**Status**: {0}", usr.Status).AppendLine();
-            if (usr.Game != null)
-                sb.AppendFormat("**Current game**: {0}", usr.Game.Value.Name);
-            embed.AddField(x =>
-            {
-                x.IsInline = false;
-                x.Name = "Status";
-                x.Value = sb.ToString();
-            });
-
-            if (usr.VoiceState != null)
-            {
-                sb = new StringBuilder();
-                sb.AppendFormat("**Channel**: {0}", usr.VoiceState.Value.VoiceChannel.Name).AppendLine();
-                sb.AppendFormat("**Is Muted**: {0}", usr.VoiceState.Value.IsMuted ? "Yes" : "No");
-                sb.AppendFormat("**Is Self Muted**: {0}", usr.VoiceState.Value.IsSelfMuted ? "Yes" : "No");
-                sb.AppendFormat("**Is Deafened**: {0}", usr.VoiceState.Value.IsDeafened ? "Yes" : "No");
-                sb.AppendFormat("**Is Self Deafe**: {0}", usr.VoiceState.Value.IsSelfDeafened ? "Yes" : "No");
-                embed.AddField(x =>
-                {
-                    x.IsInline = false;
-                    x.Name = "Voice";
-                    x.Value = sb.ToString();
-                });
-            }
-
-            sb = new StringBuilder();
-            sb.AppendFormat("**Roles**: {0}", string.Join(", ", usr.RoleIds.Select(xid => string.Concat("**", gld.GetRole(xid).Name, "**")))).AppendLine();
-            embed.AddField(x =>
-            {
-                x.IsInline = false;
-                x.Name = "Guild Info";
-                x.Value = sb.ToString();
-            });
-
+            var embed = this.PrepareEmbed(EmbedType.Info);
             if (!string.IsNullOrWhiteSpace(usr.AvatarUrl))
+                embed.ThumbnailUrl = usr.AvatarUrl;
+
+            embed.AddField(x =>
             {
+                x.IsInline = true;
+                x.Name = "Username";
+                x.Value = string.Concat("**", usr.Username, "**#", usr.DiscriminatorValue);
+            });
+
+            embed.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "ID";
+                x.Value = usr.Id.ToString();
+            });
+
+            embed.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Nickname";
+                x.Value = usr.Nickname ?? string.Concat("**", usr.Username, "**#", usr.DiscriminatorValue);
+            });
+
+            embed.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Status";
+                x.Value = usr.Status.ToString();
+            });
+
+            if (usr.Game != null)
                 embed.AddField(x =>
                 {
-                    x.IsInline = false;
-                    x.Name = "Avatar";
-                    x.Value = string.Concat("**ID**: ", usr.AvatarId);
+                    x.IsInline = true;
+                    x.Name = "Game";
+                    x.Value = usr.Game.Value.Name;
                 });
-                embed.ImageUrl = usr.AvatarUrl;
-            }
+            
+            embed.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Roles";
+                x.Value = string.Join(", ", usr.RoleIds.Select(xid => string.Concat("**", gld.GetRole(xid).Name, "**")));
+            });
 
             await chn.SendMessageAsync("", false, embed);
         }
@@ -619,41 +595,48 @@ namespace Emzi0767.Ada.Commands
         [AdaCommand("guildinfo", "Displays information about current guild. This command can only be used by guild administrators.", Aliases = "ginfo", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageGuild)]
         public async Task GuildInfo(AdaCommandContext ctx)
         {
-            var gld = ctx.Guild;
+            var gld = ctx.Guild as SocketGuild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            await msg.DeleteAsync();
+            var embed = this.PrepareEmbed(EmbedType.Info);
+            if (!string.IsNullOrWhiteSpace(gld.IconUrl))
+                embed.ThumbnailUrl = gld.IconUrl;
 
-            var embed = this.PrepareEmbed("Guild Info", string.Format("All information about **{0}** Guild.", gld.Name), EmbedType.Info);
-            
-            var gls = gld as SocketGuild;
-            var sb = new StringBuilder();
-            sb.AppendFormat("**Name**: {0}", gls.Name).AppendLine();
-            sb.AppendFormat("**ID**: {0}", gls.Id).AppendLine();
-            sb.AppendFormat("**Voice Region ID**: {0}", gls.VoiceRegionId).AppendLine();
-            sb.AppendFormat("**Owner**: {0} ({1})", (await gls.GetOwnerAsync()).Mention, gls.OwnerId).AppendLine();
-            sb.AppendFormat("**Channel count**: {0:#,##0}", gls.Channels.Count).AppendLine();
-            sb.AppendFormat("**Role count**: {0:#,##0}", gls.Roles.Count).AppendLine();
-            sb.AppendFormat("**Default channel**: {0}", (await gls.GetDefaultChannelAsync()).Mention).AppendLine();
-            sb.AppendFormat("**Features**: {0}", string.Join(", ", gls.Features.Select(xs => string.Concat("'", xs, "'")))).AppendLine();
             embed.AddField(x =>
             {
-                x.IsInline = false;
-                x.Name = "Information";
-                x.Value = sb.ToString();
+                x.IsInline = true;
+                x.Name = "Name";
+                x.Value = gld.Name;
             });
 
-            if (!string.IsNullOrWhiteSpace(gls.IconUrl))
+            embed.AddField(x =>
             {
-                embed.AddField(x =>
-                {
-                    x.IsInline = false;
-                    x.Name = "Guild Icon";
-                    x.Value = string.Concat("**ID**: ", gls.IconId);
-                });
-                embed.ImageUrl = gls.IconUrl;
-            }
+                x.IsInline = true;
+                x.Name = "ID";
+                x.Value = gld.Id.ToString();
+            });
+
+            embed.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Voice Region";
+                x.Value = gld.VoiceRegionId;
+            });
+
+            embed.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Owner";
+                x.Value = gld.GetOwnerAsync().GetAwaiter().GetResult().Mention;
+            });
+
+            embed.AddField(x =>
+            {
+                x.IsInline = true;
+                x.Name = "Default Channel";
+                x.Value = gld.GetDefaultChannelAsync().GetAwaiter().GetResult().Mention;
+            });
 
             await chn.SendMessageAsync("", false, embed);
         }
@@ -666,8 +649,6 @@ namespace Emzi0767.Ada.Commands
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
-
-            await msg.DeleteAsync();
 
             if (msg.MentionedChannelIds.Count == 0)
                 throw new ArgumentException("You need to mention a channel you want to purge");
@@ -690,30 +671,105 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("modconfig", "Configures moderator log channel. This command can only be used by guild administrators.", Aliases = "modconf", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("guildconfig", "Manages ADA configuration for this guild. This command can only be used by guild administrators.", Aliases = "guildconf;adaconfig;adaconf;modconfig;modconf", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         [AdaCommandParameter(0, "channel", "Mention of a channel to be used as mod log.", true)]
         public async Task ModConfig(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
+            var usr = ctx.User;
 
-            await msg.DeleteAsync();
-
-            if (msg.MentionedChannelIds.Count() == 0)
-                throw new ArgumentException("You need to mention a channel to use as moderator log.");
-            var mod = await gld.GetTextChannelAsync(msg.MentionedChannelIds.First());
-
-            var bot = AdaBotCore.AdaClient.CurrentUser;
-            var prm = mod.GetPermissionOverwrite(bot);
-            if (prm != null && prm.Value.SendMessages == PermValue.Deny)
-                throw new InvalidOperationException("ADA cannot write to specified channel.");
+            if (ctx.RawArguments.Count == 0)
+                throw new ArgumentException("You need to specify setting and value.");
+            var setting = ctx.RawArguments[0];
+            var val = string.Empty;
+            var embed = (EmbedBuilder)null;
 
             var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gld.Id);
-            cnf.ModLogChannel = mod.Id;
+            if (setting == "modlog")
+            {
+                var mod = (ITextChannel)null;
+                if (msg.MentionedChannelIds.Count() > 0)
+                {
+                    mod = await gld.GetTextChannelAsync(msg.MentionedChannelIds.First());
+                    var bot = AdaBotCore.AdaClient.CurrentUser;
+                    var prm = mod.GetPermissionOverwrite(bot);
+                    if (prm != null && prm.Value.SendMessages == PermValue.Deny)
+                        throw new InvalidOperationException("ADA cannot write to specified channel.");
+                }
+
+                val = mod != null ? mod.Mention : "<null>";
+                cnf.ModLogChannel = mod != null ? (ulong?)mod.Id : null;
+                embed = this.PrepareEmbed("Success", string.Concat("Moderator log was ", mod != null ? string.Concat("set to ", mod.Mention) : "removed", "."), EmbedType.Success);
+            }
+            else if (setting == "prefix")
+            {
+                var pfix = (string)null;
+                if (ctx.RawArguments.Count >= 2)
+                    pfix = string.Join(" ", ctx.RawArguments.Skip(1));
+                if (string.IsNullOrWhiteSpace(pfix))
+                    pfix = null;
+
+                val = pfix ?? "<default>";
+                cnf.CommandPrefix = pfix;
+                embed = this.PrepareEmbed("Success", string.Concat("Command prefix was set to ", pfix != null ? string.Concat("**", pfix, "**") : "default", "."), EmbedType.Success);
+            }
+            else if (setting == "deletecommands")
+            {
+                var delcmd = false;
+                if (ctx.RawArguments.Count > 1 && ctx.RawArguments[1] == "enable")
+                    delcmd = true;
+
+                val = delcmd.ToString();
+                cnf.DeleteCommands = delcmd;
+                embed = this.PrepareEmbed("Success", string.Concat("Command message deletion is now **", delcmd ? "enabled" : "disabled", "**."), EmbedType.Success);
+            }
+            else
+                throw new ArgumentException("Invalid setting specified.");
             AdaBotCore.ConfigManager.SetGuildConfig(gld.Id, cnf);
 
-            var embed = this.PrepareEmbed("Success", string.Concat("Moderator log was set to ", mod.Mention, "."), EmbedType.Success);
+            if (cnf.ModLogChannel != null)
+            {
+                var mod = await gld.GetTextChannelAsync(cnf.ModLogChannel.Value);
+                var embedmod = this.PrepareEmbed("Config updated", string.Concat(usr.Mention, " has has updated guild setting **", setting, "** with value **", val, "**."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+
+            await chn.SendMessageAsync("", false, embed);
+        }
+
+        [AdaCommand("adanick", "Changes ADA nickname in this guild. This command can only be used by guild administrators.", Aliases = "adaname", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageNicknames)]
+        [AdaCommandParameter(0, "nickname", "New nickname to use.", false, IsCatchAll = true)]
+        public async Task AdaNick(AdaCommandContext ctx)
+        {
+            var gld = ctx.Guild as SocketGuild;
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+            var usr = ctx.User;
+
+            var nck = string.Join(" ", ctx.RawArguments);
+            if (string.IsNullOrWhiteSpace(nck))
+                nck = "";
+            else
+                nck = string.Concat(AdaBotCore.AdaClient.CurrentUser.Username, " (", nck, ")");
+            var ada = gld.GetUser(AdaBotCore.AdaClient.CurrentUser.Id);
+            await ada.ModifyAsync(x =>
+            {
+                x.Nickname = nck;
+            });
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("ADA Nickname Change", string.Concat(usr.Mention, " has changed ADA nickname to **", nck == "" ? AdaBotCore.AdaClient.CurrentUser.Username : nck, "**."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+
+            var embed = this.PrepareEmbed("Success", string.Concat("Nickname set to **", nck == "" ? AdaBotCore.AdaClient.CurrentUser.Username : nck, "**."), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
 
@@ -726,12 +782,10 @@ namespace Emzi0767.Ada.Commands
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            await msg.DeleteAsync();
-
             var embed = (EmbedBuilder)null;
             if (ctx.RawArguments.Count == 0)
             {
-                embed = this.PrepareEmbed("ADA Help", string.Format("List of all ADA commands, with aliases, and descriptions. All commands use the **{0}** prefix. Run **{0}adahelp** command to learn more about a specific command.", AdaBotCore.CommandManager.Prefix), EmbedType.Info);
+                embed = this.PrepareEmbed("ADA Help", string.Format("List of all ADA commands, with aliases, and descriptions. All commands use the **{0}** prefix. Run **{0}adahelp** command to learn more about a specific command.", AdaBotCore.CommandManager.GetPrefix(gld.Id)), EmbedType.Info);
                 foreach (var cmdg in AdaBotCore.CommandManager.GetCommands().GroupBy(xcmd => xcmd.Module))
                 {
                     var err = "";
@@ -780,7 +834,7 @@ namespace Emzi0767.Ada.Commands
                 {
                     var sb1 = new StringBuilder();
                     var sb2 = new StringBuilder();
-                    sb1.Append(AdaBotCore.CommandManager.Prefix).Append(cmd.Name).Append(' ');
+                    sb1.Append(AdaBotCore.CommandManager.GetPrefix(gld.Id)).Append(cmd.Name).Append(' ');
                     foreach (var param in cmd.Parameters.OrderBy(xp => xp.Order))
                     {
                         sb1.Append(param.IsRequired ? '<' : '[').Append(param.Name).Append(param.IsCatchAll ? "..." : "").Append(param.IsRequired ? '>' : ']').Append(' ');
@@ -797,7 +851,7 @@ namespace Emzi0767.Ada.Commands
                     });
                 }
             }
-            
+
             await chn.SendMessageAsync("", false, embed);
         }
 
@@ -807,8 +861,6 @@ namespace Emzi0767.Ada.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
-
-            await msg.DeleteAsync();
 
             var a = AdaBotCore.PluginManager.MainAssembly;
             var n = a.GetName();
@@ -821,7 +873,7 @@ namespace Emzi0767.Ada.Commands
             {
                 x.IsInline = false;
                 x.Name = "What can you do?";
-                x.Value = string.Format("You can see the list of commands available to you by invoking **{0}adahelp**. Some commands might not be available to you, depending on this server's policy.", AdaBotCore.CommandManager.Prefix);
+                x.Value = string.Format("You can see the list of commands available to you by invoking **{0}adahelp**. Some commands might not be available to you, depending on this server's policy.", AdaBotCore.CommandManager.GetPrefix(gld.Id));
             });
 
             if (gls != null)
@@ -864,8 +916,6 @@ namespace Emzi0767.Ada.Commands
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
-
-            await msg.DeleteAsync();
 
             // ada assembly data
             var ada_a = AdaBotCore.PluginManager.MainAssembly;
@@ -992,8 +1042,6 @@ namespace Emzi0767.Ada.Commands
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            await msg.DeleteAsync();
-
             var duration = 42510;
             if (ctx.RawArguments.Count > 0)
                 if (!int.TryParse(ctx.RawArguments[0], out duration))
@@ -1005,14 +1053,9 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        private EmbedBuilder PrepareEmbed(string title, string desc, EmbedType type)
+        private EmbedBuilder PrepareEmbed(EmbedType type)
         {
             var embed = new EmbedBuilder();
-            embed.Title = title;
-            embed.Description = desc;
-            embed.Author = new EmbedAuthorBuilder();
-            embed.Author.IconUrl = AdaBotCore.AdaClient.CurrentUser.AvatarUrl;
-            embed.Author.Name = "ADA, a bot by Emzi0767";
             var ecolor = new Color(255, 255, 255);
             switch (type)
             {
@@ -1033,6 +1076,15 @@ namespace Emzi0767.Ada.Commands
                     break;
             }
             embed.Color = ecolor;
+            embed.ThumbnailUrl = AdaBotCore.AdaClient.CurrentUser.AvatarUrl;
+            return embed;
+        }
+
+        private EmbedBuilder PrepareEmbed(string title, string desc, EmbedType type)
+        {
+            var embed = this.PrepareEmbed(type);
+            embed.Title = title;
+            embed.Description = desc;
             return embed;
         }
 
