@@ -18,16 +18,15 @@ namespace Emzi0767.Ada.Commands
         public string Name { get { return "ADA Core Commands"; } }
 
         [AdaCommand("mkrole", "Creates a new role. This command can only be used by guild administrators.", Aliases = "makerole;createrole;mkgroup;makegroup;creategroup;gmk;gmake;gcreate", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        [AdaCommandParameter(0, "name", "Name of the new role.", true)]
-        public async Task CreateRole(AdaCommandContext ctx)
+        public async Task CreateRole(AdaCommandContext ctx,
+            [AdaArgumentParameter("Name of the new role.", true)] string name)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
-
-            var nam = ctx.RawArguments[0];
-            var grl = await gld.CreateRoleAsync(nam, new GuildPermissions(0x0635CC01u), null, false);
+            
+            var grl = await gld.CreateRoleAsync(name, new GuildPermissions(0x0635CC01u), null, false);
             
             var gid = gld.Id;
             var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
@@ -44,26 +43,17 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("rmrole", "Removes a role. This command can only be used by guild administrators.", Aliases = "removerole;deleterole;delrole;rmgroup;removegroup;deletegroup;delgroup;gdel;gdelete;grm;gremove", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        [AdaCommandParameter(0, "name", "Name or mention of the role to delete.", true)]
-        public async Task DeleteRole(AdaCommandContext ctx)
+        public async Task DeleteRole(AdaCommandContext ctx,
+            [AdaArgumentParameter("Name or mention of the role to delete.", true)] IRole role)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            var grp = (IRole)null;
-            if (msg.MentionedRoleIds.Count > 0)
-            {
-                grp = gld.GetRole(msg.MentionedRoleIds.First());
-            }
-            else
-            {
-                var nam = ctx.RawArguments[0];
-                grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
-            }
+            var grp = role;
             if (grp == null)
-                throw new ArgumentException("You must supply a role.");
+                throw new ArgumentException("You must specify a role you want to delete.");
             await grp.DeleteAsync();
 
             var gid = gld.Id;
@@ -81,9 +71,9 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("modrole", "Edits a role. This command can only be used by guild administrators.", Aliases = "modifyrole;editrole;modgroup;modifygroup;editgroup;gmod;gmodify;gedit", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        [AdaCommandParameter(0, "name", "Name or mention of the role to modify.", true)]
-        [AdaCommandParameter(1, "properties", "Properties to set. Format is property=value.", true, IsCatchAll = true)]
-        public async Task ModifyRole(AdaCommandContext ctx)
+        public async Task ModifyRole(AdaCommandContext ctx,
+            [AdaArgumentParameter("Name or mention of the role to modify.", true)] IRole role,
+            [AdaArgumentParameter("Properties to set. Format is property=value.", true)] params string[] properties)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
@@ -144,23 +134,14 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("roleinfo", "Dumps all properties of a role. This command can only be used by guild administrators.", Aliases = "rinfo;dumprole;printrole;dumpgroup;printgroup;gdump", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        [AdaCommandParameter(0, "name", "Name or mention of the role to display.", true)]
-        public async Task RoleInfo(AdaCommandContext ctx)
+        public async Task RoleInfo(AdaCommandContext ctx,
+            [AdaArgumentParameter("Name or mention of the role to display.", true)] IRole role)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            var grp = (IRole)null;
-            if (msg.MentionedRoleIds.Count > 0)
-            {
-                grp = gld.GetRole(msg.MentionedRoleIds.First());
-            }
-            else
-            {
-                var nam = string.Join(" ", ctx.RawArguments);
-                grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
-            }
+            var grp = role;
             if (grp == null)
                 throw new ArgumentException("You must supply a role.");
 
@@ -283,31 +264,20 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("roleadd", "Adds users to a role. This command can only be used by guild administrators.", Aliases = "groupadd;ugadd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        [AdaCommandParameter(0, "role", "Name or mention of the role to add to.", true)]
-        [AdaCommandParameter(1, "users", "Mentions of users to add to the role.", true, IsCatchAll = true)]
-        public async Task RoleAdd(AdaCommandContext ctx)
+        public async Task RoleAdd(AdaCommandContext ctx,
+            [AdaArgumentParameter("Name or mention of the role to add to.", true)] IRole role,
+            [AdaArgumentParameter("Mentions of users to add tp the role.", true)] params IUser[] users)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
-            
-            var grp = (IRole)null;
-            if (msg.MentionedRoleIds.Count > 0)
-            {
-                grp = gld.GetRole(msg.MentionedRoleIds.First());
-            }
-            else
-            {
-                var nam = ctx.RawArguments[0];
-                grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
-            }
+
+            var grp = role as SocketRole;
             if (grp == null)
                 throw new ArgumentException("You must supply a role.");
             
-            var gls = gld as SocketGuild;
-            await gls.DownloadUsersAsync();
-            var usrs = msg.MentionedUserIds.Select(xid => gls.Users.FirstOrDefault(xusr => xusr.Id == xid));
+            var usrs = users.Cast<SocketGuildUser>();
             if (usrs.Count() == 0)
                 throw new ArgumentException("You must mention users you want to add to a role.");
 
@@ -335,31 +305,20 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("roleremove", "Removes users from a role. This command can only be used by guild administrators.", Aliases = "groupremove;ugremove;ugrm", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
-        [AdaCommandParameter(0, "role", "Name or mention of the role to remove from.", true)]
-        [AdaCommandParameter(1, "users", "Mentions of users to remove from the role.", true, IsCatchAll = true)]
-        public async Task RoleRemove(AdaCommandContext ctx)
+        public async Task RoleRemove(AdaCommandContext ctx,
+            [AdaArgumentParameter("Name or mention of the role to remove from.", true)] IRole role,
+            [AdaArgumentParameter("Mentions of users to remove from the role.", true)] params IUser[] users)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            var grp = (IRole)null;
-            if (msg.MentionedRoleIds.Count > 0)
-            {
-                grp = gld.GetRole(msg.MentionedRoleIds.First());
-            }
-            else
-            {
-                var nam = ctx.RawArguments[0];
-                grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
-            }
+            var grp = role as SocketRole;
             if (grp == null)
                 throw new ArgumentException("You must supply a role.");
-
-            var gls = gld as SocketGuild;
-            await gls.DownloadUsersAsync();
-            var usrs = msg.MentionedUserIds.Select(xid => gls.Users.FirstOrDefault(xusr => xusr.Id == xid));
+            
+            var usrs = users.Cast<SocketGuildUser>();
             if (usrs.Count() == 0)
                 throw new ArgumentException("You must mention users you want to remove from a role.");
 
@@ -387,20 +346,17 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("report", "Reports a user to guild moderators.", Aliases = "reportuser", CheckPermissions = false)]
-        [AdaCommandParameter(0, "user", "Mention of a user to report.", true)]
-        [AdaCommandParameter(1, "reason", "Reason for report.", true, IsCatchAll = true)]
-        public async Task Report(AdaCommandContext ctx)
+        public async Task Report(AdaCommandContext ctx,
+            [AdaArgumentParameter("User to report.", true)] IUser user,
+            [AdaArgumentParameter("Reason for report.", true)] params string[] reason)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            if (msg.MentionedUserIds.Count == 0)
-                throw new ArgumentException("You need to mention the user you want to report.");
-            var rep = await gld.GetUserAsync(msg.MentionedUserIds.First());
-
-            var rsn = string.Join(" ", ctx.RawArguments.Skip(1));
+            var rep = user;
+            var rsn = string.Join(" ", reason);
             if (string.IsNullOrWhiteSpace(rsn))
                 throw new ArgumentException("You need to supply a report reason.");
 
@@ -426,8 +382,8 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("kick", "Kicks users. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
-        [AdaCommandParameter(0, "users", "Mentions of users to kick.", true, IsCatchAll = true)]
-        public async Task Kick(AdaCommandContext ctx)
+        public async Task Kick(AdaCommandContext ctx,
+            [AdaArgumentParameter("Mentions of users to kick.", true)] params IUser[] users)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
@@ -435,7 +391,7 @@ namespace Emzi0767.Ada.Commands
             var usr = ctx.User;
 
             var gls = gld as SocketGuild;
-            var uss = msg.MentionedUserIds.Select(xid => gls.GetUser(xid));
+            var uss = users.Cast<SocketGuildUser>();
             if (uss.Count() < 1)
                 throw new ArgumentException("You must mention users you want to kick.");
 
@@ -465,8 +421,8 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("ban", "Bans users. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.BanMembers)]
-        [AdaCommandParameter(0, "users", "Mentions of users to ban.", true, IsCatchAll = true)]
-        public async Task Ban(AdaCommandContext ctx)
+        public async Task Ban(AdaCommandContext ctx,
+            [AdaArgumentParameter("Mentions of users to ban.", true)] params IUser[] users)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
@@ -474,10 +430,10 @@ namespace Emzi0767.Ada.Commands
             var usr = ctx.User;
 
             var gls = gld as SocketGuild;
-            var uss = msg.MentionedUserIds.Select(xid => gls.GetUser(xid));
+            var uss = users.Cast<SocketGuildUser>();
             if (uss.Count() < 1)
                 throw new ArgumentException("You must mention users you want to ban.");
-            
+
             var gid = gld.Id;
             var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
             var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
@@ -527,18 +483,14 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("userinfo", "Displays information about users matching given name. This command can only be used by guild administrators.", Aliases = "uinfo;userlist;ulist;userfind;ufind", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
-        [AdaCommandParameter(0, "user", "Mention of user to display.", true)]
-        public async Task UserInfo(AdaCommandContext ctx)
+        public async Task UserInfo(AdaCommandContext ctx,
+            [AdaArgumentParameter("Mention of the user to display.", true)] IUser user)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            var usrs = msg.MentionedUserIds;
-            if (usrs.Count == 0)
-                throw new ArgumentException("You need to mention a user whose information you want to see.");
-
-            var usr = await gld.GetUserAsync(usrs.First()) as SocketGuildUser;
+            var usr = user as SocketGuildUser;
             if (usr == null)
                 throw new ArgumentNullException("Specified user is invalid.");
 
@@ -642,18 +594,15 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("purgechannel", "Purges a channel. Removes up to 100 messages. This command can only be used by guild administrators.", Aliases = "purgech;chpurge;chanpurge;purgechan", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
-        [AdaCommandParameter(0, "channel", "Mention of channel to purge.", true)]
-        public async Task PurgeChannel(AdaCommandContext ctx)
+        public async Task PurgeChannel(AdaCommandContext ctx,
+            [AdaArgumentParameter("Channel to purge.", true)] ITextChannel channel)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            if (msg.MentionedChannelIds.Count == 0)
-                throw new ArgumentException("You need to mention a channel you want to purge");
-            var gls = gld as SocketGuild;
-            var chp = gls.Channels.FirstOrDefault(xch => xch.Id == msg.MentionedChannelIds.First()) as SocketTextChannel;
+            var chp = channel;
             var msgs = await chp.GetMessagesAsync(100).Flatten();
             await chp.DeleteMessagesAsync(msgs);
 
@@ -672,18 +621,18 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("guildconfig", "Manages ADA configuration for this guild. This command can only be used by guild administrators.", Aliases = "guildconf;adaconfig;adaconf;modconfig;modconf", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
-        [AdaCommandParameter(0, "channel", "Mention of a channel to be used as mod log.", true)]
-        public async Task ModConfig(AdaCommandContext ctx)
+        public async Task ModConfig(AdaCommandContext ctx,
+            [AdaArgumentParameter("Setting to modify.", true)] string setting,
+            [AdaArgumentParameter("New value.", true)] params string[] value)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            if (ctx.RawArguments.Count == 0)
+            if (string.IsNullOrWhiteSpace(setting))
                 throw new ArgumentException("You need to specify setting and value.");
-            var setting = ctx.RawArguments[0];
-            var val = string.Empty;
+            var val = string.Join(" ", value);
             var embed = (EmbedBuilder)null;
 
             var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gld.Id);
@@ -705,10 +654,8 @@ namespace Emzi0767.Ada.Commands
             }
             else if (setting == "prefix")
             {
-                var pfix = (string)null;
-                if (ctx.RawArguments.Count >= 2)
-                    pfix = string.Join(" ", ctx.RawArguments.Skip(1));
-                if (string.IsNullOrWhiteSpace(pfix))
+                var pfix = val;
+                if (string.IsNullOrWhiteSpace(val))
                     pfix = null;
 
                 val = pfix ?? "<default>";
@@ -718,7 +665,7 @@ namespace Emzi0767.Ada.Commands
             else if (setting == "deletecommands")
             {
                 var delcmd = false;
-                if (ctx.RawArguments.Count > 1 && ctx.RawArguments[1] == "enable")
+                if (val == "enable")
                     delcmd = true;
 
                 val = delcmd.ToString();
@@ -740,15 +687,15 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("adanick", "Changes ADA nickname in this guild. This command can only be used by guild administrators.", Aliases = "adaname", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageNicknames)]
-        [AdaCommandParameter(0, "nickname", "New nickname to use.", false, IsCatchAll = true)]
-        public async Task AdaNick(AdaCommandContext ctx)
+        public async Task AdaNick(AdaCommandContext ctx, 
+            [AdaArgumentParameter("New nickname to use.", false)] params string[] nickname)
         {
             var gld = ctx.Guild as SocketGuild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            var nck = string.Join(" ", ctx.RawArguments);
+            var nck = string.Join(" ", nickname);
             if (string.IsNullOrWhiteSpace(nck))
                 nck = "";
             else
@@ -774,8 +721,8 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("adahelp", "Shows command list. Add command name to learn more.", Aliases = "help", CheckPermissions = false)]
-        [AdaCommandParameter(0, "command", "Command to display details of.", false)]
-        public async Task Help(AdaCommandContext ctx)
+        public async Task Help(AdaCommandContext ctx,
+            [AdaArgumentParameter("Command to display help for.", false)] string command)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
@@ -783,7 +730,7 @@ namespace Emzi0767.Ada.Commands
             var usr = ctx.User;
 
             var embed = (EmbedBuilder)null;
-            if (ctx.RawArguments.Count == 0)
+            if (string.IsNullOrWhiteSpace(command))
             {
                 embed = this.PrepareEmbed("ADA Help", string.Format("List of all ADA commands, with aliases, and descriptions. All commands use the **{0}** prefix. Run **{0}adahelp** command to learn more about a specific command.", AdaBotCore.CommandManager.GetPrefix(gld.Id)), EmbedType.Info);
                 foreach (var cmdg in AdaBotCore.CommandManager.GetCommands().GroupBy(xcmd => xcmd.Module))
@@ -803,10 +750,9 @@ namespace Emzi0767.Ada.Commands
             }
             else
             {
-                var cmdn = ctx.RawArguments[0];
-                var cmd = AdaBotCore.CommandManager.GetCommand(cmdn);
+                var cmd = AdaBotCore.CommandManager.GetCommand(command);
                 if (cmd == null)
-                    throw new InvalidOperationException(string.Format("Command **{0}** does not exist", cmdn));
+                    throw new InvalidOperationException(string.Format("Command **{0}** does not exist", command));
                 var err = (string)null;
                 if (cmd.Checker != null && !cmd.Checker.CanRun(cmd, usr, msg, chn, gld, out err))
                     throw new ArgumentException("You can't run this command.");
@@ -1036,16 +982,13 @@ namespace Emzi0767.Ada.Commands
         }
 
         [AdaCommand("hang", "Hangs current thread. This command can only be used by Emzi0767.", CheckerId = "CoreDebugChecker", CheckPermissions = true)]
-        [AdaCommandParameter(0, "timeout", "How long to hang the thread for.", false)]
-        public async Task Hang(AdaCommandContext ctx)
+        public async Task Hang(AdaCommandContext ctx, 
+            [AdaArgumentParameter("How long to hang the thread for.", false)] int duration)
         {
             var chn = ctx.Channel;
-            var msg = ctx.Message;
 
-            var duration = 42510;
-            if (ctx.RawArguments.Count > 0)
-                if (!int.TryParse(ctx.RawArguments[0], out duration))
-                    duration = 42510;
+            if (duration == 0)
+                duration = 42510;
 
             await Task.Delay(duration);
 

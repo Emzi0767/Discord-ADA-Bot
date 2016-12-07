@@ -3,7 +3,7 @@
   "copyright": "� 2016 by Emzi0767",
   "description": "ADA is a Discord Bot designed to simplify and automate certain administrative tasks. ADA stands for Automatic/Advanced Discord Administrator.",
   "language": "en-US",
-  "version": "3.1.0-*",
+  "version": "3.1.1-*",
   "buildOptions": {
     "emitEntryPoint": true
   },

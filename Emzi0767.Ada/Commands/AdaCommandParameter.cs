@@ -1,4 +1,6 @@
-﻿namespace Emzi0767.Ada.Commands
+﻿using System;
+
+namespace Emzi0767.Ada.Commands
 {
     /// <summary>
     /// Defines a command parameter.
@@ -31,6 +33,16 @@
         public bool IsCatchAll { get; private set; }
 
         /// <summary>
+        /// Gets whether the parameter is a reflection argument.
+        /// </summary>
+        internal bool IsFunctionArgument { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the parameter type.
+        /// </summary>
+        internal Type ParameterType { get; set; }
+
+        /// <summary>
         /// Defines a new command parameter.
         /// </summary>
         /// <param name="order">Order of parameter's appearance.</param>
@@ -38,13 +50,15 @@
         /// <param name="description">Parameter's description.</param>
         /// <param name="required">Whether or not the parameter is required.</param>
         /// <param name="catchall">Whether or not the parameter is catchall.</param>
-        internal AdaCommandParameter(int order, string name, string description, bool required, bool catchall)
+        /// <param name="reflection">Whether it is a reflection parameter.</param>
+        internal AdaCommandParameter(int order, string name, string description, bool required, bool catchall, bool reflection)
         {
             this.Order = order;
             this.Name = name;
             this.Description = description;
             this.IsRequired = required;
             this.IsCatchAll = catchall;
+            this.IsFunctionArgument = reflection;
         }
     }
 }

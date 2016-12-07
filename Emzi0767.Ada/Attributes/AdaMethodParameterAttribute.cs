@@ -6,7 +6,7 @@ namespace Emzi0767.Ada.Attributes
     /// Defines a new command parameter.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class AdaCommandParameterAttribute : Attribute
+    public class AdaMethodParameterAttribute : Attribute
     {
         /// <summary>
         /// Gets the parameter's order of appearance.
@@ -40,7 +40,7 @@ namespace Emzi0767.Ada.Attributes
         /// <param name="name">Parameter's name.</param>
         /// <param name="description">Parameter's description.</param>
         /// <param name="required">Whether or not the parameter is required.</param>
-        public AdaCommandParameterAttribute(int order, string name, string description, bool required)
+        public AdaMethodParameterAttribute(int order, string name, string description, bool required)
         {
             this.Order = order;
             this.Name = name;

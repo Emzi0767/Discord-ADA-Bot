@@ -14,8 +14,8 @@ namespace Emzi0767.Ada.Plugin.Tags
         public string Name { get { return "Tag Plugin Controls"; } }
 
         [AdaCommand("newtag", "Creates a new tag. This command can only be used by guild administrators.", Aliases = "mktag;definetag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
-        [AdaCommandParameter(0, "name", "Name of tag to create.", true)]
-        [AdaCommandParameter(1, "contents", "Contents of tag to create.", true, IsCatchAll = true)]
+        [AdaMethodParameter(0, "name", "Name of tag to create.", true)]
+        [AdaMethodParameter(1, "contents", "Contents of tag to create.", true, IsCatchAll = true)]
         public async Task DefineTag(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -35,8 +35,8 @@ namespace Emzi0767.Ada.Plugin.Tags
         }
 
         [AdaCommand("edittag", "Edits an existing tag. This command can only be used by guild administrators.", Aliases = "modtag;modifytag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
-        [AdaCommandParameter(0, "name", "Name of tag to edit.", true)]
-        [AdaCommandParameter(1, "contents", "New contents of the tag.", true, IsCatchAll = true)]
+        [AdaMethodParameter(0, "name", "Name of tag to edit.", true)]
+        [AdaMethodParameter(1, "contents", "New contents of the tag.", true, IsCatchAll = true)]
         public async Task EditTag(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -56,7 +56,7 @@ namespace Emzi0767.Ada.Plugin.Tags
         }
 
         [AdaCommand("removetag", "Removes an existing tag. This command can only be used by guild administrators.", Aliases = "rmtag;deletetag;deltag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
-        [AdaCommandParameter(0, "name", "Name of tag to edit.", true)]
+        [AdaMethodParameter(0, "name", "Name of tag to edit.", true)]
         public async Task RemoveTag(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -75,7 +75,7 @@ namespace Emzi0767.Ada.Plugin.Tags
         }
 
         [AdaCommand("tag", "Displays contents of a specified tag.", CheckPermissions = false)]
-        [AdaCommandParameter(0, "name", "Name of tag to edit.", true)]
+        [AdaMethodParameter(0, "name", "Name of tag to edit.", true)]
         public async Task ShowTag(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -93,7 +93,7 @@ namespace Emzi0767.Ada.Plugin.Tags
         }
 
         [AdaCommand("dumptag", "Displays raw contents of a specified tag.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
-        [AdaCommandParameter(0, "name", "Name of tag to edit.", true)]
+        [AdaMethodParameter(0, "name", "Name of tag to edit.", true)]
         public async Task DumpTag(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;

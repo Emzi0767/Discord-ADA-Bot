@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace Emzi0767.Ada.Commands
     /// </summary>
     public class AdaCommandManager
     {
+        internal AdaParameterParser ParameterParser { get; private set; }
         private Dictionary<string, AdaCommand> RegisteredCommands { get; set; }
         private Dictionary<string, IAdaPermissionChecker> RegisteredCheckers { get; set; }
         public int CommandCount { get { return this.GetCommands().Count(); } }
@@ -28,6 +30,7 @@ namespace Emzi0767.Ada.Commands
         internal void Initialize()
         {
             L.W("ADA CMD", "Initializing commands");
+            this.ParameterParser = new AdaParameterParser();
             this.RegisterCheckers();
             this.RegisterCommands();
             this.InitCommands();
@@ -90,7 +93,7 @@ namespace Emzi0767.Ada.Commands
             var ts = @as.SelectMany(xa => xa.DefinedTypes);
             var ht = typeof(IAdaCommandModule);
             var ct = typeof(AdaCommandAttribute);
-            var pt = typeof(AdaCommandParameterAttribute);
+            var pt = typeof(AdaMethodParameterAttribute);
             foreach (var t in ts)
             {
                 if (!ht.IsAssignableFrom(t.AsType()) || !t.IsClass || t.IsAbstract)
@@ -104,13 +107,48 @@ namespace Emzi0767.Ada.Commands
                     if (xct == null)
                         continue;
 
-                    var xps = m.GetCustomAttributes<AdaCommandParameterAttribute>().ToArray();
+                    var prs = m.GetParameters();
+                    var xps = m.GetCustomAttributes<AdaMethodParameterAttribute>().ToArray();
+                    if (prs.Length > 1 && xps.Length > 0)
+                    {
+                        L.W("ADA CMD", "Command '{0}' has invalid parameter specification, skipping", xct.Name);
+                        continue;
+                    }
+
                     var ats = new List<AdaCommandParameter>();
-                    foreach (var xp in xps)
-                        ats.Add(new AdaCommandParameter(xp.Order, xp.Name, xp.Description, xp.IsRequired, xp.IsCatchAll));
+                    if (xps.Length > 0)
+                    {
+                        foreach (var xp in xps)
+                            ats.Add(new AdaCommandParameter(xp.Order, xp.Name, xp.Description, xp.IsRequired, xp.IsCatchAll, false));
+                    }
+                    else if (prs.Length > 1)
+                    {
+                        var prn = 0;
+                        foreach (var prm in prs.Skip(1))
+                        {
+                            var pmi = prm.GetCustomAttribute<AdaArgumentParameterAttribute>();
+                            var isp = prm.GetCustomAttribute<ParamArrayAttribute>();
+
+                            var all = false; // catchall
+                            if (isp != null)
+                                all = true;
+
+                            if (pmi == null)
+                                pmi = new AdaArgumentParameterAttribute("UNSPECIFIED.", true);
+
+                            ats.Add(new AdaCommandParameter(prn++, prm.Name, pmi.Description, pmi.IsRequired, all, true) { ParameterType = prm.ParameterType });
+                        }
+                    }
+                    
+                    var prms = m.GetParameters();
+                    var args = new ParameterExpression[prms.Length];
+                    var i = 0;
+                    foreach (var prm in prms)
+                        args[i++] = Expression.Parameter(prm.ParameterType, prm.Name);
+                    var func = Expression.Lambda(Expression.Call(Expression.Constant(ch), m, args), args).Compile();
 
                     var aliases = xct.Aliases != null ? xct.Aliases.Split(';') : new string[] { };
-                    var cmd = new AdaCommand(xct.Name, aliases, xct.Description, xct.CheckPermissions && this.RegisteredCheckers.ContainsKey(xct.CheckerId) ? this.RegisteredCheckers[xct.CheckerId] : null, m, ch, xct.RequiredPermission, ats);
+                    var cmd = new AdaCommand(xct.Name, aliases, xct.Description, xct.CheckPermissions && this.RegisteredCheckers.ContainsKey(xct.CheckerId) ? this.RegisteredCheckers[xct.CheckerId] : null, func, ch, xct.RequiredPermission, ats);
                     var names = new string[1 + aliases.Length];
                     names[0] = cmd.Name;
                     if (aliases.Length > 0)

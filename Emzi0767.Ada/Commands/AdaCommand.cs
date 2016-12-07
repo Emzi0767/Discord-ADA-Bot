@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq.Expressions;
-using System.Reflection;
+using System.Linq;
 using System.Threading.Tasks;
 using Emzi0767.Ada.Commands.Permissions;
 
@@ -40,14 +39,9 @@ namespace Emzi0767.Ada.Commands
         internal IAdaPermissionChecker Checker { get; private set; }
 
         /// <summary>
-        /// Gets the method executed when the command is called.
-        /// </summary>
-        internal MethodInfo Method { get; private set; }
-
-        /// <summary>
         /// Gets the function to execute when this command is executed.
         /// </summary>
-        internal Func<AdaCommandContext, Task> Function { get; private set; }
+        internal Delegate Function { get; private set; }
 
         /// <summary>
         /// Gets the command's registering module.
@@ -69,21 +63,16 @@ namespace Emzi0767.Ada.Commands
         /// <param name="method">Method executed when command is called.</param>
         /// <param name="handler">Command's registering handler.</param>
         /// <param name="permission">Command's required permission.</param>
-        public AdaCommand(string name, string[] aliases, string description, IAdaPermissionChecker checker, MethodInfo method, IAdaCommandModule module, AdaPermission permission, IList<AdaCommandParameter> @params)
+        public AdaCommand(string name, string[] aliases, string description, IAdaPermissionChecker checker, Delegate function, IAdaCommandModule module, AdaPermission permission, IList<AdaCommandParameter> @params)
         {
             this.Name = name;
             this.Aliases = new ReadOnlyCollection<string>(aliases);
             this.Description = description;
             this.Checker = checker;
-            this.Method = method;
+            this.Function = function;
             this.Module = module;
             this.RequiredPermission = permission;
             this.Parameters = new ReadOnlyCollection<AdaCommandParameter>(@params);
-
-            var mtd = method;
-            var mtp = Expression.Parameter(typeof(AdaCommandContext));
-            var fn = Expression.Lambda<Func<AdaCommandContext, Task>>(Expression.Call(Expression.Constant(module), mtd, mtp), mtp).Compile();
-            this.Function = fn;
         }
 
         internal async Task Execute(AdaCommandContext context)
@@ -95,9 +84,50 @@ namespace Emzi0767.Ada.Commands
             else
                 canrun = this.Checker.CanRun(this, context.User, context.Message, context.Channel, context.Guild, out error);
             if (canrun)
-                await this.Function(context);
+                await (Task)this.Function.DynamicInvoke(PrepareArguments(context));
             else
                 throw new UnauthorizedAccessException(error);
+        }
+
+        private object[] PrepareArguments(AdaCommandContext ctx)
+        {
+            var prms = this.Parameters.Where(xp => xp.IsFunctionArgument).OrderBy(xp => xp.Order);
+            var args = new object[prms.Count() + 1];
+            args[0] = ctx;
+
+            foreach (var prm in prms)
+            {
+                if (prm.IsCatchAll)
+                {
+                    if (!prm.ParameterType.IsArray)
+                        throw new InvalidOperationException("Parameter is catchall but not an array.");
+
+                    var ags = ctx.RawArguments
+                        .Skip(prm.Order)
+                        .Select(xa => AdaBotCore.CommandManager.ParameterParser.Parse(ctx, xa, prm.ParameterType.GetElementType()))
+                        .ToArray();
+                    var agt = Array.CreateInstance(prm.ParameterType.GetElementType(), ags.Length);
+                    Array.Copy(ags, agt, agt.Length);
+                    args[prm.Order + 1] = agt;
+                    break;
+                }
+                else
+                {
+                    if (prm.ParameterType.IsArray)
+                        throw new InvalidOperationException("Parameter is not catchall but an array.");
+
+                    if (prm.IsRequired && ctx.RawArguments.Count < prm.Order + 1)
+                        throw new ArgumentException(string.Concat("Parameter ", prm.Name, " is required."));
+                    else if (!prm.IsRequired && ctx.RawArguments.Count < prm.Order + 1)
+                        break;
+
+                    var arg = ctx.RawArguments[prm.Order];
+                    var val = AdaBotCore.CommandManager.ParameterParser.Parse(ctx, arg, prm.ParameterType);
+                    args[prm.Order + 1] = val;
+                }
+            }
+
+            return args;
         }
 
         public override bool Equals(object obj)
