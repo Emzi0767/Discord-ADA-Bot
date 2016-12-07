@@ -15,57 +15,51 @@ namespace Emzi0767.Ada.Plugin.Feedle
         public string Name { get { return "ADA RSS Commands"; } }
 
         [AdaCommand("addrss", "Adds an RSS feed to a specified channel. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
-        [AdaMethodParameter(0, "channel", "Mention of a channel to add the feed to.", true)]
-        [AdaMethodParameter(1, "url", "URL of the RSS feed.", true)]
-        [AdaMethodParameter(2, "tag", "Tag of the feed to use as title prefix.", false)]
-        public async Task AddRss(AdaCommandContext ctx)
+        public async Task AddRss(AdaCommandContext ctx,
+            [AdaArgumentParameter("Mention of the channel to add the feed to.", true)] ITextChannel channel,
+            [AdaArgumentParameter("URL of the RSS feed.", true)] string url,
+            [AdaArgumentParameter("Tag of the feed to use as title prefix.", false)] string tag)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            if (msg.MentionedChannelIds.Count == 0)
-                throw new ArgumentException("You need to mention a channel you want to add a feed to.");
-            var chf = msg.MentionedChannelIds.FirstOrDefault();
-            var chx = await gld.GetChannelAsync(chf) as SocketTextChannel;
-            var url = ctx.RawArguments[1];
-            var tag = ctx.RawArguments.Count > 2 ? ctx.RawArguments[2] : null;
+            var chf = channel as SocketTextChannel;
+            if (chf == null)
+                throw new ArgumentException("Invalid channel specified.");
 
-            FeedlePlugin.Instance.AddFeed(new Uri(url), chf, tag);
+            FeedlePlugin.Instance.AddFeed(new Uri(url), chf.Id, tag);
             var embed = this.PrepareEmbed("Success", "Feed was added successfully.", EmbedType.Success);
             embed.AddField(x =>
             {
                 x.IsInline = false;
                 x.Name = "Details";
-                x.Value = string.Concat("Feed pointing to <", url, ">", tag != null ? string.Concat(" and **", tag, "** tag") : "", " was added to ", chx.Mention, ".");
+                x.Value = string.Concat("Feed pointing to <", url, ">", tag != null ? string.Concat(" and **", tag, "** tag") : "", " was added to ", chf.Mention, ".");
             });
             await chn.SendMessageAsync("", false, embed);
         }
 
         [AdaCommand("rmrss", "Removes an RSS feed from a specified channel. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
-        [AdaMethodParameter(0, "channel", "Mention of a channel to remove the feed from.", true)]
-        [AdaMethodParameter(1, "url", "URL of the RSS feed.", true)]
-        [AdaMethodParameter(2, "tag", "Tag used as the feed's title prefix.", false)]
-        public async Task RemoveRss(AdaCommandContext ctx)
+        public async Task RemoveRss(AdaCommandContext ctx,
+            [AdaArgumentParameter("Mention of the channel to remove the feed from.", true)] ITextChannel channel,
+            [AdaArgumentParameter("URL of the RSS feed.", true)] string url,
+            [AdaArgumentParameter("Tag of the feed to use as title prefix.", false)] string tag)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            if (msg.MentionedChannelIds.Count == 0)
-                throw new ArgumentException("You need to mention a channel you want to remove a feed from.");
-            var chf = msg.MentionedChannelIds.FirstOrDefault();
-            var chx = await gld.GetChannelAsync(chf) as SocketTextChannel;
-            var url = ctx.RawArguments[1];
-            var tag = ctx.RawArguments.Count > 2 ? ctx.RawArguments[2] : null;
+            var chf = channel as SocketTextChannel;
+            if (chf == null)
+                throw new ArgumentException("Invalid channel specified.");
 
-            FeedlePlugin.Instance.RemoveFeed(new Uri(url), chf, tag);
+            FeedlePlugin.Instance.RemoveFeed(new Uri(url), chf.Id, tag);
             var embed = this.PrepareEmbed("Success", "Feed was removed successfully.", EmbedType.Success);
             embed.AddField(x =>
             {
                 x.IsInline = false;
                 x.Name = "Details";
-                x.Value = string.Concat("Feed pointing to <", url, ">", tag != null ? string.Concat(" and **", tag, "** tag") : "", " was removed from ", chx.Mention, ".");
+                x.Value = string.Concat("Feed pointing to <", url, ">", tag != null ? string.Concat(" and **", tag, "** tag") : "", " was removed from ", chf.Mention, ".");
             });
             await chn.SendMessageAsync("", false, embed);
         }

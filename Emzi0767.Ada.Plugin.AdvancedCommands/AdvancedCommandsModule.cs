@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Drawing;
-//using System.Drawing.Drawing2D;
-//using System.Drawing.Imaging;
-//using System.IO;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +13,8 @@ using Emzi0767.Ada.Attributes;
 using Emzi0767.Ada.Commands;
 using Emzi0767.Ada.Commands.Permissions;
 using Markov;
-//using d = System.Drawing;
-//using s = Discord;
+using d = System.Drawing;
+using s = Discord;
 
 namespace Emzi0767.Ada.Plugin.AdvancedCommands
 {
@@ -24,14 +24,15 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
 
         [AdaCommand("colorme", "Sets your own color. This command can be disabled by guild administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
         [AdaMethodParameter(0, "color", "Color to set, in RRGGBB format.", true)]
-        public async Task SetColor(AdaCommandContext ctx)
+        public async Task SetColor(AdaCommandContext ctx,
+            [AdaArgumentParameter("Color in RRGGBB format.", true)] string color)
         {
             var gld = ctx.Guild as SocketGuild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            var clr = Convert.ToUInt32(ctx.RawArguments[0], 16);
+            var clr = Convert.ToUInt32(color, 16);
             var url = gld.Roles.FirstOrDefault(xr => xr.Name == usr.Id.ToString()) as IRole;
             if (url == null)
             {
@@ -79,8 +80,8 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
         }
 
         [AdaCommand("asciitobase64", "Converts an ASCII string to a Base64 string. This command can be disabled by guild administrators.", Aliases = "ascii2base64;ascii2b64;2b64;b64;base64;tobase64;2base64", CheckerId = "ACPChecker", CheckPermissions = true)]
-        [AdaMethodParameter(0, "ascii text", "ASCII text to convert to Base64.", true, IsCatchAll = true)]
-        public async Task AsciiToBase64(AdaCommandContext ctx)
+        public async Task AsciiToBase64(AdaCommandContext ctx,
+            [AdaArgumentParameter("ASCII text to convert to Base64.", true)] params string[] ascii_text)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
@@ -88,7 +89,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             var usr = ctx.User;
 
             var utf8 = new UTF8Encoding(false);
-            var dat = utf8.GetBytes(string.Join(" ", ctx.RawArguments));
+            var dat = utf8.GetBytes(string.Join(" ", ascii_text));
             var b64 = Convert.ToBase64String(dat);
 
             var embed = this.PrepareEmbed("ASCII to Base64", string.Concat(usr.Mention, ": ", b64), EmbedType.Info);
@@ -96,8 +97,8 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
         }
 
         [AdaCommand("base64toascii", "Converts a Base64 string to an ASCII string. This command can be disabled by guild administrators.", Aliases = "base642ascii;b642ascii;2ascii;ascii;toascii", CheckerId = "ACPChecker", CheckPermissions = true)]
-        [AdaMethodParameter(0, "base64 text", "Base64 text to convert to ASCII.", true, IsCatchAll = true)]
-        public async Task Base64ToAscii(AdaCommandContext ctx)
+        public async Task Base64ToAscii(AdaCommandContext ctx,
+            [AdaArgumentParameter("Base64 text to convert to ASCII.", true)] params string[] base64_text)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
@@ -105,43 +106,43 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             var usr = ctx.User;
 
             var utf8 = new UTF8Encoding(false);
-            var dat = Convert.FromBase64String(string.Join(" ", ctx.RawArguments));
+            var dat = Convert.FromBase64String(string.Join(" ", base64_text));
             var ascii = utf8.GetString(dat);
 
             var embed = this.PrepareEmbed("Base64 to ASCII", string.Concat(usr.Mention, ": ", ascii), EmbedType.Info);
             await chn.SendMessageAsync("", false, embed);
         }
 
-        //[AdaCommand("color", "Creates a colored square, used for color previewing. This command can be disabled by guild administrators.", Aliases = "clr;colour;colorsquare;coloursquare;clrsq", CheckerId = "ACPChecker", CheckPermissions = true)]
-        //[AdaCommandParameter(0, "color", "Color in AARRGGBB format.", true)]
-        //public async Task ColorSquare(AdaCommandContext ctx)
-        //{
-        //    var gld = ctx.Guild;
-        //    var chn = ctx.Channel;
-        //    var msg = ctx.Message;
-        //    var usr = ctx.User;
-        //
-        //    using (var ms = new MemoryStream())
-        //    using (var bmp = new Bitmap(64, 64, PixelFormat.Format32bppPArgb))
-        //    using (var g = Graphics.FromImage(bmp))
-        //    {
-        //        g.CompositingMode = CompositingMode.SourceOver;
-        //        g.CompositingQuality = CompositingQuality.HighSpeed;
-        //
-        //        var cli = Convert.ToInt32(ctx.RawArguments[0], 16);
-        //        var clr = d.Color.FromArgb(cli);
-        //        var csb = new SolidBrush(clr);
-        //
-        //        g.Clear(d.Color.Transparent);
-        //        g.FillRectangle(csb, new Rectangle(Point.Empty, bmp.Size));
-        //        g.Flush();
-        //
-        //        bmp.Save(ms, ImageFormat.Png);
-        //        ms.Seek(0, SeekOrigin.Begin);
-        //
-        //        await chn.SendFileAsync(ms, "color_square.png", string.Concat(usr.Mention, ", here's a ", cli.ToString("X8"), " square."));
-        //    }
-        //}
+        [AdaCommand("color", "Creates a colored square, used for color previewing. This command can be disabled by guild administrators.", Aliases = "clr;colour;colorsquare;coloursquare;clrsq", CheckerId = "ACPChecker", CheckPermissions = true)]
+        public async Task ColorSquare(AdaCommandContext ctx,
+            [AdaArgumentParameter("Color in AARRGGBB format.", true)] string color)
+        {
+            var gld = ctx.Guild;
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+            var usr = ctx.User;
+        
+            using (var ms = new MemoryStream())
+            using (var bmp = new Bitmap(64, 64, PixelFormat.Format32bppPArgb))
+            using (var g = Graphics.FromImage(bmp))
+            {
+                g.CompositingMode = CompositingMode.SourceOver;
+                g.CompositingQuality = CompositingQuality.HighSpeed;
+        
+                var cli = Convert.ToInt32(color, 16);
+                var clr = d.Color.FromArgb(cli);
+                var csb = new SolidBrush(clr);
+        
+                g.Clear(d.Color.Transparent);
+                g.FillRectangle(csb, new Rectangle(Point.Empty, bmp.Size));
+                g.Flush();
+        
+                bmp.Save(ms, ImageFormat.Png);
+                ms.Seek(0, SeekOrigin.Begin);
+        
+                await chn.SendFileAsync(ms, "color_square.png", string.Concat(usr.Mention, ", here's a ", cli.ToString("X8"), " square."));
+            }
+        }
 
         [AdaCommand("markov", "Creates a markov chain sentence out of messages from specified source. This command can be disabled by guild administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
         [AdaMethodParameter(0, "channels", "Channels to create the chain from. Specify single if not mentioning roles or users.", true, IsCatchAll = true)]
@@ -246,16 +247,16 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
         }
 
         [AdaCommand("enableadvancedcommand", "Enables an Advanced Commands command. This command can only be used by guild administrators.", Aliases = "enableac;enableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
-        [AdaMethodParameter(0, "commands", "Commands to enable. Consult adahelp for list of available commands to enable.", true, IsCatchAll = true)]
-        public async Task EnableAdvancedCommand(AdaCommandContext ctx)
+        public async Task EnableAdvancedCommand(AdaCommandContext ctx,
+            [AdaArgumentParameter("Commands to enable. Consult adahelp for list of commands that can be enabled.", true)] params string[] commands)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            var cmds = ctx.RawArguments;
-            if (cmds.Count == 0)
+            var cmds = commands;
+            if (cmds.Length == 0)
                 throw new ArgumentException("You need to list commands you want to enable.");
             AdvancedCommandsPlugin.Instance.SetEnabled(cmds.ToArray(), gld.Id, true);
 
@@ -270,16 +271,16 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
         }
 
         [AdaCommand("disableadvancedcommand", "Disables an Advanced Commands command. This command can only be used by guild administrators.", Aliases = "disableac;disableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
-        [AdaMethodParameter(0, "commands", "Commands to disable. Consult adahelp for list of available commands to disable.", true, IsCatchAll = true)]
-        public async Task DisableAdvancedCommand(AdaCommandContext ctx)
+        public async Task DisableAdvancedCommand(AdaCommandContext ctx,
+            [AdaArgumentParameter("Commands to disable. Consult adahelp for list of commands that can be disabled.", true)] params string[] commands)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
 
-            var cmds = ctx.RawArguments;
-            if (cmds.Count == 0)
+            var cmds = commands;
+            if (cmds.Length == 0)
                 throw new ArgumentException("You need to list commands you want to disable.");
             AdvancedCommandsPlugin.Instance.SetEnabled(cmds.ToArray(), gld.Id, false);
 
@@ -299,23 +300,23 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             switch (type)
             {
                 case EmbedType.Info:
-                    embed.Color = new Color(0, 127, 255);
+                    embed.Color = new s.Color(0, 127, 255);
                     break;
 
                 case EmbedType.Success:
-                    embed.Color = new Color(127, 255, 0);
+                    embed.Color = new s.Color(127, 255, 0);
                     break;
 
                 case EmbedType.Warning:
-                    embed.Color = new Color(255, 255, 0);
+                    embed.Color = new s.Color(255, 255, 0);
                     break;
 
                 case EmbedType.Error:
-                    embed.Color = new Color(255, 127, 0);
+                    embed.Color = new s.Color(255, 127, 0);
                     break;
 
                 default:
-                    embed.Color = new Color(255, 255, 255);
+                    embed.Color = new s.Color(255, 255, 255);
                     break;
             }
             embed.ThumbnailUrl = AdaBotCore.AdaClient.CurrentUser.AvatarUrl;

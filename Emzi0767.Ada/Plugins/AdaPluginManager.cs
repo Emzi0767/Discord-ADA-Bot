@@ -31,6 +31,18 @@ namespace Emzi0767.Ada.Plugins
             this.MainAssembly = a;
             var l = a.Location;
             l = Path.GetDirectoryName(l);
+
+            var r = Path.Combine(l, "references");
+            if (Directory.Exists(r))
+            {
+                var x = Directory.GetFiles(r, "*.dll", SearchOption.TopDirectoryOnly);
+                foreach (var xx in x)
+                {
+                    L.W("ADA PLG", "Loaded reference file '{0}'", xx);
+                    var xa = AssemblyLoadContext.Default.LoadFromAssemblyPath(xx);
+                }
+            }
+
             l = Path.Combine(l, "plugins");
             if (Directory.Exists(l))
             {

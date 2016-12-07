@@ -14,16 +14,16 @@ namespace Emzi0767.Ada.Plugin.Tags
         public string Name { get { return "Tag Plugin Controls"; } }
 
         [AdaCommand("newtag", "Creates a new tag. This command can only be used by guild administrators.", Aliases = "mktag;definetag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
-        [AdaMethodParameter(0, "name", "Name of tag to create.", true)]
-        [AdaMethodParameter(1, "contents", "Contents of tag to create.", true, IsCatchAll = true)]
-        public async Task DefineTag(AdaCommandContext ctx)
+        public async Task DefineTag(AdaCommandContext ctx,
+            [AdaArgumentParameter("Name of tag to create.", true)] string name, 
+            [AdaArgumentParameter("Contents of tag to create.", true)] params string[] contents)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            var nam = ctx.RawArguments[0];
-            var tag = string.Join(" ", ctx.RawArguments.Skip(1));
+            var nam = name;
+            var tag = string.Join(" ", contents);
             if (string.IsNullOrWhiteSpace(nam) || string.IsNullOrWhiteSpace(tag))
                 throw new ArgumentException("Tag needs to have a name and contents.");
             var wrk = TagPlugin.Instance.AddTag(chn.Id, nam, tag);
@@ -35,16 +35,16 @@ namespace Emzi0767.Ada.Plugin.Tags
         }
 
         [AdaCommand("edittag", "Edits an existing tag. This command can only be used by guild administrators.", Aliases = "modtag;modifytag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
-        [AdaMethodParameter(0, "name", "Name of tag to edit.", true)]
-        [AdaMethodParameter(1, "contents", "New contents of the tag.", true, IsCatchAll = true)]
-        public async Task EditTag(AdaCommandContext ctx)
+        public async Task EditTag(AdaCommandContext ctx,
+            [AdaArgumentParameter("Name of tag to edit.", true)] string name,
+            [AdaArgumentParameter("New contents of the tag.", true)] params string[] contents)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            var nam = ctx.RawArguments[0];
-            var tag = string.Join(" ", ctx.RawArguments.Skip(1));
+            var nam = name;
+            var tag = string.Join(" ", contents);
             if (string.IsNullOrWhiteSpace(nam) || string.IsNullOrWhiteSpace(tag))
                 throw new ArgumentException("Tag needs to have a name and contents.");
             var wrk = TagPlugin.Instance.EditTag(chn.Id, nam, tag);
@@ -56,14 +56,14 @@ namespace Emzi0767.Ada.Plugin.Tags
         }
 
         [AdaCommand("removetag", "Removes an existing tag. This command can only be used by guild administrators.", Aliases = "rmtag;deletetag;deltag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
-        [AdaMethodParameter(0, "name", "Name of tag to edit.", true)]
-        public async Task RemoveTag(AdaCommandContext ctx)
+        public async Task RemoveTag(AdaCommandContext ctx,
+            [AdaArgumentParameter("Name of tag to delete.", true)] params string[] name)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            var nam = string.Join(" ", ctx.RawArguments);
+            var nam = string.Join(" ", name);
             if (string.IsNullOrWhiteSpace(nam))
                 throw new ArgumentException("Need to specify a tag to remove.");
             var wrk = TagPlugin.Instance.DeleteTag(chn.Id, nam);
@@ -75,14 +75,14 @@ namespace Emzi0767.Ada.Plugin.Tags
         }
 
         [AdaCommand("tag", "Displays contents of a specified tag.", CheckPermissions = false)]
-        [AdaMethodParameter(0, "name", "Name of tag to edit.", true)]
-        public async Task ShowTag(AdaCommandContext ctx)
+        public async Task ShowTag(AdaCommandContext ctx,
+            [AdaArgumentParameter("Name of tag to display.", true)] params string[] name)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            var nam = string.Join(" ", ctx.RawArguments);
+            var nam = string.Join(" ", name);
             if (string.IsNullOrWhiteSpace(nam))
                 throw new ArgumentException("Need to specify a tag to display.");
             var tag = TagPlugin.Instance.GetTag(chn.Id, nam);
@@ -93,14 +93,14 @@ namespace Emzi0767.Ada.Plugin.Tags
         }
 
         [AdaCommand("dumptag", "Displays raw contents of a specified tag.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
-        [AdaMethodParameter(0, "name", "Name of tag to edit.", true)]
-        public async Task DumpTag(AdaCommandContext ctx)
+        public async Task DumpTag(AdaCommandContext ctx,
+            [AdaArgumentParameter("Name of tag to dump.", true)] params string[] name)
         {
             var gld = ctx.Guild;
             var chn = ctx.Channel;
             var msg = ctx.Message;
 
-            var nam = string.Join(" ", ctx.RawArguments);
+            var nam = string.Join(" ", name);
             if (string.IsNullOrWhiteSpace(nam))
                 throw new ArgumentException("Need to specify a tag to display.");
             var tag = TagPlugin.Instance.GetTag(chn.Id, nam);
