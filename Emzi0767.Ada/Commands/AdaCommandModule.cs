@@ -79,23 +79,12 @@ namespace Emzi0767.Ada.Commands
             var chn = ctx.Channel;
             var msg = ctx.Message;
             var usr = ctx.User;
-
-            var grp = (IRole)null;
-            if (msg.MentionedRoleIds.Count > 0)
-            {
-                grp = gld.GetRole(msg.MentionedRoleIds.First());
-            }
-            else
-            {
-                var nam = ctx.RawArguments[0];
-                grp = gld.Roles.FirstOrDefault(xr => xr.Name == nam);
-            }
+            
+            var grp = role;
             if (grp == null)
-                throw new ArgumentException("You must supply a role.");
-
-            var raw = ctx.RawArguments[0];
-            var par = ctx.RawArguments
-                .Skip(1)
+                throw new ArgumentException("You must specify a role you want to modify.");
+            
+            var par = properties
                 .Select(xrs => xrs.Split('='))
                 .ToDictionary(xrs => xrs[0], xrs => xrs[1]);
 
@@ -516,7 +505,7 @@ namespace Emzi0767.Ada.Commands
             {
                 x.IsInline = true;
                 x.Name = "Nickname";
-                x.Value = usr.Nickname ?? string.Concat("**", usr.Username, "**#", usr.DiscriminatorValue);
+                x.Value = usr.Nickname ?? usr.Username;
             });
 
             embed.AddField(x =>
