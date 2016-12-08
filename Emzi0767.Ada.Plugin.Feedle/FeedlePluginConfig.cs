@@ -37,6 +37,7 @@ namespace Emzi0767.Ada.Plugin.Feedle
                 var uri_ = (string)xjo["uri"];
                 var uri = new Uri(uri_);
                 var chn = (ulong)xjo["channel"];
+                var ini = xjo["initialized"] != null ? (bool)xjo["initialized"] : true;
                 var ris = (JArray)xjo["recent"];
                 this.Feeds.Add(new Feed(uri, chn, tag) { RecentUris = ris.Select(xjv => (string)xjv).ToList() });
             }
@@ -52,6 +53,7 @@ namespace Emzi0767.Ada.Plugin.Feedle
                 xjo.Add("tag", feed.Tag);
                 xjo.Add("uri", feed.FeedUri.ToString());
                 xjo.Add("channel", feed.ChannelId);
+                xjo.Add("initialized", feed.Initialized);
                 xjo.Add("recent", new JArray(feed.RecentUris));
                 ja.Add(xjo);
             }

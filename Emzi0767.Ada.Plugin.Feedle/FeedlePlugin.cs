@@ -116,10 +116,11 @@ namespace Emzi0767.Ada.Plugin.Feedle
                         embed.Timestamp = new DateTimeOffset(itd.ToUniversalTime());
                         embed.Color = new Color(255, 127, 0);
                         embed.ThumbnailUrl = thm ?? AdaBotCore.AdaClient.CurrentUser.AvatarUrl;
-                        AdaBotCore.AdaClient.SendEmbed(embed, feed.ChannelId);
+                        if (feed.Initialized) AdaBotCore.AdaClient.SendEmbed(embed, feed.ChannelId);
                     }
                 }
 
+                feed.Initialized = true;
                 if (changed)
                     feed.RecentUris = rec;
             }
