@@ -25,7 +25,7 @@ namespace Emzi0767.Ada.Plugin.Feedle
             L.W("ADA RSS", "Initializing Feedle");
             Instance = this;
             this.conf = new FeedlePluginConfig();
-            var tmr = new Timer(new TimerCallback(FeedleTick), null, 0, 300000);
+            var tmr = new Timer(new TimerCallback(FeedleTick), null, 5000, 300000);
             L.W("ADA RSS", "Done");
         }
 
