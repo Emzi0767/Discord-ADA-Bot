@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Discord;
 
 // inspired by Discord.Net
@@ -33,7 +34,7 @@ namespace Emzi0767.Ada.Commands
             this.Parsers[typeof(decimal)] = (TryParseDelegate<decimal>)decimal.TryParse;
             this.Parsers[typeof(DateTime)] = (TryParseDelegate<DateTime>)DateTime.TryParse;
             this.Parsers[typeof(DateTimeOffset)] = (TryParseDelegate<DateTimeOffset>)DateTimeOffset.TryParse;
-            this.Parsers[typeof(TimeSpan)] = (TryParseDelegate<TimeSpan>)TimeSpan.TryParse;
+            this.Parsers[typeof(TimeSpan)] = (TryParseDelegate<TimeSpan>)TryParseTimeSpan;
             this.Parsers[typeof(char)] = (TryParseDelegate<char>)char.TryParse;
             this.Parsers[typeof(string)] = (TryParseDelegate<string>)TryParseString;
             this.Parsers[typeof(IUser)] = (ContextParseDelegate<IUser>)TryParseUser;
@@ -90,6 +91,62 @@ namespace Emzi0767.Ada.Commands
         private static bool TryParseString(string value, out string result)
         {
             result = value;
+            return true;
+        }
+
+        private static bool TryParseTimeSpan(string value, out TimeSpan result)
+        {
+            if (value == "0")
+            {
+                result = TimeSpan.Zero;
+                return true;
+            }
+
+            if (TimeSpan.TryParse(value, out result))
+                return true;
+
+            var reg = new Regex(@"^(?<days>\d+d)?(?<hours>\d{1,2}h)?(?<minutes>\d{1,2}m)?(?<seconds>\d{1,2}s)?$", RegexOptions.Compiled);
+            var gps = new string[] { "days", "hours", "minutes", "seconds" };
+            var mtc = reg.Match(value);
+            if (!mtc.Success)
+            {
+                result = TimeSpan.Zero;
+                return false;
+            }
+
+            var d = 0;
+            var h = 0;
+            var m = 0;
+            var s = 0;
+            foreach (var gp in gps)
+            {
+                var val = 0;
+                var gpc = mtc.Groups[gp].Value;
+                if (string.IsNullOrWhiteSpace(gpc))
+                    continue;
+
+                var gpt = gpc.Last();
+                int.TryParse(gpc.Substring(0, gpc.Length - 1), out val);
+                switch (gpt)
+                {
+                    case 'd':
+                        d = val;
+                        break;
+
+                    case 'h':
+                        h = val;
+                        break;
+
+                    case 'm':
+                        m = val;
+                        break;
+
+                    case 's':
+                        s = val;
+                        break;
+                }
+            }
+            result = new TimeSpan(d, h, m, s);
             return true;
         }
 
