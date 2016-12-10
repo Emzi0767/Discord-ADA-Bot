@@ -13,7 +13,7 @@ namespace Emzi0767.Ada.Plugin.Tags
     {
         public string Name { get { return "Tag Plugin Controls"; } }
 
-        [AdaCommand("newtag", "Creates a new tag. This command can only be used by guild administrators.", Aliases = "mktag;definetag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [AdaCommand("newtag", "Creates a new tag.", Aliases = "mktag;definetag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public async Task DefineTag(AdaCommandContext ctx,
             [AdaArgumentParameter("Name of tag to create.", true)] string name, 
             [AdaArgumentParameter("Contents of tag to create.", true)] params string[] contents)
@@ -34,7 +34,7 @@ namespace Emzi0767.Ada.Plugin.Tags
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("edittag", "Edits an existing tag. This command can only be used by guild administrators.", Aliases = "modtag;modifytag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [AdaCommand("edittag", "Edits an existing tag.", Aliases = "modtag;modifytag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public async Task EditTag(AdaCommandContext ctx,
             [AdaArgumentParameter("Name of tag to edit.", true)] string name,
             [AdaArgumentParameter("New contents of the tag.", true)] params string[] contents)
@@ -55,7 +55,7 @@ namespace Emzi0767.Ada.Plugin.Tags
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("removetag", "Removes an existing tag. This command can only be used by guild administrators.", Aliases = "rmtag;deletetag;deltag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [AdaCommand("removetag", "Removes an existing tag.", Aliases = "rmtag;deletetag;deltag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public async Task RemoveTag(AdaCommandContext ctx,
             [AdaArgumentParameter("Name of tag to delete.", true)] params string[] name)
         {

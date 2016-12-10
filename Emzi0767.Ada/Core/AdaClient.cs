@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Audio;
 using Discord.WebSocket;
+using Emzi0767.Ada.Config;
 using Newtonsoft.Json.Linq;
 
 namespace Emzi0767.Ada.Core
@@ -15,6 +17,7 @@ namespace Emzi0767.Ada.Core
     public sealed class AdaClient
     {
         public IUser CurrentUser { get { return this.DiscordClient.CurrentUser; } }
+        public string Game { get; private set; }
         internal DiscordSocketClient DiscordClient { get; private set; }
         internal JObject ConfigJson { get; private set; }
         private Timer BanHammer { get; set; }
@@ -23,6 +26,7 @@ namespace Emzi0767.Ada.Core
         internal AdaClient()
         {
             L.W("ADA DSC", "Initializing Discord");
+            this.Game = "Banhammer 40,000";
             var dsc = new DiscordSocketConfig()
             {
                 LogLevel = Debugger.IsAttached ? LogSeverity.Debug : LogSeverity.Info,
@@ -163,13 +167,58 @@ namespace Emzi0767.Ada.Core
 
         private Task Client_Ready()
         {
-            this.BanHammer = new Timer(new TimerCallback(BanHammer_Tick), null, 0, 3600000);
+            this.BanHammer = new Timer(new TimerCallback(BanHammer_Tick), null, 0, 60000);
             return Task.CompletedTask;
         }
 
         private void BanHammer_Tick(object _)
         {
-            this.DiscordClient.SetGame("Banhammer 40,000").Wait();
+            var gconfs = AdaBotCore.ConfigManager != null ? AdaBotCore.ConfigManager.GetGuildConfigs() : new KeyValuePair<ulong, AdaGuildConfig>[0];
+            if (gconfs.Count() > 0)
+            {
+                var now = DateTime.UtcNow;
+                foreach (var kvp in gconfs.ToList())
+                {
+                    var gld = AdaBotCore.AdaClient.DiscordClient.GetGuild(kvp.Key) as SocketGuild;
+                    var mrl = kvp.Value.MuteRole != null ? gld.GetRole(kvp.Value.MuteRole.Value) : null;
+                    if (gld == null)
+                        continue;
+
+                    var done = new List<AdaModAction>();
+                    foreach (var ma in kvp.Value.ModActions)
+                    {
+                        if (ma.Until <= now)
+                        {
+                            if (ma.ActionType == AdaModActionType.Mute && mrl != null)
+                            {
+                                var usr = gld.GetUser(ma.UserId);
+                                if (usr == null)
+                                    continue;
+
+                                usr.RemoveRolesAsync(mrl).Wait();
+                                done.Add(ma);
+                            }
+                            else if (ma.ActionType == AdaModActionType.HardBan)
+                            {
+                                var ban = gld.GetBansAsync().GetAwaiter().GetResult().FirstOrDefault(xban => xban.User.Id == ma.UserId);
+                                if (ban == null)
+                                    continue;
+
+                                gld.RemoveBanAsync(ma.UserId).Wait();
+                                done.Add(ma);
+                            }
+                        }
+                    }
+
+                    foreach (var ma in done)
+                        kvp.Value.ModActions.Remove(ma);
+
+                    AdaBotCore.ConfigManager.SetGuildConfig(kvp.Key, kvp.Value);
+                }
+            }
+
+            if (this.CurrentUser.Game == null || this.CurrentUser.Game.Value.Name != this.Game)
+                this.DiscordClient.SetGame(this.Game).Wait();
             L.W("ADA DSC BH", "Ticked banhammer");
         }
     }

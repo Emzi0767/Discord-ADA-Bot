@@ -10,7 +10,7 @@ namespace Emzi0767.Ada.Plugin.Stallman
     {
         public string Name { get { return "GNU/Stallman Commands"; } }
 
-        [AdaCommand("stallmanenable", "Enables the GNU/Stallman plugin for this guild. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageGuild)]
+        [AdaCommand("stallmanenable", "Enables the GNU/Stallman plugin for this guild.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageGuild)]
         public async Task EnableStallman(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -21,7 +21,7 @@ namespace Emzi0767.Ada.Plugin.Stallman
             await ctx.Channel.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("stallmandisable", "Disables the GNU/Stallman plugin for this guild. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageGuild)]
+        [AdaCommand("stallmandisable", "Disables the GNU/Stallman plugin for this guild.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageGuild)]
         public async Task DisableStallman(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;

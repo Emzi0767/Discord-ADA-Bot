@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ext_lib", "ext_lib", "{0F2D9783-9522-4B08-A83A-1F930CEF10FB}"
-	ProjectSection(SolutionItems) = preProject
-		ext_lib\Emzi0767.Tools.MicroLogger.dll = ext_lib\Emzi0767.Tools.MicroLogger.dll
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample_configs", "sample_configs", "{061B5A91-5E15-403B-AD53-29EE5B2BDD89}"
 	ProjectSection(SolutionItems) = preProject

@@ -27,6 +27,15 @@ namespace Emzi0767.Ada.Config
             this.WriteConfigs();
         }
 
+        internal IEnumerable<KeyValuePair<ulong, AdaGuildConfig>> GetGuildConfigs()
+        {
+            if (this.GuildConfigs == null)
+                yield break;
+
+            foreach (var kvp in this.GuildConfigs)
+                yield return kvp;
+        }
+
         public AdaGuildConfig GetGuildConfig(ulong guild_id)
         {
             if (this.GuildConfigs.ContainsKey(guild_id))
@@ -55,6 +64,22 @@ namespace Emzi0767.Ada.Config
                 gcf.ModLogChannel = gconf["modlog"] != null ? (ulong?)gconf["modlog"] : null;
                 gcf.DeleteCommands = gconf["delete_commands"] != null ? (bool?)gconf["delete_commands"] : null;
                 gcf.CommandPrefix = gconf["command_prefix"] != null ? (string)gconf["command_prefix"] : null;
+                gcf.MuteRole = gconf["mute_role"] != null ? (ulong?)gconf["mute_role"] : null;
+                var jma = gconf["mod_actions"] != null ? (JArray)gconf["mod_actions"] : new JArray();
+                foreach (var xjma in jma)
+                {
+                    var xma = (JObject)xjma;
+                    var ma = new AdaModAction
+                    {
+                        ActionType = (AdaModActionType)(byte)xma["type"],
+                        Issued = (DateTime)xma["issued"],
+                        Issuer = (ulong)xma["issuer"],
+                        Reason = (string)xma["reason"],
+                        Until = (DateTime)xma["until"],
+                        UserId = (ulong)xma["user"]
+                    };
+                    gcf.ModActions.Add(ma);
+                }
 
                 this.GuildConfigs[guild] = gcf;
             }
@@ -114,6 +139,21 @@ namespace Emzi0767.Ada.Config
                     gconf.Add("delete_commands", kvp.Value.DeleteCommands);
                 if (!string.IsNullOrWhiteSpace(kvp.Value.CommandPrefix))
                     gconf.Add("command_prefix", kvp.Value.CommandPrefix);
+                if (kvp.Value.MuteRole != null)
+                    gconf.Add("mute_role", kvp.Value.MuteRole.Value);
+                var jma = new JArray();
+                foreach (var ma in kvp.Value.ModActions)
+                {
+                    var xjma = new JObject();
+                    xjma.Add("type", (byte)ma.ActionType);
+                    xjma.Add("issued", ma.Issued);
+                    xjma.Add("issuer", ma.Issuer);
+                    xjma.Add("reason", ma.Reason ?? string.Empty);
+                    xjma.Add("until", ma.Until);
+                    xjma.Add("user", ma.UserId);
+                    jma.Add(xjma);
+                }
+                gconf.Add("mod_actions", jma);
 
                 gconfs.Add(kvp.Key.ToString(), gconf);
             }

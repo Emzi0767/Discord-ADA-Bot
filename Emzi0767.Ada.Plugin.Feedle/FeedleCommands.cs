@@ -14,7 +14,7 @@ namespace Emzi0767.Ada.Plugin.Feedle
     {
         public string Name { get { return "ADA RSS Commands"; } }
 
-        [AdaCommand("addrss", "Adds an RSS feed to a specified channel. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("addrss", "Adds an RSS feed to a specified channel.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public async Task AddRss(AdaCommandContext ctx,
             [AdaArgumentParameter("Mention of the channel to add the feed to.", true)] ITextChannel channel,
             [AdaArgumentParameter("URL of the RSS feed.", true)] string url,
@@ -39,7 +39,7 @@ namespace Emzi0767.Ada.Plugin.Feedle
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("rmrss", "Removes an RSS feed from a specified channel. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("rmrss", "Removes an RSS feed from a specified channel.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public async Task RemoveRss(AdaCommandContext ctx,
             [AdaArgumentParameter("Mention of the channel to remove the feed from.", true)] ITextChannel channel,
             [AdaArgumentParameter("URL of the RSS feed.", true)] string url,
@@ -64,7 +64,7 @@ namespace Emzi0767.Ada.Plugin.Feedle
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("listrss", "Lists RSS feeds active in the current guild. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("listrss", "Lists RSS feeds active in the current guild.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public async Task ListRss(AdaCommandContext ctx)
         {
             var gld = ctx.Guild as SocketGuild;

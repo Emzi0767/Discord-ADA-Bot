@@ -8,6 +8,7 @@ using Discord;
 using Discord.WebSocket;
 using Emzi0767.Ada.Attributes;
 using Emzi0767.Ada.Commands.Permissions;
+using Emzi0767.Ada.Config;
 using Emzi0767.Ada.Extensions;
 using Microsoft.Extensions.PlatformAbstractions;
 
@@ -17,7 +18,8 @@ namespace Emzi0767.Ada.Commands
     {
         public string Name { get { return "ADA Core Commands"; } }
 
-        [AdaCommand("mkrole", "Creates a new role. This command can only be used by guild administrators.", Aliases = "makerole;createrole;mkgroup;makegroup;creategroup;gmk;gmake;gcreate", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        #region Role Manipulation
+        [AdaCommand("mkrole", "Creates a new role.", Aliases = "makerole;createrole;mkgroup;makegroup;creategroup;gmk;gmake;gcreate", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
         public async Task CreateRole(AdaCommandContext ctx,
             [AdaArgumentParameter("Name of the new role.", true)] string name)
         {
@@ -42,7 +44,7 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("rmrole", "Removes a role. This command can only be used by guild administrators.", Aliases = "removerole;deleterole;delrole;rmgroup;removegroup;deletegroup;delgroup;gdel;gdelete;grm;gremove", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommand("rmrole", "Removes a role.", Aliases = "removerole;deleterole;delrole;rmgroup;removegroup;deletegroup;delgroup;gdel;gdelete;grm;gremove", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
         public async Task DeleteRole(AdaCommandContext ctx,
             [AdaArgumentParameter("Name or mention of the role to delete.", true)] IRole role)
         {
@@ -70,7 +72,7 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("modrole", "Edits a role. This command can only be used by guild administrators.", Aliases = "modifyrole;editrole;modgroup;modifygroup;editgroup;gmod;gmodify;gedit", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommand("modrole", "Edits a role.", Aliases = "modifyrole;editrole;modgroup;modifygroup;editgroup;gmod;gmodify;gedit", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
         public async Task ModifyRole(AdaCommandContext ctx,
             [AdaArgumentParameter("Name or mention of the role to modify.", true)] IRole role,
             [AdaArgumentParameter("Properties to set. Format is property=value.", true)] params string[] properties)
@@ -122,7 +124,7 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("roleinfo", "Dumps all properties of a role. This command can only be used by guild administrators.", Aliases = "rinfo;dumprole;printrole;dumpgroup;printgroup;gdump", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommand("roleinfo", "Dumps all properties of a role.", Aliases = "rinfo;dumprole;printrole;dumpgroup;printgroup;gdump", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
         public async Task RoleInfo(AdaCommandContext ctx,
             [AdaArgumentParameter("Name or mention of the role to display.", true)] IRole role)
         {
@@ -231,7 +233,7 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("listroles", "Lists all roles on the server. This command can only be used by guild administrators.", Aliases = "lsroles;lsgroups;listgroups;glist;gls", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommand("listroles", "Lists all roles on the server.", Aliases = "lsroles;lsgroups;listgroups;glist;gls", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
         public async Task ListRoles(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -252,7 +254,7 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("roleadd", "Adds users to a role. This command can only be used by guild administrators.", Aliases = "groupadd;ugadd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommand("roleadd", "Adds users to a role.", Aliases = "groupadd;ugadd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
         public async Task RoleAdd(AdaCommandContext ctx,
             [AdaArgumentParameter("Name or mention of the role to add to.", true)] IRole role,
             [AdaArgumentParameter("Mentions of users to add tp the role.", true)] params IUser[] users)
@@ -293,7 +295,7 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("roleremove", "Removes users from a role. This command can only be used by guild administrators.", Aliases = "groupremove;ugremove;ugrm", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
+        [AdaCommand("roleremove", "Removes users from a role.", Aliases = "groupremove;ugremove;ugrm", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageRoles)]
         public async Task RoleRemove(AdaCommandContext ctx,
             [AdaArgumentParameter("Name or mention of the role to remove from.", true)] IRole role,
             [AdaArgumentParameter("Mentions of users to remove from the role.", true)] params IUser[] users)
@@ -333,7 +335,9 @@ namespace Emzi0767.Ada.Commands
             });
             await chn.SendMessageAsync("", false, embed);
         }
+        #endregion
 
+        #region User Management
         [AdaCommand("report", "Reports a user to guild moderators.", Aliases = "reportuser", CheckPermissions = false)]
         public async Task Report(AdaCommandContext ctx,
             [AdaArgumentParameter("User to report.", true)] IUser user,
@@ -370,7 +374,181 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed2);
         }
 
-        [AdaCommand("kick", "Kicks users. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
+        [AdaCommand("mute", "Mutes users.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
+        public async Task Mute(AdaCommandContext ctx,
+            [AdaArgumentParameter("Duration of the mute. Use 0 for permanent.", true)] TimeSpan duration,
+            [AdaArgumentParameter("Mentions of users to mute.", true)] params IUser[] users)
+        {
+            var gld = ctx.Guild;
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+            var usr = ctx.User;
+            
+            var gls = gld as SocketGuild;
+            var uss = users.Cast<SocketGuildUser>();
+            if (uss.Count() < 1)
+                throw new ArgumentException("You must mention users you want to mute.");
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+            var mrl = cnf != null && cnf.MuteRole != null ? gld.GetRole(cnf.MuteRole.Value) : null;
+
+            if (mrl == null)
+                throw new InvalidOperationException("Mute role is not configured. Specify via guildconfig.");
+
+            var now = DateTime.UtcNow;
+            var unt = duration != TimeSpan.Zero ? now + duration : DateTime.MaxValue.ToUniversalTime();
+            var dsr = duration != TimeSpan.Zero ? string.Concat("for ", duration.Days, " days, ", duration.Hours, " hours, ", duration.Minutes, " minutes") : "permanently";
+            uss = uss.Where(xus => !xus.GuildPermissions.Administrator);
+            foreach (var usm in uss)
+            {
+                await usm.AddRolesAsync(mrl);
+                var moda = cnf.ModActions.FirstOrDefault(xma => xma.UserId == usm.Id && xma.ActionType == AdaModActionType.Mute);
+                if (moda != null)
+                    cnf.ModActions.Remove(moda);
+                cnf.ModActions.Add(new AdaModAction { ActionType = AdaModActionType.Mute, Issuer = usr.Id, Until = unt, UserId = usm.Id });
+            }
+            AdaBotCore.ConfigManager.SetGuildConfig(gid, cnf);
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("User mutes", string.Concat(usr.Mention, " has muted ", string.Join(", ", uss.Select(xus => xus.Mention)), " ", dsr, "."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+
+            var embed = this.PrepareEmbed(EmbedType.Success);
+            embed.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "User Muted";
+                x.Value = string.Concat("The following user", uss.Count() > 1 ? "s were" : " was", " muted ", dsr, ": ", string.Join(", ", uss.Select(xusr => xusr.Mention)));
+            });
+
+            await chn.SendMessageAsync("", false, embed);
+        }
+
+        [AdaCommand("unmute", "Unmutes users.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
+        public async Task Unmute(AdaCommandContext ctx,
+            [AdaArgumentParameter("Mentions of users to unmute.", true)] params IUser[] users)
+        {
+            var gld = ctx.Guild;
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+            var usr = ctx.User;
+
+            var gls = gld as SocketGuild;
+            var uss = users.Cast<SocketGuildUser>();
+            if (uss.Count() < 1)
+                throw new ArgumentException("You must mention users you want to unmute.");
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+            var mrl = cnf != null && cnf.MuteRole != null ? gld.GetRole(cnf.MuteRole.Value) : null;
+
+            if (mrl == null)
+                throw new InvalidOperationException("Mute role is not configured. Specify via guildconfig.");
+            
+            uss = uss.Where(xus => !xus.GuildPermissions.Administrator);
+            foreach (var usm in uss)
+            {
+                await usm.RemoveRolesAsync(mrl);
+                var moda = cnf.ModActions.FirstOrDefault(xma => xma.UserId == usm.Id && xma.ActionType == AdaModActionType.Mute);
+                if (moda != null)
+                    cnf.ModActions.Remove(moda);
+            }
+            AdaBotCore.ConfigManager.SetGuildConfig(gid, cnf);
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("User unmutes", string.Concat(usr.Mention, " has unmuted ", string.Join(", ", uss.Select(xus => xus.Mention)), "."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+
+            var embed = this.PrepareEmbed(EmbedType.Success);
+            embed.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "User Unmuted";
+                x.Value = string.Concat("The following user", uss.Count() > 1 ? "s were" : " was", " unmuted: ", string.Join(", ", uss.Select(xusr => xusr.Mention)));
+            });
+
+            await chn.SendMessageAsync("", false, embed);
+        }
+
+        [AdaCommand("muteinfo", "Lists current mutes or displays information about specific mute.", Aliases = "listmutes;mutelist", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
+        public async Task MuteInfo(AdaCommandContext ctx,
+            [AdaArgumentParameter("Mention of muted user to view info for.", false)] IUser user)
+        {
+            var gld = ctx.Guild;
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+            var usr = ctx.User;
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var minf = cnf.ModActions.Where(xma => xma.ActionType == AdaModActionType.Mute);
+            if (minf.Count() == 0)
+                throw new InvalidOperationException("There are no mutes in place.");
+
+            var embed = this.PrepareEmbed("Mute Information", null, EmbedType.Info);
+            if (user == null)
+            {
+                embed.AddField(x =>
+                {
+                    x.IsInline = false;
+                    x.Name = "Current mutes";
+                    x.Value = string.Join(", ", minf.Select(xmute => gld.GetUserAsync(xmute.UserId).GetAwaiter().GetResult() != null ? gld.GetUserAsync(xmute.UserId).GetAwaiter().GetResult().Mention : xmute.UserId.ToString()));
+                });
+            }
+            else
+            {
+                var mute = minf.FirstOrDefault(xma => xma.UserId == user.Id);
+                if (mute == null)
+                    throw new InvalidProgramException("User is not in mute registry.");
+                var isr = await gld.GetUserAsync(mute.Issuer);
+
+                embed.AddField(x =>
+                {
+                    x.IsInline = true;
+                    x.Name = "User";
+                    x.Value = user.Mention;
+                });
+
+                embed.AddField(x =>
+                {
+                    x.IsInline = true;
+                    x.Name = "Id";
+                    x.Value = user.Id.ToString();
+                });
+
+                embed.AddField(x =>
+                {
+                    x.IsInline = true;
+                    x.Name = "Mod responsible";
+                    x.Value = isr != null ? isr.Mention : "<unknown>";
+                });
+
+                embed.AddField(x =>
+                {
+                    x.IsInline = true;
+                    x.Name = "Issued (UTC)";
+                    x.Value = mute.Issued.ToString("yyyy-MM-dd HH:mm:ss");
+                });
+
+                embed.AddField(x =>
+                {
+                    x.IsInline = true;
+                    x.Name = "Active until (UTC)";
+                    x.Value = mute.Until != DateTime.MaxValue.ToUniversalTime() ? mute.Until.ToString("yyyy-MM-dd HH:mm:ss") : "End of the Universe";
+                });
+            }
+
+            await chn.SendMessageAsync("", false, embed);
+        }
+
+        [AdaCommand("kick", "Kicks users.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
         public async Task Kick(AdaCommandContext ctx,
             [AdaArgumentParameter("Mentions of users to kick.", true)] params IUser[] users)
         {
@@ -403,14 +581,16 @@ namespace Emzi0767.Ada.Commands
             {
                 x.IsInline = false;
                 x.Name = "User Kicked";
-                x.Value = string.Concat("The following user", uss.Count() > 1 ? "s were" : " was" , " kicked: ", string.Join(", ", uss.Select(xusr => xusr.Mention)));
+                x.Value = string.Concat("The following user", uss.Count() > 1 ? "s were" : " was" , " kicked: ", string.Join(", ", uss.Select(xusr => xusr.Mention)), ".");
             });
 
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("ban", "Bans users. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.BanMembers)]
+        [AdaCommand("ban", "Bans users.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.BanMembers)]
         public async Task Ban(AdaCommandContext ctx,
+            [AdaArgumentParameter("Duration of the ban. Use 0 for permanent.", true)] TimeSpan duration,
+            [AdaArgumentParameter("Ban reason.", true)] string reason,
             [AdaArgumentParameter("Mentions of users to ban.", true)] params IUser[] users)
         {
             var gld = ctx.Guild;
@@ -427,13 +607,23 @@ namespace Emzi0767.Ada.Commands
             var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
             var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
 
+            var now = DateTime.UtcNow;
+            var unt = duration != TimeSpan.Zero ? now + duration : DateTime.MaxValue.ToUniversalTime();
+            var dsr = duration != TimeSpan.Zero ? string.Concat("for ", duration.Days, " days, ", duration.Hours, " hours, ", duration.Minutes, " minutes") : "permanently";
             uss = uss.Where(xus => !xus.GuildPermissions.Administrator);
             foreach (var usm in uss)
+            {
                 await gls.AddBanAsync(usm);
+                var moda = cnf.ModActions.FirstOrDefault(xma => xma.UserId == usm.Id && xma.ActionType == AdaModActionType.HardBan);
+                if (moda != null)
+                    cnf.ModActions.Remove(moda);
+                cnf.ModActions.Add(new Config.AdaModAction { ActionType = AdaModActionType.HardBan, Issuer = usr.Id, Until = unt, UserId = usm.Id, Reason = reason });
+            }
+            AdaBotCore.ConfigManager.SetGuildConfig(gid, cnf);
 
             if (mod != null)
             {
-                var embedmod = this.PrepareEmbed("User bans", string.Concat(usr.Mention, " has banned ", string.Join(", ", uss.Select(xus => xus.Mention)), "."), EmbedType.Info);
+                var embedmod = this.PrepareEmbed("User bans", string.Concat(usr.Mention, " has banned ", string.Join(", ", uss.Select(xus => xus.Mention)), " ", dsr, ". Reason: ", reason, "."), EmbedType.Info);
                 await mod.SendMessageAsync("", false, embedmod);
             }
             
@@ -441,14 +631,144 @@ namespace Emzi0767.Ada.Commands
             embed.AddField(x =>
             {
                 x.IsInline = false;
-                x.Name = "User Bans";
-                x.Value = string.Concat("The following user", uss.Count() > 1 ? "s were" : " was", " banned: ", string.Join(", ", uss.Select(xusr => xusr.Mention)));
+                x.Name = "User Banned";
+                x.Value = string.Concat("The following user", uss.Count() > 1 ? "s were" : " was", " banned ", dsr, ": ", string.Join(", ", uss.Select(xusr => xusr.Mention)), ". Reason: ", reason, ".");
             });
 
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("prune", "Prunes inactive users. This command can only be used by guild administrators.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
+        [AdaCommand("unban", "Unbans users. Consult listbans for user IDs.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.BanMembers)]
+        public async Task Unban(AdaCommandContext ctx,
+            [AdaArgumentParameter("IDs of users to unban.", true)] params ulong[] users)
+        {
+            var gld = ctx.Guild;
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+            var usr = ctx.User;
+
+            var gls = gld as SocketGuild;
+            var bns = await gld.GetBansAsync();
+            var uss = bns.Where(xban => users.Contains(xban.User.Id));
+            if (uss.Count() < 1)
+                throw new ArgumentException("You must list IDs of users you want to unban.");
+
+            var gid = gld.Id;
+            var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            var mod = cnf != null && cnf.ModLogChannel != null ? await gld.GetTextChannelAsync(cnf.ModLogChannel.Value) : null;
+            
+            foreach (var usm in uss)
+            {
+                await gls.RemoveBanAsync(usm.User.Id);
+                var moda = cnf.ModActions.FirstOrDefault(xma => xma.UserId == usm.User.Id && xma.ActionType == AdaModActionType.HardBan);
+                if (moda != null)
+                    cnf.ModActions.Remove(moda);
+            }
+            AdaBotCore.ConfigManager.SetGuildConfig(gid, cnf);
+
+            if (mod != null)
+            {
+                var embedmod = this.PrepareEmbed("User unbans", string.Concat(usr.Mention, " has unbanned ", string.Join(", ", uss.Select(xus => xus.User.Mention)), "."), EmbedType.Info);
+                await mod.SendMessageAsync("", false, embedmod);
+            }
+
+            var embed = this.PrepareEmbed(EmbedType.Success);
+            embed.AddField(x =>
+            {
+                x.IsInline = false;
+                x.Name = "User Unbanned";
+                x.Value = string.Concat("The following user", uss.Count() > 1 ? "s were" : " was", " unbanned: ", string.Join(", ", uss.Select(xusr => xusr.User.Mention)));
+            });
+
+            await chn.SendMessageAsync("", false, embed);
+        }
+
+        [AdaCommand("baninfo", "Lists current bans or displays information about specific ban.", Aliases = "listbans;banlist", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.BanMembers)]
+        public async Task BanInfo(AdaCommandContext ctx,
+            [AdaArgumentParameter("ID of banned user to view info for.", false)] ulong id)
+        {
+            var gld = ctx.Guild;
+            var chn = ctx.Channel;
+            var msg = ctx.Message;
+            var usr = ctx.User;
+
+            var embed = this.PrepareEmbed("Ban Information", null, EmbedType.Info);
+            if (id == 0)
+            {
+                var bans = await gld.GetBansAsync();
+                if (bans.Count == 0)
+                    throw new InvalidOperationException("There are no users banned at this time.");
+
+                embed.AddField(x =>
+                {
+                    x.IsInline = false;
+                    x.Name = "Current bans";
+                    x.Value = string.Join(", ", bans.Select(xban => string.Concat(xban.User.Mention, " (", xban.User.Id, ")")));
+                });
+            }
+            else
+            {
+                var bans = await gld.GetBansAsync();
+                var ban = bans.FirstOrDefault(xban => xban.User.Id == id);
+                if (ban == null)
+                    throw new ArgumentException("Invalid ban ID.");
+
+                var gid = gld.Id;
+                var cnf = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+                var binf = cnf.ModActions.FirstOrDefault(xma => xma.UserId == ban.User.Id && xma.ActionType == AdaModActionType.HardBan);
+
+                embed.AddField(x =>
+                {
+                    x.IsInline = true;
+                    x.Name = "User";
+                    x.Value = ban.User.Mention;
+                });
+
+                embed.AddField(x =>
+                {
+                    x.IsInline = true;
+                    x.Name = "Id";
+                    x.Value = ban.User.Id.ToString();
+                });
+
+                if (binf != null)
+                {
+                    var isr = await gld.GetUserAsync(binf.Issuer);
+                    
+                    embed.AddField(x =>
+                    {
+                        x.IsInline = true;
+                        x.Name = "Mod responsible";
+                        x.Value = isr != null ? isr.Mention : "<unknown>";
+                    });
+
+                    embed.AddField(x =>
+                    {
+                        x.IsInline = true;
+                        x.Name = "Reason";
+                        x.Value = string.IsNullOrWhiteSpace(binf.Reason) ? "<unknown>" : binf.Reason;
+                    });
+
+                    embed.AddField(x =>
+                    {
+                        x.IsInline = true;
+                        x.Name = "Issued (UTC)";
+                        x.Value = binf.Issued.ToString("yyyy-MM-dd HH:mm:ss");
+                    });
+
+                    embed.AddField(x => 
+                    {
+                        x.IsInline = true;
+                        x.Name = "Active until (UTC)";
+                        x.Value = binf.Until != DateTime.MaxValue.ToUniversalTime() ? binf.Until.ToString("yyyy-MM-dd HH:mm:ss") : "End of the Universe";
+                    });
+                }
+            }
+
+            await chn.SendMessageAsync("", false, embed);
+        }
+
+        [AdaCommand("prune", "Prunes inactive users.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.KickMembers)]
         public async Task Prune(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -471,7 +791,7 @@ namespace Emzi0767.Ada.Commands
             var embed = this.PrepareEmbed("Success", string.Concat(usp.ToString("#,##0"), " user", usp > 1 ? "s were" : " was" , " pruned."), EmbedType.Success);
         }
 
-        [AdaCommand("userinfo", "Displays information about users matching given name. This command can only be used by guild administrators.", Aliases = "uinfo;userlist;ulist;userfind;ufind", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("userinfo", "Displays information about users matching given name.", Aliases = "uinfo;userlist;ulist;userfind;ufind", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public async Task UserInfo(AdaCommandContext ctx,
             [AdaArgumentParameter("Mention of the user to display.", true)] IUser user)
         {
@@ -532,8 +852,10 @@ namespace Emzi0767.Ada.Commands
 
             await chn.SendMessageAsync("", false, embed);
         }
+        #endregion
 
-        [AdaCommand("guildinfo", "Displays information about current guild. This command can only be used by guild administrators.", Aliases = "ginfo", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageGuild)]
+        #region Guild, Channel, and Bot Management
+        [AdaCommand("guildinfo", "Displays information about current guild.", Aliases = "ginfo", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageGuild)]
         public async Task GuildInfo(AdaCommandContext ctx)
         {
             var gld = ctx.Guild as SocketGuild;
@@ -582,7 +904,7 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("purgechannel", "Purges a channel. Removes up to 100 messages. This command can only be used by guild administrators.", Aliases = "purgech;chpurge;chanpurge;purgechan", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [AdaCommand("purgechannel", "Purges a channel. Removes up to 100 messages.", Aliases = "purgech;chpurge;chanpurge;purgechan", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public async Task PurgeChannel(AdaCommandContext ctx,
             [AdaArgumentParameter("Channel to purge.", true)] ITextChannel channel)
         {
@@ -609,7 +931,7 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("guildconfig", "Manages ADA configuration for this guild. This command can only be used by guild administrators.", Aliases = "guildconf;adaconfig;adaconf;modconfig;modconf", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("guildconfig", "Manages ADA configuration for this guild.", Aliases = "guildconf;adaconfig;adaconf;modconfig;modconf", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public async Task ModConfig(AdaCommandContext ctx,
             [AdaArgumentParameter("Setting to modify.", true)] string setting,
             [AdaArgumentParameter("New value.", true)] params string[] value)
@@ -640,6 +962,30 @@ namespace Emzi0767.Ada.Commands
                 val = mod != null ? mod.Mention : "<null>";
                 cnf.ModLogChannel = mod != null ? (ulong?)mod.Id : null;
                 embed = this.PrepareEmbed("Success", string.Concat("Moderator log was ", mod != null ? string.Concat("set to ", mod.Mention) : "removed", "."), EmbedType.Success);
+            }
+            else if (setting == "muterole")
+            {
+                var mute = (IRole)null;
+                if (msg.MentionedRoleIds.Count > 0)
+                    mute = gld.GetRole(msg.MentionedRoleIds.First());
+                else
+                    mute = gld.Roles.FirstOrDefault(xr => xr.Name == string.Join(" ", value));
+
+                if (mute != null && 
+                    (mute.Permissions.SendMessages || 
+                    mute.Permissions.SendTTSMessages || 
+                    mute.Permissions.AttachFiles || 
+                    mute.Permissions.EmbedLinks || 
+                    mute.Permissions.Speak || 
+                    mute.Permissions.UseVAD || 
+                    mute.Permissions.AddReactions || 
+                    mute.Permissions.UseExternalEmojis || 
+                    mute.Permissions.CreateInstantInvite))
+                    throw new InvalidOperationException("Specified role cannot have any of the following permissions: Send Messages, Send TTS Messages, Attach Files, Embed Links, Speak, Use Voice Activitiy, Add Reactions, Use External Emojis, or Create Instant Invite.");
+
+                val = mute != null ? (mute.IsMentionable ? mute.Mention : mute.Name) : "<null>";
+                cnf.MuteRole = mute != null ? (ulong?)mute.Id : null;
+                embed = this.PrepareEmbed("Success", string.Concat("Mute role was ", mute != null ? string.Concat("set to ", val) : "removed", "."), EmbedType.Success);
             }
             else if (setting == "prefix")
             {
@@ -675,7 +1021,7 @@ namespace Emzi0767.Ada.Commands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("adanick", "Changes ADA nickname in this guild. This command can only be used by guild administrators.", Aliases = "adaname", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageNicknames)]
+        [AdaCommand("adanick", "Changes ADA nickname in this guild.", Aliases = "adaname", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageNicknames)]
         public async Task AdaNick(AdaCommandContext ctx, 
             [AdaArgumentParameter("New nickname to use.", false)] params string[] nickname)
         {
@@ -708,7 +1054,9 @@ namespace Emzi0767.Ada.Commands
             var embed = this.PrepareEmbed("Success", string.Concat("Nickname set to **", nck == "" ? AdaBotCore.AdaClient.CurrentUser.Username : nck, "**."), EmbedType.Success);
             await chn.SendMessageAsync("", false, embed);
         }
+        #endregion
 
+        #region Miscellaneous Commands
         [AdaCommand("adahelp", "Shows command list. Add command name to learn more.", Aliases = "help", CheckPermissions = false)]
         public async Task Help(AdaCommandContext ctx,
             [AdaArgumentParameter("Command to display help for.", false)] string command)
@@ -747,6 +1095,16 @@ namespace Emzi0767.Ada.Commands
                     throw new ArgumentException("You can't run this command.");
 
                 embed = this.PrepareEmbed("ADA Help", string.Format("**{0}** Command help", cmd.Name), EmbedType.Info);
+
+                if (cmd.Checker != null && cmd.RequiredPermission != AdaPermission.None)
+                {
+                    embed.AddField(x =>
+                    {
+                        x.IsInline = false;
+                        x.Name = "Required permission";
+                        x.Value = cmd.RequiredPermission.ToString();
+                    });
+                }
                 
                 embed.AddField(x =>
                 {
@@ -844,7 +1202,9 @@ namespace Emzi0767.Ada.Commands
             
             await chn.SendMessageAsync("", false, embed);
         }
+        #endregion
 
+        #region Debug Commands
         [AdaCommand("fulldump", "Performs a full environment dump. This command can only be used by Emzi0767.", CheckerId = "CoreDebugChecker", CheckPermissions = true)]
         public async Task FullDump(AdaCommandContext ctx)
         {
@@ -984,7 +1344,9 @@ namespace Emzi0767.Ada.Commands
             var embed = this.PrepareEmbed("Thread hang complete", string.Concat("Thread was hanged for ", duration.ToString("#,##0"), "ms."), EmbedType.Warning);
             await chn.SendMessageAsync("", false, embed);
         }
+        #endregion
 
+        #region Embeds
         private EmbedBuilder PrepareEmbed(EmbedType type)
         {
             var embed = new EmbedBuilder();
@@ -1030,5 +1392,6 @@ namespace Emzi0767.Ada.Commands
             Warning,
             Info
         }
+        #endregion
     }
 }

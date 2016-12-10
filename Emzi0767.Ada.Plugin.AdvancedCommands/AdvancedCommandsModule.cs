@@ -246,7 +246,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("enableadvancedcommand", "Enables an Advanced Commands command. This command can only be used by guild administrators.", Aliases = "enableac;enableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("enableadvancedcommand", "Enables an Advanced Commands command.", Aliases = "enableac;enableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public async Task EnableAdvancedCommand(AdaCommandContext ctx,
             [AdaArgumentParameter("Commands to enable. Consult adahelp for list of commands that can be enabled.", true)] params string[] commands)
         {
@@ -270,7 +270,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("disableadvancedcommand", "Disables an Advanced Commands command. This command can only be used by guild administrators.", Aliases = "disableac;disableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [AdaCommand("disableadvancedcommand", "Disables an Advanced Commands command.", Aliases = "disableac;disableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public async Task DisableAdvancedCommand(AdaCommandContext ctx,
             [AdaArgumentParameter("Commands to disable. Consult adahelp for list of commands that can be disabled.", true)] params string[] commands)
         {
