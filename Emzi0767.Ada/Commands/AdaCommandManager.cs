@@ -162,7 +162,7 @@ namespace Emzi0767.Ada.Commands
                             else
                                 L.W("ADA CMD", "Alias '{0}' for command '{1}' already taken, skipping", name, cmd.Name);
                         }
-                        L.W("ADA CMD", "Registered command '{0}' for handler '{1}'", cmd.Name, ch.Name);
+                        L.W("ADA CMD", "Registered command '{0}' for module '{1}'", cmd.Name, ch.Name);
                     }
                     else
                         L.W("ADA CMD", "Command name '{0}' is already registered, skipping", cmd.Name);
