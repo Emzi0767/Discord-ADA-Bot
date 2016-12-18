@@ -100,14 +100,13 @@ namespace Emzi0767.Ada.Commands
             await grp.ModifyAsync(x =>
             {
                 if (par.ContainsKey("color"))
-                    x.Color = gcl;
+                    x.Color = new Color(gcl);
                 if (par.ContainsKey("hoist"))
                     x.Hoist = ghs;
                 if (par.ContainsKey("permissions"))
-                    x.Permissions = gpr;
+                    x.Permissions = new GuildPermissions(gpr);
                 if (par.ContainsKey("position"))
                     x.Position = gps;
-                x.Permissions = par.ContainsKey("permissions") ? gpr : grp.Permissions.RawValue;
             });
 
             var gid = gld.Id;

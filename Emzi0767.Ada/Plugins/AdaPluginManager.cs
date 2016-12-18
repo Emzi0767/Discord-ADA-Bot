@@ -51,11 +51,11 @@ namespace Emzi0767.Ada.Plugins
                 {
                     L.W("ADA PLG", "Loaded file '{0}'", xx);
                     var xa = FrameworkAssemblyLoader.LoadFile(xx);
-                    this.LoadedAssemblies.Add(xa.FullName, xa);
+                    this.LoadedAssemblies.Add(xa.GetName().Name, xa);
                 }
             }
-            //L.W("ADA PLG", "Registering dependency resolver");
-            //AssemblyLoadContext.Default.Resolving += Default_Resolving;
+            L.W("ADA PLG", "Registering plugin dependency resolver");
+            FrameworkAssemblyLoader.ResolvingAssembly += ResolvePlugin;
             L.W("ADA PLG", "Done");
         }
 
@@ -91,11 +91,11 @@ namespace Emzi0767.Ada.Plugins
             }
         }
 
-        //private Assembly Default_Resolving(AssemblyLoadContext arg1, AssemblyName arg2)
-        //{
-        //    if (this.LoadedAssemblies.ContainsKey(arg2.FullName))
-        //        return this.LoadedAssemblies[arg2.FullName];
-        //    return null;
-        //}
+        private Assembly ResolvePlugin(string assembly_name)
+        {
+            if (this.LoadedAssemblies.ContainsKey(assembly_name))
+                return this.LoadedAssemblies[assembly_name];
+            return null;
+        }
     }
 }

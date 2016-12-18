@@ -40,6 +40,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Plugin.Tags", 
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Plugin.Feedle", "Emzi0767.Ada.Plugin.Feedle\Emzi0767.Ada.Plugin.Feedle.xproj", "{95FF5B3D-E1A6-4FB6-BFBF-79D567D91A16}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.AssemblyResolver.FX", "Emzi0767.AssemblyResolver.FX\Emzi0767.AssemblyResolver.FX.xproj", "{9E750ADA-6E2C-4964-AB1A-99BE2A2AB401}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.AssemblyResolver.Standard", "Emzi0767.AssemblyResolver.Standard\Emzi0767.AssemblyResolver.Standard.xproj", "{799B62EB-0453-4A32-885E-87392C460C2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +74,14 @@ Global
 		{95FF5B3D-E1A6-4FB6-BFBF-79D567D91A16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95FF5B3D-E1A6-4FB6-BFBF-79D567D91A16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95FF5B3D-E1A6-4FB6-BFBF-79D567D91A16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E750ADA-6E2C-4964-AB1A-99BE2A2AB401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E750ADA-6E2C-4964-AB1A-99BE2A2AB401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E750ADA-6E2C-4964-AB1A-99BE2A2AB401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E750ADA-6E2C-4964-AB1A-99BE2A2AB401}.Release|Any CPU.Build.0 = Release|Any CPU
+		{799B62EB-0453-4A32-885E-87392C460C2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{799B62EB-0453-4A32-885E-87392C460C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{799B62EB-0453-4A32-885E-87392C460C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{799B62EB-0453-4A32-885E-87392C460C2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

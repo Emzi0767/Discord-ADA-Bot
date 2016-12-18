@@ -41,7 +41,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             }
             await url.ModifyAsync(x =>
             {
-                x.Color = clr;
+                x.Color = new s.Color(clr);
             });
             
             var embed = this.PrepareEmbed("Success", string.Format(usr.Mention, "'s color is now ", clr.ToString("X6")), EmbedType.Success);

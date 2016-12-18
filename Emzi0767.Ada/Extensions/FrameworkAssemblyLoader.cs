@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using Emzi0767.AssemblyResolver;
 
 namespace Emzi0767.Ada.Extensions
 {
@@ -8,9 +9,12 @@ namespace Emzi0767.Ada.Extensions
     {
         public static bool UsingCore { get; private set; }
         private static Func<string, Assembly> LoadAssembly { get; set; }
+        private static Resolver Resolver { get; set; }
 
         static FrameworkAssemblyLoader()
         {
+            Resolver = new Resolver();
+
             var type = Type.GetType("System.Runtime.Loader.AssemblyLoadContext");
             if (type != null)
                 UsingCore = true;
@@ -21,12 +25,12 @@ namespace Emzi0767.Ada.Extensions
                 var prop = type.GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
                 var ldr = prop.GetValue(null);
                 var ldt = ldr.GetType();
-                ldrmtd = ldt.GetMethod("LoadFromAssemblyPath", BindingFlags.Public | BindingFlags.Static);
+                ldrmtd = ldt.GetMethod("LoadFromAssemblyPath", new Type[] { typeof(string) });
             }
             else
             {
                 type = Type.GetType("System.Reflection.Assembly");
-                ldrmtd = type.GetMethod("LoadFile", BindingFlags.Public | BindingFlags.Static);
+                ldrmtd = type.GetMethod("LoadFile", new Type[] { typeof(string) });
             }
 
             if (ldrmtd == null)
