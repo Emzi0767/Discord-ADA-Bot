@@ -27,7 +27,7 @@ namespace Emzi0767.Ada.Plugins
             L.W("ADA PLG", "Loading all plugin assemblies");
             this.LoadedAssemblies = new Dictionary<string, Assembly>();
             var a = typeof(AdaPlugin).GetTypeInfo().Assembly;
-            this.LoadedAssemblies.Add(a.FullName, a);
+            this.LoadedAssemblies.Add(a.GetName().Name, a);
             this.MainAssembly = a;
             var l = a.Location;
             l = Path.GetDirectoryName(l);
@@ -40,6 +40,7 @@ namespace Emzi0767.Ada.Plugins
                 {
                     L.W("ADA PLG", "Loaded reference file '{0}'", xx);
                     var xa = FrameworkAssemblyLoader.LoadFile(xx);
+                    this.LoadedAssemblies.Add(xa.GetName().Name, xa);
                 }
             }
 
