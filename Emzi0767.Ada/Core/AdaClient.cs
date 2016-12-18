@@ -53,8 +53,8 @@ namespace Emzi0767.Ada.Core
         internal void Initialize()
         {
             L.W("ADA DSC", "Connecting");
-            this.DiscordClient.LoginAsync(TokenType.Bot, this.Token).ConfigureAwait(false).GetAwaiter().GetResult();
-            this.DiscordClient.ConnectAsync(true).ConfigureAwait(false).GetAwaiter().GetResult();
+            this.DiscordClient.LoginAsync(TokenType.Bot, this.Token).GetAwaiter().GetResult();
+            this.DiscordClient.ConnectAsync(true).GetAwaiter().GetResult();
             L.W("ADA DSC", "Connected as '{0}'", this.DiscordClient.CurrentUser.Username);
         }
 
@@ -63,7 +63,7 @@ namespace Emzi0767.Ada.Core
             L.W("ADA DSC", "Saving configs");
             AdaBotCore.PluginManager.UpdateAllConfigs();
             L.W("ADA DSC", "Disconnecting");
-            this.DiscordClient.DisconnectAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            this.DiscordClient.DisconnectAsync().GetAwaiter().GetResult();
             L.W("ADA DSC", "Disconnected");
         }
 
@@ -140,12 +140,12 @@ namespace Emzi0767.Ada.Core
             }
 
             foreach (var ms in msg)
-                channel.SendMessageAsync(ms).ConfigureAwait(false).GetAwaiter().GetResult();
+                channel.SendMessageAsync(ms).GetAwaiter().GetResult();
         }
 
         internal void SendEmbed(EmbedBuilder embed, SocketTextChannel channel)
         {
-            channel.SendMessageAsync("", false, embed).ConfigureAwait(false).GetAwaiter().GetResult();
+            channel.SendMessageAsync("", false, embed).GetAwaiter().GetResult();
         }
 
         internal void WriteConfig()
@@ -195,16 +195,16 @@ namespace Emzi0767.Ada.Core
                                 if (usr == null)
                                     continue;
 
-                                usr.RemoveRolesAsync(mrl).ConfigureAwait(false).GetAwaiter().GetResult();
+                                usr.RemoveRolesAsync(mrl).GetAwaiter().GetResult();
                                 done.Add(ma);
                             }
                             else if (ma.ActionType == AdaModActionType.HardBan)
                             {
-                                var ban = gld.GetBansAsync().ConfigureAwait(false).GetAwaiter().GetResult().FirstOrDefault(xban => xban.User.Id == ma.UserId);
+                                var ban = gld.GetBansAsync().GetAwaiter().GetResult().FirstOrDefault(xban => xban.User.Id == ma.UserId);
                                 if (ban == null)
                                     continue;
 
-                                gld.RemoveBanAsync(ma.UserId).ConfigureAwait(false).GetAwaiter().GetResult();
+                                gld.RemoveBanAsync(ma.UserId).GetAwaiter().GetResult();
                                 done.Add(ma);
                             }
                         }
@@ -218,7 +218,7 @@ namespace Emzi0767.Ada.Core
             }
 
             if (this.CurrentUser.Game == null || this.CurrentUser.Game.Value.Name != this.Game)
-                this.DiscordClient.SetGame(this.Game).ConfigureAwait(false).GetAwaiter().GetResult();
+                this.DiscordClient.SetGame(this.Game).GetAwaiter().GetResult();
             L.W("ADA DSC BH", "Ticked banhammer");
         }
     }

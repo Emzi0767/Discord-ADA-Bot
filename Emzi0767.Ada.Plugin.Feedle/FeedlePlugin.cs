@@ -86,7 +86,7 @@ namespace Emzi0767.Ada.Plugin.Feedle
                 var rec = new List<string>();
 
                 var uri_root_builder = new UriBuilder(feed.FeedUri);
-                var ctx = wc.GetStringAsync(feed.FeedUri).ConfigureAwait(false).GetAwaiter().GetResult();
+                var ctx = wc.GetStringAsync(feed.FeedUri).GetAwaiter().GetResult();
                 var rss = XDocument.Parse(ctx);
                 var chn = rss.Root.Element("channel");
                 var img = chn.Element("image");

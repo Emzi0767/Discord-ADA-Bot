@@ -162,7 +162,7 @@ namespace Emzi0767.Ada.Commands
                 return false;
 
             var id = ulong.Parse(usrid);
-            result = ctx.Guild.GetUserAsync(id).ConfigureAwait(false).GetAwaiter().GetResult();
+            result = ctx.Guild.GetUserAsync(id).GetAwaiter().GetResult();
             return true;
         }
 
@@ -200,7 +200,7 @@ namespace Emzi0767.Ada.Commands
                 return false;
 
             var id = ulong.Parse(chnid);
-            var chn = ctx.Guild.GetChannelAsync(id).ConfigureAwait(false).GetAwaiter().GetResult() as ITextChannel;
+            var chn = ctx.Guild.GetChannelAsync(id).GetAwaiter().GetResult() as ITextChannel;
             result = chn;
             if (chn == null)
                 return false;
