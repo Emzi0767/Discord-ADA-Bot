@@ -266,7 +266,7 @@ namespace Emzi0767.Ada.Commands
                 });
             }
 
-            ctx.Channel.SendMessageAsync("", false, embed).Wait();
+            ctx.Channel.SendMessageAsync("", false, embed).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         private void CommandExecuted(AdaCommandContext ctx)

@@ -158,9 +158,9 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             var rnd = new Random();
             var mnt = (string)null;
 
-            var xmu = msg.MentionedUserIds.Select(xid => gld.GetUserAsync(xid).GetAwaiter().GetResult());
+            var xmu = msg.MentionedUserIds.Select(xid => gld.GetUserAsync(xid).ConfigureAwait(false).GetAwaiter().GetResult());
             var xmr = msg.MentionedRoleIds.Select(xid => gld.GetRole(xid));
-            var xmc = msg.MentionedChannelIds.Select(xid => gld.GetChannelAsync(xid).GetAwaiter().GetResult());
+            var xmc = msg.MentionedChannelIds.Select(xid => gld.GetChannelAsync(xid).ConfigureAwait(false).GetAwaiter().GetResult());
 
             if (xmu.Count() == 0 && xmr.Count() == 0 && xmc.Count() == 0)
                 throw new ArgumentException("Missing mention.");

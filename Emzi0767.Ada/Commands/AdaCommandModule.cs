@@ -498,7 +498,7 @@ namespace Emzi0767.Ada.Commands
                 {
                     x.IsInline = false;
                     x.Name = "Current mutes";
-                    x.Value = string.Join(", ", minf.Select(xmute => gld.GetUserAsync(xmute.UserId).GetAwaiter().GetResult() != null ? gld.GetUserAsync(xmute.UserId).GetAwaiter().GetResult().Mention : xmute.UserId.ToString()));
+                    x.Value = string.Join(", ", minf.Select(xmute => gld.GetUserAsync(xmute.UserId).ConfigureAwait(false).GetAwaiter().GetResult() != null ? gld.GetUserAsync(xmute.UserId).ConfigureAwait(false).GetAwaiter().GetResult().Mention : xmute.UserId.ToString()));
                 });
             }
             else
@@ -890,14 +890,14 @@ namespace Emzi0767.Ada.Commands
             {
                 x.IsInline = true;
                 x.Name = "Owner";
-                x.Value = gld.GetOwnerAsync().GetAwaiter().GetResult().Mention;
+                x.Value = gld.GetOwnerAsync().ConfigureAwait(false).GetAwaiter().GetResult().Mention;
             });
 
             embed.AddField(x =>
             {
                 x.IsInline = true;
                 x.Name = "Default Channel";
-                x.Value = gld.GetDefaultChannelAsync().GetAwaiter().GetResult().Mention;
+                x.Value = gld.GetDefaultChannelAsync().ConfigureAwait(false).GetAwaiter().GetResult().Mention;
             });
 
             await chn.SendMessageAsync("", false, embed);
