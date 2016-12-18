@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
+using Emzi0767.Ada.Extensions;
 
 namespace Emzi0767.Ada.Plugins
 {
@@ -39,7 +39,7 @@ namespace Emzi0767.Ada.Plugins
                 foreach (var xx in x)
                 {
                     L.W("ADA PLG", "Loaded reference file '{0}'", xx);
-                    var xa = AssemblyLoadContext.Default.LoadFromAssemblyPath(xx);
+                    var xa = FrameworkAssemblyLoader.LoadFile(xx);
                 }
             }
 
@@ -50,12 +50,12 @@ namespace Emzi0767.Ada.Plugins
                 foreach (var xx in x)
                 {
                     L.W("ADA PLG", "Loaded file '{0}'", xx);
-                    var xa = AssemblyLoadContext.Default.LoadFromAssemblyPath(xx);
+                    var xa = FrameworkAssemblyLoader.LoadFile(xx);
                     this.LoadedAssemblies.Add(xa.FullName, xa);
                 }
             }
-            L.W("ADA PLG", "Registering dependency resolver");
-            AssemblyLoadContext.Default.Resolving += Default_Resolving;
+            //L.W("ADA PLG", "Registering dependency resolver");
+            //AssemblyLoadContext.Default.Resolving += Default_Resolving;
             L.W("ADA PLG", "Done");
         }
 
@@ -91,11 +91,11 @@ namespace Emzi0767.Ada.Plugins
             }
         }
 
-        private Assembly Default_Resolving(AssemblyLoadContext arg1, AssemblyName arg2)
-        {
-            if (this.LoadedAssemblies.ContainsKey(arg2.FullName))
-                return this.LoadedAssemblies[arg2.FullName];
-            return null;
-        }
+        //private Assembly Default_Resolving(AssemblyLoadContext arg1, AssemblyName arg2)
+        //{
+        //    if (this.LoadedAssemblies.ContainsKey(arg2.FullName))
+        //        return this.LoadedAssemblies[arg2.FullName];
+        //    return null;
+        //}
     }
 }
