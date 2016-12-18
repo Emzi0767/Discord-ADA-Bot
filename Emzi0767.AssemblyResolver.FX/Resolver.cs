@@ -14,7 +14,8 @@ namespace Emzi0767.AssemblyResolver
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            return this.FireResolving(args.Name);
+            var an = new AssemblyName(args.Name);
+            return this.FireResolving(an.Name);
         }
 
         private Assembly FireResolving(string name)

@@ -27,10 +27,14 @@ namespace Emzi0767.Ada.Core
         {
             L.W("ADA DSC", "Initializing Discord");
             this.Game = "Banhammer 40,000";
+
+            var spr = AdaBotCore.SocketManager.SocketProvider;
+            var spv = spr != null ? spr.Provider : null;
             var dsc = new DiscordSocketConfig()
             {
                 LogLevel = Debugger.IsAttached ? LogSeverity.Debug : LogSeverity.Info,
-                AudioMode = AudioMode.Disabled
+                AudioMode = AudioMode.Disabled,
+                WebSocketProvider = spv
             };
             
             this.DiscordClient = new DiscordSocketClient(dsc);

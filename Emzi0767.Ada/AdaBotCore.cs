@@ -15,6 +15,7 @@ namespace Emzi0767.Ada
         public static int PluginCount { get { return PluginManager.PluginCount; } }
         public static AdaConfigManager ConfigManager { get; private set; }
         internal static AdaPluginManager PluginManager { get; set; }
+        internal static AdaSocketManager SocketManager { get; set; }
         internal static UTF8Encoding UTF8 { get; set; }
         private static bool KeepRunning { get; set; }
 
@@ -25,6 +26,12 @@ namespace Emzi0767.Ada
             L.D(Debugger.IsAttached);
             UTF8 = new UTF8Encoding(false);
             Console.CancelKeyPress += Console_CancelKeyPress;
+
+            // init sockets
+            L.W("ADA", "Initializing ADA Socket manager");
+            SocketManager = new AdaSocketManager();
+            SocketManager.Initialize();
+            L.W("ADA", "ADA Socket manager initialized");
 
             // init discord
             L.W("ADA", "Initializing ADA Discord module");

@@ -44,6 +44,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.AssemblyResolver.F
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.AssemblyResolver.Standard", "Emzi0767.AssemblyResolver.Standard\Emzi0767.AssemblyResolver.Standard.xproj", "{799B62EB-0453-4A32-885E-87392C460C2C}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Providers.WS4Net", "Emzi0767.Ada.Providers.WS4Net\Emzi0767.Ada.Providers.WS4Net.xproj", "{8E5F7865-CE3A-479A-94CC-B0A24766FDAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,10 @@ Global
 		{799B62EB-0453-4A32-885E-87392C460C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{799B62EB-0453-4A32-885E-87392C460C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{799B62EB-0453-4A32-885E-87392C460C2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E5F7865-CE3A-479A-94CC-B0A24766FDAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E5F7865-CE3A-479A-94CC-B0A24766FDAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E5F7865-CE3A-479A-94CC-B0A24766FDAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E5F7865-CE3A-479A-94CC-B0A24766FDAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -14,6 +14,7 @@ namespace Emzi0767.Ada.Extensions
         static FrameworkAssemblyLoader()
         {
             Resolver = new Resolver();
+            Resolver.Resolving += Resolver_Resolving;
 
             var type = Type.GetType("System.Runtime.Loader.AssemblyLoadContext");
             if (type != null)
@@ -38,6 +39,11 @@ namespace Emzi0767.Ada.Extensions
 
             var mtdarg = Expression.Parameter(typeof(string));
             LoadAssembly = Expression.Lambda<Func<string, Assembly>>(Expression.Call(null, ldrmtd, mtdarg), mtdarg).Compile();
+        }
+
+        private static Assembly Resolver_Resolving(string name)
+        {
+            return ResolveAssemblyFire(name);
         }
 
         public static Assembly LoadFile(string filename)
