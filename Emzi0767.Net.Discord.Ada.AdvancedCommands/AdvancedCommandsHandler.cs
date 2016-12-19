@@ -28,8 +28,6 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var clr = Convert.ToUInt32(ea.Args[0], 16);
             var url = usr.Roles.FirstOrDefault(xr => xr.Name == usr.Id.ToString());
             if (url == null)
@@ -50,8 +48,6 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var rng = new Random();
             var n3 = rng.Next();
             var n2 = BitConverter.GetBytes(n3);
@@ -67,8 +63,6 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
             
             var n1 = Guid.NewGuid().ToString();
 
@@ -82,8 +76,6 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
 
             var utf8 = new UTF8Encoding(false);
             var dat = utf8.GetBytes(ea.Args[0]);
@@ -100,8 +92,6 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var utf8 = new UTF8Encoding(false);
             var dat = Convert.FromBase64String(ea.Args[0]);
             var ascii = utf8.GetString(dat);
@@ -116,8 +106,6 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
 
             using (var ms = new MemoryStream())
             using (var bmp = new Bitmap(64, 64, PixelFormat.Format32bppPArgb))
@@ -148,8 +136,6 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
 
             var chain = new MarkovChain<string>(1);
             var rnd = new Random();
@@ -234,8 +220,6 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var cmds = ea.Args[0].Split(',');
             foreach (var cmd in cmds)
             {
@@ -252,8 +236,6 @@ namespace Emzi0767.Net.Discord.Ada.AdvancedCommands
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
 
             var cmds = ea.Args[0].Split(',');
             foreach (var cmd in cmds)

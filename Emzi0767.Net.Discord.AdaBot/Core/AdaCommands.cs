@@ -23,8 +23,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var nam = ea.Args.Length > 0 ? ea.Args[0] : null;
             if (string.IsNullOrWhiteSpace(nam))
                 throw new ArgumentException("Name must not be null.");
@@ -40,8 +38,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
             
             var grp = (Role)null;
             if (msg.MentionedRoles.Count() > 0)
@@ -71,8 +67,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var msg = ea.Message;
             var usr = ea.User;
             var prm = usr.ServerPermissions;
-
-            await msg.Delete();
 
             var raw = ea.Args[0];
             var par = raw.Split(';')
@@ -104,8 +98,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
             
             var grp = msg.MentionedRoles.FirstOrDefault() ?? srv.Roles.FirstOrDefault(xr => xr.Name == ea.Args[0]);
 
@@ -184,8 +176,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var nam = ea.Args[0];
             var grp = srv.Roles;
 
@@ -209,8 +199,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
             
             var usg = msg.MentionedUsers.FirstOrDefault();
             var gru = msg.MentionedRoles.FirstOrDefault() ?? srv.Roles.FirstOrDefault(xr => xr.Name == ea.Args[0].Substring(ea.Args[0].IndexOf('>') + 1));
@@ -230,8 +218,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var usr = ea.User;
             var prm = usr.ServerPermissions;
 
-            await msg.Delete();
-
             var usg = msg.MentionedUsers.FirstOrDefault();
             var gru = msg.MentionedRoles.FirstOrDefault() ?? srv.Roles.FirstOrDefault(xr => xr.Name == ea.Args[0].Substring(ea.Args[0].IndexOf('>') + 1));
             if (usg == null || gru == null)
@@ -248,8 +234,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
 
             var usk = msg.MentionedUsers.FirstOrDefault();
             if (usk == null)
@@ -270,8 +254,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var usb = msg.MentionedUsers.FirstOrDefault();
             if (usb == null)
                 throw new ArgumentException("You need to mention a user you want to kick.");
@@ -291,8 +273,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var usp = await srv.PruneUsers();
             await chn.SendMessage(string.Format("**ADA**: Pruned {0:#,##0} users", usp));
         }
@@ -304,8 +284,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
 
             var xus = msg.MentionedUsers.FirstOrDefault();
             if (xus == null)
@@ -330,8 +308,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var sb = new StringBuilder();
             sb.AppendLine("**ADA**: guild info").AppendLine();
             sb.AppendFormat("**Name**: '{0}'", srv.Name).AppendLine();
@@ -355,8 +331,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var chp = msg.MentionedChannels.FirstOrDefault();
             if (chp == null)
                 throw new ArgumentException("You need to mention a channel you want to purge.");
@@ -373,8 +347,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
 
             var a = Assembly.GetExecutingAssembly();
             var n = a.GetName();
@@ -421,8 +393,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var a = Assembly.GetExecutingAssembly();
             var n = a.GetName();
 
@@ -449,8 +419,6 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
 
             // ada assembly data
             var ada_a = Assembly.GetExecutingAssembly();

@@ -17,8 +17,6 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             var chn = ea.Channel;
             var msg = ea.Message;
 
-            await msg.Delete();
-
             var nam = ea.Args[0].Substring(0, ea.Args[0].IndexOf(' '));
             var tag = ea.Args[0].Substring(ea.Args[0].IndexOf(' ') + 1);
             if (string.IsNullOrWhiteSpace(nam) || string.IsNullOrWhiteSpace(tag))
@@ -36,8 +34,6 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             var srv = ea.Server;
             var chn = ea.Channel;
             var msg = ea.Message;
-
-            await msg.Delete();
 
             var nam = ea.Args[0].Substring(0, ea.Args[0].IndexOf(' '));
             var tag = ea.Args[0].Substring(ea.Args[0].IndexOf(' ') + 1);
@@ -57,8 +53,6 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             var chn = ea.Channel;
             var msg = ea.Message;
 
-            await msg.Delete();
-
             var nam = ea.Args[0];
             if (string.IsNullOrWhiteSpace(nam))
                 throw new ArgumentException("Need to specify a tag to remove.");
@@ -75,8 +69,6 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             var srv = ea.Server;
             var chn = ea.Channel;
             var msg = ea.Message;
-
-            await msg.Delete();
 
             var nam = ea.Args[0];
             if (string.IsNullOrWhiteSpace(nam))
@@ -95,8 +87,6 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             var chn = ea.Channel;
             var msg = ea.Message;
 
-            await msg.Delete();
-
             var nam = ea.Args[0];
             if (string.IsNullOrWhiteSpace(nam))
                 throw new ArgumentException("Need to specify a tag to display.");
@@ -113,8 +103,6 @@ namespace Emzi0767.Net.Discord.Ada.Tags
             var srv = ea.Server;
             var chn = ea.Channel;
             var msg = ea.Message;
-
-            await msg.Delete();
 
             var tags = TagPlugin.GetTags(chn.Id);
             if (tags.Count() > 0)

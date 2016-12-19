@@ -20,8 +20,6 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var args = ea.Args[0].Split(';')
                 .Select(xs => xs.Split('='))
                 .ToDictionary(xsa => xsa[0], xsa => xsa[1]);
@@ -43,8 +41,6 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
             var msg = ea.Message;
             var usr = ea.User;
 
-            await msg.Delete();
-
             var args = ea.Args[0].Split(';')
                 .Select(xs => xs.Split('='))
                 .ToDictionary(xsa => xsa[0], xsa => xsa[1]);
@@ -65,8 +61,6 @@ namespace Emzi0767.Net.Discord.Ada.Feedle
             var chn = ea.Channel;
             var msg = ea.Message;
             var usr = ea.User;
-
-            await msg.Delete();
 
             var feeds = FeedlePlugin.GetFeeds(srv.AllChannels.Select(xch => xch.Id).ToArray());
 
