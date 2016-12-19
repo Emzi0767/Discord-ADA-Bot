@@ -12,6 +12,11 @@ namespace Emzi0767.AssemblyResolver
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
         }
 
+        public Assembly LoadFromFile(string filename)
+        {
+            return Assembly.LoadFile(filename);
+        }
+
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             var an = new AssemblyName(args.Name);

@@ -12,6 +12,11 @@ namespace Emzi0767.AssemblyResolver
             AssemblyLoadContext.Default.Resolving += Default_Resolving;
         }
 
+        public Assembly LoadFromFile(string filename)
+        {
+            return AssemblyLoadContext.Default.LoadFromAssemblyPath(filename);
+        }
+
         private Assembly Default_Resolving(AssemblyLoadContext arg1, AssemblyName arg2)
         {
             return this.FireResolving(arg2.Name);
