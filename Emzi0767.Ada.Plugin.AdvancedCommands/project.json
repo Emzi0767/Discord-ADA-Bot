@@ -19,7 +19,7 @@
         "CoreCompat.System.Drawing": "1.0.0-beta006"
       }
     },
-    "net461": {
+    "net462": {
       "dependencies": {
         "Markov": "1.2.1"
       },

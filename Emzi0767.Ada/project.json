@@ -27,7 +27,7 @@
         "Emzi0767.AssemblyResolver.Standard": "1.0.0-*"
       }
     },
-    "net461": {
+    "net462": {
       "dependencies": {
         "Emzi0767.AssemblyResolver.FX" : "1.0.0-*"
       }

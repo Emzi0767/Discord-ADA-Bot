@@ -4,6 +4,6 @@
   "dependencies": { },
 
   "frameworks": {
-    "net461": { }
+    "net462": { }
   }
 }
