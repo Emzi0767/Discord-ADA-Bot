@@ -354,7 +354,8 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             var sb = new StringBuilder();
             sb.AppendLine("**ADA**: Help");
             sb.AppendFormat("ADA Version: {0}", n.Version).AppendLine();
-            sb.AppendFormat("Created by Emzi0767 (<@181875147148361728>)").AppendLine();
+            //sb.AppendFormat("Created by Emzi0767 (<@181875147148361728>)").AppendLine();
+            sb.AppendFormat("Created by Emzi0767").AppendLine();
             sb.AppendLine();
             var str0 = "";
             if (ea.Args.Length == 0 || string.IsNullOrWhiteSpace(ea.Args[0]))
@@ -385,7 +386,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             await chn.SendMessage(sb.ToString());
         }
 
-        [Command("aboutada", "Shows information about ADA.", CheckPermissions = false)]
+        /*[Command("aboutada", "Shows information about ADA.", CheckPermissions = false)]
         public static async Task About(CommandEventArgs ea)
         {
             var srv = ea.Server;
@@ -410,7 +411,7 @@ namespace Emzi0767.Net.Discord.AdaBot.Core
             sb.AppendFormat("The brave individuals who wish to do so, can view and contribute to my source code at https://github.com/Emzi0767/Discord-ADA-Bot");
 
             await chn.SendMessage(sb.ToString());
-        }
+        }*/
 
         [Command("fulldump", "Performs a full environment dump. This command can only be used by Emzi0767.", CheckerId = "CoreDebugChecker", CheckPermissions = true)]
         public static async Task FullDump(CommandEventArgs ea)
