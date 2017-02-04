@@ -184,7 +184,7 @@ namespace Emzi0767.Ada.Commands
             await Task.Delay(1);
 
             var msg = arg as SocketUserMessage;
-            if (msg == null)
+            if (msg == null || msg.Author == null || msg.Author.IsBot)
                 return;
 
             var chn = msg.Channel as SocketTextChannel;

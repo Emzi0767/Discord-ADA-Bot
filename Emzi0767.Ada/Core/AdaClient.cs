@@ -41,6 +41,12 @@ namespace Emzi0767.Ada.Core
             this.DiscordClient.Log += Client_Log;
             this.DiscordClient.Ready += Client_Ready;
 
+            // modlog events
+            this.DiscordClient.UserJoined += DiscordClient_UserJoined;
+            this.DiscordClient.UserLeft += DiscordClient_UserLeft;
+            this.DiscordClient.UserBanned += DiscordClient_UserBanned;
+            this.DiscordClient.UserUnbanned += DiscordClient_UserUnbanned;
+
             var a = typeof(AdaClient).GetTypeInfo().Assembly;
             var n = a.GetName();
             var l = Path.GetDirectoryName(a.Location);
@@ -52,6 +58,31 @@ namespace Emzi0767.Ada.Core
             this.ConfigJson = sjo;
             this.Token = (string)sjo["token"];
             L.W("ADA DSC", "Discord initialized");
+        }
+
+        /// <summary>
+        /// Registers a message received handler.
+        /// </summary>
+        /// <param name="handler">Handler to register.</param>
+        public void RegisterMessageHandler(Func<SocketMessage, Task> handler)
+        {
+            this.DiscordClient.MessageReceived += handler;
+        }
+
+        /// <summary>
+        /// Sends an embed to a sepcified channel.
+        /// </summary>
+        /// <param name="embed">Embed to send.</param>
+        /// <param name="channel">Channel to send the embed to.</param>
+        public void SendEmbed(EmbedBuilder embed, ulong channel)
+        {
+            var ch = (SocketTextChannel)null;
+            var tg = DateTime.Now;
+            while (ch == null && (DateTime.Now - tg).TotalSeconds < 10)
+                ch = this.DiscordClient.GetChannel(channel) as SocketTextChannel;
+            if (ch == null)
+                return;
+            this.SendEmbed(embed, ch);
         }
 
         internal void Initialize()
@@ -72,15 +103,6 @@ namespace Emzi0767.Ada.Core
         }
 
         /// <summary>
-        /// Registers a message received handler.
-        /// </summary>
-        /// <param name="handler">Handler to register.</param>
-        public void RegisterMessageHandler(Func<SocketMessage, Task> handler)
-        {
-            this.DiscordClient.MessageReceived += handler;
-        }
-
-        /// <summary>
         /// Sends a message to a specified channel.
         /// </summary>
         /// <param name="message">Message to send.</param>
@@ -94,22 +116,6 @@ namespace Emzi0767.Ada.Core
             if (ch == null)
                 return;
             this.SendMessage(message, ch);
-        }
-
-        /// <summary>
-        /// Sends an embed to a sepcified channel.
-        /// </summary>
-        /// <param name="embed">Embed to send.</param>
-        /// <param name="channel">Channel to send the embed to.</param>
-        public void SendEmbed(EmbedBuilder embed, ulong channel)
-        {
-            var ch = (SocketTextChannel)null;
-            var tg = DateTime.Now;
-            while (ch == null && (DateTime.Now - tg).TotalSeconds < 10)
-                ch = this.DiscordClient.GetChannel(channel) as SocketTextChannel;
-            if (ch == null)
-                return;
-            this.SendEmbed(embed, ch);
         }
 
         /// <summary>
@@ -175,6 +181,52 @@ namespace Emzi0767.Ada.Core
             return Task.CompletedTask;
         }
 
+        private async Task DiscordClient_UserJoined(SocketGuildUser arg)
+        {
+            var usr = arg;
+            var gld = usr.Guild;
+            var gid = gld.Id;
+
+            var cfg = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            if (cfg == null || cfg.ModLogChannel == null)
+                return;
+
+            var chn = await gld.GetTextChannelAsync(cfg.ModLogChannel.Value);
+            if (chn == null)
+                return;
+
+            await chn.SendMessageAsync("", false, this.PrepareEmbed("User joined", usr.Mention, EmbedType.Info));
+        }
+
+        private async Task DiscordClient_UserLeft(SocketGuildUser arg)
+        {
+            var usr = arg;
+            var gld = usr.Guild;
+            var gid = gld.Id;
+
+            var cfg = AdaBotCore.ConfigManager.GetGuildConfig(gid);
+            if (cfg == null || cfg.ModLogChannel == null)
+                return;
+
+            var chn = await gld.GetTextChannelAsync(cfg.ModLogChannel.Value);
+            if (chn == null)
+                return;
+
+            await chn.SendMessageAsync("", false, this.PrepareEmbed("User left", usr.Mention, EmbedType.Info));
+        }
+
+        private async Task DiscordClient_UserBanned(SocketUser arg1, SocketGuild arg2)
+        {
+            // figure out non-conflicting bans
+            await Task.Delay(1);
+        }
+
+        private async Task DiscordClient_UserUnbanned(SocketUser arg1, SocketGuild arg2)
+        {
+            // figure out non-conflicting bans
+            await Task.Delay(1);
+        }
+
         private void BanHammer_Tick(object _)
         {
             var gconfs = AdaBotCore.ConfigManager != null ? AdaBotCore.ConfigManager.GetGuildConfigs() : new KeyValuePair<ulong, AdaGuildConfig>[0];
@@ -225,5 +277,53 @@ namespace Emzi0767.Ada.Core
                 this.DiscordClient.SetGame(this.Game).GetAwaiter().GetResult();
             L.W("ADA DSC BH", "Ticked banhammer");
         }
+
+        #region Embeds
+        private EmbedBuilder PrepareEmbed(EmbedType type)
+        {
+            var embed = new EmbedBuilder();
+            switch (type)
+            {
+                case EmbedType.Info:
+                    embed.Color = new Color(0, 127, 255);
+                    break;
+
+                case EmbedType.Success:
+                    embed.Color = new Color(127, 255, 0);
+                    break;
+
+                case EmbedType.Warning:
+                    embed.Color = new Color(255, 255, 0);
+                    break;
+
+                case EmbedType.Error:
+                    embed.Color = new Color(255, 127, 0);
+                    break;
+
+                default:
+                    embed.Color = new Color(255, 255, 255);
+                    break;
+            }
+            embed.ThumbnailUrl = AdaBotCore.AdaClient.CurrentUser.AvatarUrl;
+            return embed;
+        }
+
+        private EmbedBuilder PrepareEmbed(string title, string desc, EmbedType type)
+        {
+            var embed = this.PrepareEmbed(type);
+            embed.Title = title;
+            embed.Description = desc;
+            return embed;
+        }
+
+        private enum EmbedType : uint
+        {
+            Unknown,
+            Success,
+            Error,
+            Warning,
+            Info
+        }
+        #endregion
     }
 }
