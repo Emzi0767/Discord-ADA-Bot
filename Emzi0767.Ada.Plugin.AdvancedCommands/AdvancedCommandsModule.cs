@@ -22,7 +22,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
     {
         public string Name { get { return "ADA Advanced Commands"; } }
 
-        [AdaCommand("colorme", "Sets your own color. This command can be disabled by guild administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [Command("colorme", "Sets your own color. This command can be disabled by guild administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
         [AdaMethodParameter(0, "color", "Color to set, in RRGGBB format.", true)]
         public async Task SetColor(AdaCommandContext ctx,
             [AdaArgumentParameter("Color in RRGGBB format.", true)] string color)
@@ -48,7 +48,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("generateid", "Generates a random ID. This command can be disabled by guild administrators.", Aliases = "genid;makeid;mkid", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [Command("generateid", "Generates a random ID. This command can be disabled by guild administrators.", Aliases = "genid;makeid;mkid", CheckerId = "ACPChecker", CheckPermissions = true)]
         public async Task CreateId(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -65,7 +65,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("generateuuid", "Generates a random UUID. This command can be disabled by guild administrators.", Aliases = "genuuid;makeuuid;mkuuid;generateguid;genguid;makeguid;mkguid", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [Command("generateuuid", "Generates a random UUID. This command can be disabled by guild administrators.", Aliases = "genuuid;makeuuid;mkuuid;generateguid;genguid;makeguid;mkguid", CheckerId = "ACPChecker", CheckPermissions = true)]
         public async Task CreateUuid(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -79,7 +79,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("asciitobase64", "Converts an ASCII string to a Base64 string. This command can be disabled by guild administrators.", Aliases = "ascii2base64;ascii2b64;2b64;b64;base64;tobase64;2base64", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [Command("asciitobase64", "Converts an ASCII string to a Base64 string. This command can be disabled by guild administrators.", Aliases = "ascii2base64;ascii2b64;2b64;b64;base64;tobase64;2base64", CheckerId = "ACPChecker", CheckPermissions = true)]
         public async Task AsciiToBase64(AdaCommandContext ctx,
             [AdaArgumentParameter("ASCII text to convert to Base64.", true)] params string[] ascii_text)
         {
@@ -96,7 +96,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("base64toascii", "Converts a Base64 string to an ASCII string. This command can be disabled by guild administrators.", Aliases = "base642ascii;b642ascii;2ascii;ascii;toascii", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [Command("base64toascii", "Converts a Base64 string to an ASCII string. This command can be disabled by guild administrators.", Aliases = "base642ascii;b642ascii;2ascii;ascii;toascii", CheckerId = "ACPChecker", CheckPermissions = true)]
         public async Task Base64ToAscii(AdaCommandContext ctx,
             [AdaArgumentParameter("Base64 text to convert to ASCII.", true)] params string[] base64_text)
         {
@@ -113,7 +113,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("color", "Creates a colored square, used for color previewing. This command can be disabled by guild administrators.", Aliases = "clr;colour;colorsquare;coloursquare;clrsq", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [Command("color", "Creates a colored square, used for color previewing. This command can be disabled by guild administrators.", Aliases = "clr;colour;colorsquare;coloursquare;clrsq", CheckerId = "ACPChecker", CheckPermissions = true)]
         public async Task ColorSquare(AdaCommandContext ctx,
             [AdaArgumentParameter("Color in AARRGGBB format.", true)] string color)
         {
@@ -144,7 +144,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             }
         }
 
-        [AdaCommand("markov", "Creates a markov chain sentence out of messages from specified source. This command can be disabled by guild administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
+        [Command("markov", "Creates a markov chain sentence out of messages from specified source. This command can be disabled by guild administrators.", CheckerId = "ACPChecker", CheckPermissions = true)]
         [AdaMethodParameter(0, "channels", "Channels to create the chain from. Specify single if not mentioning roles or users.", true, IsCatchAll = true)]
         [AdaMethodParameter(1, "user or role", "User or role whose messages to create the chain from.", true)]
         public async Task Markov(AdaCommandContext ctx)
@@ -246,7 +246,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("enableadvancedcommand", "Enables an Advanced Commands command.", Aliases = "enableac;enableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [Command("enableadvancedcommand", "Enables an Advanced Commands command.", Aliases = "enableac;enableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public async Task EnableAdvancedCommand(AdaCommandContext ctx,
             [AdaArgumentParameter("Commands to enable. Consult adahelp for list of commands that can be enabled.", true)] params string[] commands)
         {
@@ -270,7 +270,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("disableadvancedcommand", "Disables an Advanced Commands command.", Aliases = "disableac;disableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
+        [Command("disableadvancedcommand", "Disables an Advanced Commands command.", Aliases = "disableac;disableadvcmd", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.Administrator)]
         public async Task DisableAdvancedCommand(AdaCommandContext ctx,
             [AdaArgumentParameter("Commands to disable. Consult adahelp for list of commands that can be disabled.", true)] params string[] commands)
         {
@@ -319,7 +319,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
                     embed.Color = new s.Color(255, 255, 255);
                     break;
             }
-            embed.ThumbnailUrl = AdaBotCore.AdaClient.CurrentUser.AvatarUrl;
+            embed.ThumbnailUrl = AdaBotProgram.AdaClient.CurrentUser.AvatarUrl;
             return embed;
         }
 

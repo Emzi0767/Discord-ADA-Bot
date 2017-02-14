@@ -3,99 +3,67 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Discord.Commands;
+using Emzi0767.Ada.Commands;
 using Emzi0767.Ada.Extensions;
 
 namespace Emzi0767.Ada.Plugins
 {
-    internal class AdaPluginManager
+    public class AdaPluginManager
     {
-        public int PluginCount { get { return this.RegisteredPlugins.Count; } }
-        internal IEnumerable<Assembly> PluginAssemblies { get { return this.LoadedAssemblies.Select(xkvp => xkvp.Value); } }
-        internal Assembly MainAssembly { get; private set; }
-        private Dictionary<string, AdaPlugin> RegisteredPlugins { get; set; }
+        public IEnumerable<Type> Modules { get { return this.FoundModules.AsEnumerable(); } }
+
+        private List<Type> FoundModules { get; set; }
         private Dictionary<string, Assembly> LoadedAssemblies { get; set; }
 
         public AdaPluginManager()
         {
-            L.W("ADA PLG", "Initializing Plugin manager");
-            this.RegisteredPlugins = new Dictionary<string, AdaPlugin>();
-            L.W("ADA PLG", "Initializer");
+            this.FoundModules = new List<Type>();
         }
 
-        public void LoadAssemblies()
+        internal void Initialize()
         {
-            L.W("ADA PLG", "Loading all plugin assemblies");
-            this.LoadedAssemblies = new Dictionary<string, Assembly>();
-            var a = typeof(AdaPlugin).GetTypeInfo().Assembly;
-            this.LoadedAssemblies.Add(a.GetName().Name, a);
-            this.MainAssembly = a;
-            var l = a.Location;
-            l = Path.GetDirectoryName(l);
+            L.W("ADA PLUGIN", "Locating assemblies");
+            var a = typeof(AdaPluginManager).GetTypeInfo().Assembly;
+            var l = Path.GetDirectoryName(a.Location);
 
-            var r = Path.Combine(l, "references");
-            if (Directory.Exists(r))
+            L.W("ADA PLUGIN", "Looking for references");
+            FrameworkAssemblyLoader.ResolvingAssembly += ResolvingAssembly;
+            var asfs = Directory.GetFiles(Path.Combine(l, "references"), "*.dll", SearchOption.TopDirectoryOnly);
+            foreach (var asf in asfs)
             {
-                var x = Directory.GetFiles(r, "*.dll", SearchOption.TopDirectoryOnly);
-                foreach (var xx in x)
-                {
-                    L.W("ADA PLG", "Loaded reference file '{0}'", xx);
-                    var xa = FrameworkAssemblyLoader.LoadFile(xx);
-                    this.LoadedAssemblies.Add(xa.GetName().Name, xa);
-                }
+                var xa = FrameworkAssemblyLoader.LoadFile(asf);
+                this.LoadedAssemblies.Add(xa.GetName().Name, xa);
             }
 
-            l = Path.Combine(l, "plugins");
-            if (Directory.Exists(l))
-            {
-                var x = Directory.GetFiles(l, "*.dll", SearchOption.TopDirectoryOnly);
-                foreach (var xx in x)
-                {
-                    L.W("ADA PLG", "Loaded file '{0}'", xx);
-                    var xa = FrameworkAssemblyLoader.LoadFile(xx);
-                    this.LoadedAssemblies.Add(xa.GetName().Name, xa);
-                }
-            }
-            L.W("ADA PLG", "Registering plugin dependency resolver");
-            FrameworkAssemblyLoader.ResolvingAssembly += ResolvePlugin;
-            L.W("ADA PLG", "Done");
-        }
+            L.W("ADA PLUGIN", "Registering core modules");
+            var mt = typeof(ModuleBase<AdaCommandContext>);
+            var ea = Assembly.GetEntryAssembly();
+            var cms = ea
+                .DefinedTypes
+                .Select(xti => xti.AsType())
+                .Where(xt => !xt.IsNested && xt.HasParentType(mt));
+            this.FoundModules.AddRange(cms);
 
-        public void Initialize()
-        {
-            L.W("ADA PLG", "Registering and initializing plugins");
-            var @as = this.PluginAssemblies;
-            var ts = @as.SelectMany(xa => xa.DefinedTypes);
-            var pt = typeof(IAdaPlugin);
-            foreach (var t in ts)
+            L.W("ADA PLUGIN", "Looking for modules");
+            asfs = Directory.GetFiles(Path.Combine(l, "plugins"), "*.dll", SearchOption.TopDirectoryOnly);
+            foreach (var asf in asfs)
             {
-                if (!pt.IsAssignableFrom(t.AsType()) || !t.IsClass || t.IsAbstract)
-                    continue;
+                var xa = FrameworkAssemblyLoader.LoadFile(asf);
+                this.LoadedAssemblies.Add(xa.GetName().Name, xa);
 
-                L.W("ADA PLG", "Type {0} is a plugin", t.ToString());
-                var iplg = (IAdaPlugin)Activator.CreateInstance(t.AsType());
-                var plg = new AdaPlugin { Plugin = iplg };
-                this.RegisteredPlugins.Add(plg.Name, plg);
-                L.W("ADA PLG", "Registered plugin '{0}'", plg.Name);
-                plg.Plugin.Initialize();
-                plg.Plugin.LoadConfig(AdaBotCore.ConfigManager.GetConfig(iplg));
-                L.W("ADA PLG", "Plugin '{0}' initialized", plg.Name);
-            }
-            this.UpdateAllConfigs();
-            L.W("ADA PLG", "Registered and initialized {0:#,##0} plugins", this.RegisteredPlugins.Count);
-        }
-
-        internal void UpdateAllConfigs()
-        {
-            foreach (var plg in this.RegisteredPlugins)
-            {
-                AdaBotCore.ConfigManager.UpdateConfig(plg.Value.Plugin);
+                var xts = xa.DefinedTypes
+                    .Select(xti => xti.AsType())
+                    .Where(xt => !xt.IsNested && xt.HasParentType(mt));
+                this.FoundModules.AddRange(xts);
             }
         }
 
-        private Assembly ResolvePlugin(string assembly_name)
+        private Assembly ResolvingAssembly(string assembly_name)
         {
             if (this.LoadedAssemblies.ContainsKey(assembly_name))
                 return this.LoadedAssemblies[assembly_name];
+
             return null;
         }
     }

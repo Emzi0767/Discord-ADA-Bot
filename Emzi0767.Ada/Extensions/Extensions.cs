@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 
 namespace Emzi0767.Ada.Extensions
 {
@@ -41,6 +43,40 @@ namespace Emzi0767.Ada.Extensions
             else
                 pst = string.Concat("0x", i32.ToString("X8"));
             return pst;
+        }
+
+        public static bool IsAssignableToGenericType(this Type givenType, Type genericType)
+        {
+            var interfaceTypes = givenType.GetInterfaces();
+
+            foreach (var it in interfaceTypes)
+            {
+                if (it.GetTypeInfo().IsGenericType && it.GetGenericTypeDefinition() == genericType)
+                    return true;
+            }
+
+            if (givenType.GetTypeInfo().IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
+                return true;
+
+            var baseType = givenType.GetTypeInfo().BaseType;
+            if (baseType == null) return false;
+
+            return IsAssignableToGenericType(baseType, genericType);
+        }
+
+        public static bool HasParentType(this Type type, Type parent_type)
+        {
+            var bt = type.GetTypeInfo().BaseType;
+
+            while (bt != null)
+            {
+                if (bt == parent_type)
+                    return true;
+
+                bt = bt.GetTypeInfo().BaseType;
+            }
+
+            return false;
         }
     }
 }

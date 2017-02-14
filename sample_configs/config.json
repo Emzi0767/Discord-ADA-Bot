@@ -1,5 +1,15 @@
 {
   "token": "discord bot token",
-  "guild_config": {},
-  "conf_manager": []
+  "shard_count": 2,
+  "game": "Banhammer 40,000",
+  "image_path": "Full path to image directory",
+
+  "postgresql": 
+  {
+    "hostname": "localhost",
+    "port": 5432,
+    "username": "discord_ada",
+    "password": "ada_drocsid",
+    "database": "discord_ada"
+  }
 }

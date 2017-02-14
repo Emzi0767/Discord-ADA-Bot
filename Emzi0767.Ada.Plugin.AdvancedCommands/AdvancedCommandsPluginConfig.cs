@@ -35,7 +35,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             var sd = CommandConfiguration[guild];
             sd[command] = state;
 
-            AdaBotCore.ConfigManager.UpdateConfig(AdvancedCommandsPlugin.Instance);
+            AdaBotProgram.ConfigurationManager.UpdateConfig(AdvancedCommandsPlugin.Instance);
         }
 
         public void SetEnabled(string[] commands, ulong guild, bool state)
@@ -47,7 +47,7 @@ namespace Emzi0767.Ada.Plugin.AdvancedCommands
             foreach (var command in commands)
                 sd[command] = state;
 
-            AdaBotCore.ConfigManager.UpdateConfig(AdvancedCommandsPlugin.Instance);
+            AdaBotProgram.ConfigurationManager.UpdateConfig(AdvancedCommandsPlugin.Instance);
         }
 
         public void Load(JObject jo)

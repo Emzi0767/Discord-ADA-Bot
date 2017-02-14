@@ -13,7 +13,7 @@ namespace Emzi0767.Ada.Plugin.Tags
     {
         public string Name { get { return "Tag Plugin Controls"; } }
 
-        [AdaCommand("newtag", "Creates a new tag.", Aliases = "mktag;definetag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [Command("newtag", "Creates a new tag.", Aliases = "mktag;definetag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public async Task DefineTag(AdaCommandContext ctx,
             [AdaArgumentParameter("Name of tag to create.", true)] string name, 
             [AdaArgumentParameter("Contents of tag to create.", true)] params string[] contents)
@@ -34,7 +34,7 @@ namespace Emzi0767.Ada.Plugin.Tags
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("edittag", "Edits an existing tag.", Aliases = "modtag;modifytag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [Command("edittag", "Edits an existing tag.", Aliases = "modtag;modifytag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public async Task EditTag(AdaCommandContext ctx,
             [AdaArgumentParameter("Name of tag to edit.", true)] string name,
             [AdaArgumentParameter("New contents of the tag.", true)] params string[] contents)
@@ -55,7 +55,7 @@ namespace Emzi0767.Ada.Plugin.Tags
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("removetag", "Removes an existing tag.", Aliases = "rmtag;deletetag;deltag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [Command("removetag", "Removes an existing tag.", Aliases = "rmtag;deletetag;deltag", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public async Task RemoveTag(AdaCommandContext ctx,
             [AdaArgumentParameter("Name of tag to delete.", true)] params string[] name)
         {
@@ -74,7 +74,7 @@ namespace Emzi0767.Ada.Plugin.Tags
             await chn.SendMessageAsync("", false, embed);
         }
 
-        [AdaCommand("tag", "Displays contents of a specified tag.", CheckPermissions = false)]
+        [Command("tag", "Displays contents of a specified tag.", CheckPermissions = false)]
         public async Task ShowTag(AdaCommandContext ctx,
             [AdaArgumentParameter("Name of tag to display.", true)] params string[] name)
         {
@@ -92,7 +92,7 @@ namespace Emzi0767.Ada.Plugin.Tags
             await chn.SendMessageAsync(tag.Contents);
         }
 
-        [AdaCommand("dumptag", "Displays raw contents of a specified tag.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
+        [Command("dumptag", "Displays raw contents of a specified tag.", CheckerId = "CoreAdminChecker", CheckPermissions = true, RequiredPermission = AdaPermission.ManageMessages)]
         public async Task DumpTag(AdaCommandContext ctx,
             [AdaArgumentParameter("Name of tag to dump.", true)] params string[] name)
         {
@@ -110,7 +110,7 @@ namespace Emzi0767.Ada.Plugin.Tags
             await chn.SendMessageAsync(string.Concat("```\n", tag.Contents.Replace("```", "` ` `"), "\n```"));
         }
 
-        [AdaCommand("tags", "Lists tags defined for this channel.", CheckPermissions = false)]
+        [Command("tags", "Lists tags defined for this channel.", CheckPermissions = false)]
         public async Task ShowTags(AdaCommandContext ctx)
         {
             var gld = ctx.Guild;
@@ -158,7 +158,7 @@ namespace Emzi0767.Ada.Plugin.Tags
                     embed.Color = new Color(255, 255, 255);
                     break;
             }
-            embed.ThumbnailUrl = AdaBotCore.AdaClient.CurrentUser.AvatarUrl;
+            embed.ThumbnailUrl = AdaBotProgram.AdaClient.CurrentUser.AvatarUrl;
             return embed;
         }
 

@@ -21,7 +21,7 @@ namespace Emzi0767.Ada.Plugin.Stallman
         {
             L.W("GNU/ADA", "Initializing GNU/Stallman Plugin");
             Instance = this;
-            AdaBotCore.AdaClient.RegisterMessageHandler(MessageHandler);
+            AdaBotProgram.AdaClient.RegisterMessageHandler(MessageHandler);
             L.W("GNU/ADA", "Done");
         }
 
@@ -30,7 +30,7 @@ namespace Emzi0767.Ada.Plugin.Stallman
             if (this.conf.DisabledGuilds.Contains(guild))
             {
                 this.conf.DisabledGuilds.Remove(guild);
-                AdaBotCore.ConfigManager.UpdateConfig(this);
+                AdaBotProgram.ConfigurationManager.UpdateConfig(this);
             }
         }
 
@@ -39,7 +39,7 @@ namespace Emzi0767.Ada.Plugin.Stallman
             if (!this.conf.DisabledGuilds.Contains(guild))
             {
                 this.conf.DisabledGuilds.Add(guild);
-                AdaBotCore.ConfigManager.UpdateConfig(this);
+                AdaBotProgram.ConfigurationManager.UpdateConfig(this);
             }
         }
 

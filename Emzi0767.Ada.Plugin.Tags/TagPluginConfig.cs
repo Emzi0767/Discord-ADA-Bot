@@ -24,7 +24,7 @@ namespace Emzi0767.Ada.Plugin.Tags
                 return false;
 
             this.Tags[channel][tag.Id] = tag;
-            AdaBotCore.ConfigManager.UpdateConfig(TagPlugin.Instance);
+            AdaBotProgram.ConfigurationManager.UpdateConfig(TagPlugin.Instance);
             return true;
         }
 
@@ -37,7 +37,7 @@ namespace Emzi0767.Ada.Plugin.Tags
                 return false;
 
             this.Tags[channel][tag.Id] = tag;
-            AdaBotCore.ConfigManager.UpdateConfig(TagPlugin.Instance);
+            AdaBotProgram.ConfigurationManager.UpdateConfig(TagPlugin.Instance);
             return true;
         }
 
@@ -50,7 +50,7 @@ namespace Emzi0767.Ada.Plugin.Tags
                 return false;
 
             this.Tags[channel].Remove(id);
-            AdaBotCore.ConfigManager.UpdateConfig(TagPlugin.Instance);
+            AdaBotProgram.ConfigurationManager.UpdateConfig(TagPlugin.Instance);
             return true;
         }
 

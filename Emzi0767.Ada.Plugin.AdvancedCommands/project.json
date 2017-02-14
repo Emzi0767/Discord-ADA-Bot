@@ -3,29 +3,18 @@
   "copyright": "© Emzi0767 2016",
   "description": "A plugin for ADA Bot, which adds a number of commands.",
   "language": "en-US",
-  "version": "1.1.0-*",
+  "version": "2.0.0-*",
 
   "dependencies": {
-    "Emzi0767.Ada": "3.1.4-*",
-    "Newtonsoft.Json": "9.0.2-beta1"
+    "Emzi0767.Ada": "4.0.0-*",
+    "MarkovCore": "1.2.1",
+    "Microsoft.NETCore.App": "1.1.0",
+    "CoreCompat.System.Drawing": "1.0.0-beta006"
   },
 
   "frameworks": {
-    "netcoreapp1.0": {
-      "imports": "dnxcore50",
-      "dependencies": {
-        "MarkovCore": "1.2.1",
-        "Microsoft.NETCore.App": "1.1.0",
-        "CoreCompat.System.Drawing": "1.0.0-beta006"
-      }
-    },
-    "net462": {
-      "dependencies": {
-        "Markov": "1.2.1"
-      },
-      "frameworkAssemblies": {
-        "System.Drawing": "4.0.0.0"
-      }
+    "netcoreapp1.1": {
+      "imports": "dnxcore50"
     }
   }
 }

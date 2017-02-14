@@ -74,7 +74,7 @@ namespace Emzi0767.Ada.Plugin.Feedle
         {
             L.W("ADA RSS", "Updating config");
 
-            AdaBotCore.ConfigManager.UpdateConfig(this);
+            AdaBotProgram.ConfigurationManager.UpdateConfig(this);
         }
 
         private void FeedleTick(object _)
@@ -115,8 +115,8 @@ namespace Emzi0767.Ada.Plugin.Feedle
                         embed.Url = itu.ToString();
                         embed.Timestamp = new DateTimeOffset(itd.ToUniversalTime());
                         embed.Color = new Color(255, 127, 0);
-                        embed.ThumbnailUrl = thm ?? AdaBotCore.AdaClient.CurrentUser.AvatarUrl;
-                        if (feed.Initialized) AdaBotCore.AdaClient.SendEmbed(embed, feed.ChannelId);
+                        embed.ThumbnailUrl = thm ?? AdaBotProgram.AdaClient.CurrentUser.AvatarUrl;
+                        if (feed.Initialized) AdaBotProgram.AdaClient.SendEmbed(embed, feed.ChannelId);
                     }
                 }
 

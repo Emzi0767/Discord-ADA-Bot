@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample_configs", "sample_configs", "{061B5A91-5E15-403B-AD53-29EE5B2BDD89}"
 	ProjectSection(SolutionItems) = preProject
 		sample_configs\config.json = sample_configs\config.json
+		N:\Visual Studio 2015\Projects\Emzi0767.Net.Discord.AdaBot\sample_configs\pamdb.sql = N:\Visual Studio 2015\Projects\Emzi0767.Net.Discord.AdaBot\sample_configs\pamdb.sql
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9EB9A9A8-D8C1-4D35-A445-4EBF17FD3C2D}"
@@ -32,19 +33,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.2.1", "1.2.1", "{D21DCA42
 		ext_lib\local_nuget\markovcore\1.2.1\markovcore.nuspec = ext_lib\local_nuget\markovcore\1.2.1\markovcore.nuspec
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Plugin.Dispatch", "Emzi0767.Ada.Plugin.Dispatch\Emzi0767.Ada.Plugin.Dispatch.xproj", "{D7071780-812D-4632-8D29-9B4E23CFEE23}"
-EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Plugin.Stallman", "Emzi0767.Ada.Plugin.Stallman\Emzi0767.Ada.Plugin.Stallman.xproj", "{9AA6B4E5-69F9-42E0-BED4-1F453E633759}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Plugin.Tags", "Emzi0767.Ada.Plugin.Tags\Emzi0767.Ada.Plugin.Tags.xproj", "{B3DBEB5A-775D-48B6-A867-5C38F59AE5D7}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Plugin.Feedle", "Emzi0767.Ada.Plugin.Feedle\Emzi0767.Ada.Plugin.Feedle.xproj", "{95FF5B3D-E1A6-4FB6-BFBF-79D567D91A16}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.AssemblyResolver.FX", "Emzi0767.AssemblyResolver.FX\Emzi0767.AssemblyResolver.FX.xproj", "{9E750ADA-6E2C-4964-AB1A-99BE2A2AB401}"
-EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.AssemblyResolver.Standard", "Emzi0767.AssemblyResolver.Standard\Emzi0767.AssemblyResolver.Standard.xproj", "{799B62EB-0453-4A32-885E-87392C460C2C}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Providers.WS4Net", "Emzi0767.Ada.Providers.WS4Net\Emzi0767.Ada.Providers.WS4Net.xproj", "{8E5F7865-CE3A-479A-94CC-B0A24766FDAF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,10 +55,6 @@ Global
 		{90DEC6F2-E77E-4052-B267-404E5EC05352}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90DEC6F2-E77E-4052-B267-404E5EC05352}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90DEC6F2-E77E-4052-B267-404E5EC05352}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D7071780-812D-4632-8D29-9B4E23CFEE23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7071780-812D-4632-8D29-9B4E23CFEE23}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D7071780-812D-4632-8D29-9B4E23CFEE23}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D7071780-812D-4632-8D29-9B4E23CFEE23}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9AA6B4E5-69F9-42E0-BED4-1F453E633759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9AA6B4E5-69F9-42E0-BED4-1F453E633759}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AA6B4E5-69F9-42E0-BED4-1F453E633759}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -76,18 +67,10 @@ Global
 		{95FF5B3D-E1A6-4FB6-BFBF-79D567D91A16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95FF5B3D-E1A6-4FB6-BFBF-79D567D91A16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95FF5B3D-E1A6-4FB6-BFBF-79D567D91A16}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9E750ADA-6E2C-4964-AB1A-99BE2A2AB401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E750ADA-6E2C-4964-AB1A-99BE2A2AB401}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9E750ADA-6E2C-4964-AB1A-99BE2A2AB401}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9E750ADA-6E2C-4964-AB1A-99BE2A2AB401}.Release|Any CPU.Build.0 = Release|Any CPU
 		{799B62EB-0453-4A32-885E-87392C460C2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{799B62EB-0453-4A32-885E-87392C460C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{799B62EB-0453-4A32-885E-87392C460C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{799B62EB-0453-4A32-885E-87392C460C2C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8E5F7865-CE3A-479A-94CC-B0A24766FDAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E5F7865-CE3A-479A-94CC-B0A24766FDAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8E5F7865-CE3A-479A-94CC-B0A24766FDAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8E5F7865-CE3A-479A-94CC-B0A24766FDAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
