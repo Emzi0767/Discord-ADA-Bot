@@ -36,4 +36,8 @@
     <PackageReference Include="Npgsql" Version="3.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+
 </Project>
