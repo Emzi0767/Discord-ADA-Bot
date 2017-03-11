@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -11,6 +13,8 @@ using Emzi0767.Ada.Commands.Permissions;
 using Emzi0767.Ada.Config;
 using Emzi0767.Ada.Core;
 using Emzi0767.Ada.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Emzi0767.Ada.Commands
@@ -18,7 +22,7 @@ namespace Emzi0767.Ada.Commands
     [Name("core")]
     internal class AdaCoreCommandModule : ModuleBase<AdaCommandContext>
     {
-        #region Role Manipulation
+        #region Role Management
         [Group("role")]
         [Alias("roles")]
         [Summary("Role management commands")]
@@ -201,18 +205,10 @@ namespace Emzi0767.Ada.Commands
                 
                 var rsn = reason;
                 if (string.IsNullOrWhiteSpace(rsn))
-                {
-                    var embed_err = this.Context.Utilities.BuildEmbed(this.Context, "Invalid reason", "Reason cannot be empty.", AdaUtilities.EmbedColour.Error);
-                    await this.ReplyAsync("", false, embed_err);
-                    return;
-                }
+                    throw new ArgumentException("You must specify a reason");
 
                 if (!this.Context.Utilities.CheckModLogConfiguration(gld))
-                {
-                    var embed_err = this.Context.Utilities.BuildEmbed(this.Context, "Invalid guild configuration", "This guild does not have modlog configured.", AdaUtilities.EmbedColour.Error);
-                    await this.ReplyAsync("", false, embed_err);
-                    return;
-                }
+                    throw new InvalidOperationException("This guild is not properly configured");
 
                 var embed = this.Context.Utilities.BuildEmbed(this.Context, "User reported successfully", string.Concat(user.Mention, " was reported to the moderators."), AdaUtilities.EmbedColour.Success);
 
@@ -229,20 +225,12 @@ namespace Emzi0767.Ada.Commands
                 var gld = this.Context.Guild as SocketGuild;
 
                 if (members.Length < 1)
-                {
-                    var embed_err = this.Context.Utilities.BuildEmbed(this.Context, "Error muting", "You must specify members you want to mute.", AdaUtilities.EmbedColour.Error);
-                    await this.ReplyAsync("", false, embed_err);
-                    return;
-                }
+                    throw new ArgumentException("You must specify members");
 
                 var gconf = this.Context.Configuration.GetConfiguration(gld);
                 var mrl = gconf.MuteRole;
                 if (mrl == null)
-                {
-                    var embed_err = this.Context.Utilities.BuildEmbed(this.Context, "Error muting", "Mute role is not configured.", AdaUtilities.EmbedColour.Error);
-                    await this.ReplyAsync("", false, embed_err);
-                    return;
-                }
+                    throw new InvalidOperationException("This guild is not properly configured");
 
                 foreach (var usm in members)
                 {
@@ -263,20 +251,12 @@ namespace Emzi0767.Ada.Commands
                 var gld = this.Context.Guild as SocketGuild;
 
                 if (members.Length < 1)
-                {
-                    var embed_err = this.Context.Utilities.BuildEmbed(this.Context, "Error unmuting", "You must specify members you want to unmute.", AdaUtilities.EmbedColour.Error);
-                    await this.ReplyAsync("", false, embed_err);
-                    return;
-                }
+                    throw new ArgumentException("You must specify members");
 
                 var gconf = this.Context.Configuration.GetConfiguration(gld);
                 var mrl = gconf.MuteRole;
                 if (mrl == null)
-                {
-                    var embed_err = this.Context.Utilities.BuildEmbed(this.Context, "Error unmuting", "Mute role is not configured.", AdaUtilities.EmbedColour.Error);
-                    await this.ReplyAsync("", false, embed_err);
-                    return;
-                }
+                    throw new InvalidOperationException("This guild is not properly configured");
 
                 foreach (var usm in members)
                 {
@@ -295,11 +275,7 @@ namespace Emzi0767.Ada.Commands
             public async Task Kick([Summary("Members to kick")] params SocketGuildUser[] members)
             {
                 if (members.Length < 1)
-                {
-                    var embed_err = this.Context.Utilities.BuildEmbed(this.Context, "Error kicking", "You must specify members you want to kick.", AdaUtilities.EmbedColour.Error);
-                    await this.ReplyAsync("", false, embed_err);
-                    return;
-                }
+                    throw new ArgumentException("You must specify members");
 
                 foreach (var usm in members)
                 {
@@ -318,6 +294,9 @@ namespace Emzi0767.Ada.Commands
             public async Task Softban([Summary("Members to ban")] params SocketGuildUser[] members)
             {
                 var gld = this.Context.Guild as SocketGuild;
+
+                if (members.Length < 1)
+                    throw new ArgumentException("You must specify members");
 
                 foreach (var usr in members)
                 {
@@ -338,11 +317,7 @@ namespace Emzi0767.Ada.Commands
                 var gld = this.Context.Guild as SocketGuild;
 
                 if (members.Length < 1)
-                {
-                    var embed_err = this.Context.Utilities.BuildEmbed(this.Context, "Error banning", "You must specify members you want to ban.", AdaUtilities.EmbedColour.Error);
-                    await this.ReplyAsync("", false, embed_err);
-                    return;
-                }
+                    throw new ArgumentException("You must specify members");
 
                 foreach (var usm in members)
                 {
@@ -361,13 +336,9 @@ namespace Emzi0767.Ada.Commands
             public async Task Unban([Summary("Ids of members to unban")] params ulong[] members)
             {
                 var gld = this.Context.Guild as SocketGuild;
-
+                
                 if (members.Length < 1)
-                {
-                    var embed_err = this.Context.Utilities.BuildEmbed(this.Context, "Error kicking", "You must specify members you want to kick.", AdaUtilities.EmbedColour.Error);
-                    await this.ReplyAsync("", false, embed_err);
-                    return;
-                }
+                    throw new ArgumentException("You must specify members");
 
                 var bans = await gld.GetBansAsync();
 
@@ -416,24 +387,16 @@ namespace Emzi0767.Ada.Commands
             {
                 var gld = this.Context.Guild as SocketGuild;
 
-                var usr = member;
-                if (usr == null)
-                {
-                    var ee = this.Context.Utilities.BuildEmbed(this.Context, "Member not found", "Specified member was not found.", AdaUtilities.EmbedColour.Error);
-                    await this.ReplyAsync("", false, ee);
-                    return;
-                }
-                
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Member information", string.Concat("Information about ", usr.Mention, "."), AdaUtilities.EmbedColour.Info);
-                if (!string.IsNullOrWhiteSpace(usr.AvatarUrl))
-                    embed.ThumbnailUrl = usr.AvatarUrl;
+                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Member information", string.Concat("Information about ", member.Mention, "."), AdaUtilities.EmbedColour.Info);
+                if (!string.IsNullOrWhiteSpace(member.AvatarUrl))
+                    embed.ThumbnailUrl = member.AvatarUrl;
 
-                this.Context.Utilities.CreateEmbedField(embed, "Username", string.Concat("**", usr.Username, "**#", usr.DiscriminatorValue));
-                this.Context.Utilities.CreateEmbedField(embed, "Id", usr.Id.ToString());
-                this.Context.Utilities.CreateEmbedField(embed, "Nickname", usr.Nickname ?? usr.Username);
-                this.Context.Utilities.CreateEmbedField(embed, "Status", usr.Status.ToString());
-                this.Context.Utilities.CreateEmbedField(embed, "Game", usr.Game != null ? usr.Game.Value.Name : "<not playing anything>");
-                this.Context.Utilities.CreateEmbedField(embed, "Roles", string.Join(", ", usr.RoleIds.Select(xid => gld.GetRole(xid).Mention)));
+                this.Context.Utilities.CreateEmbedField(embed, "Username", string.Concat("**", member.Username, "**#", member.DiscriminatorValue));
+                this.Context.Utilities.CreateEmbedField(embed, "Id", member.Id.ToString());
+                this.Context.Utilities.CreateEmbedField(embed, "Nickname", member.Nickname ?? member.Username);
+                this.Context.Utilities.CreateEmbedField(embed, "Status", member.Status.ToString());
+                this.Context.Utilities.CreateEmbedField(embed, "Game", member.Game != null ? member.Game.Value.Name : "<not playing anything>");
+                this.Context.Utilities.CreateEmbedField(embed, "Roles", string.Join(", ", member.RoleIds.Select(xid => gld.GetRole(xid).Mention)));
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -466,10 +429,6 @@ namespace Emzi0767.Ada.Commands
                 this.Context.Utilities.CreateEmbedField(embed, "Moderation log", gconf.ModerationLog != null ? gconf.ModerationLog.Mention : "Not configured");
                 this.Context.Utilities.CreateEmbedField(embed, "Mute role", gconf.MuteRole != null ? gconf.MuteRole.Mention : "Not configured");
                 this.Context.Utilities.CreateEmbedField(embed, "Command prefix", string.Concat("`", this.Context.Utilities.AdaClient.GetPrefix(gld), "`"));
-
-                // TODO: moderation log
-                // TODO: mute role
-                // TODO: prefix
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -654,17 +613,15 @@ namespace Emzi0767.Ada.Commands
                     .FirstOrDefault(xm => xm.Name == module || xm.Aliases.Contains(module));
 
                 if (mod == null)
-                    embed = this.Context.Utilities.BuildEmbed(this.Context, "ADA Help", "No module with specified name exists.", AdaUtilities.EmbedColour.Error);
-                else
-                {
-                    var cmn = mod.Aliases.First() == "" ? mod.Name : mod.Aliases.First();
+                    throw new ArgumentException("Specified module does not exist");
 
-                    var cmd = mod.Commands.Select(xc => string.Concat("`", this.Context.Utilities.GetQualifiedName(xc, gld), "` ", xc.Summary));
-                    var cmh = string.Join("\n", cmd);
+                var cmn = mod.Aliases.First() == "" ? mod.Name : mod.Aliases.First();
 
-                    embed = this.Context.Utilities.BuildEmbed(this.Context, "ADA Help", string.Concat("All commands defined in `", cmn, "`.\n\nFor more detailed help, visit [ADA's Command documentation](https://emzi0767.github.io/discord/ada/doc.html) page."), AdaUtilities.EmbedColour.Info);
-                    this.Context.Utilities.CreateEmbedField(embed, "Commands", cmh, false);
-                }
+                var cmd = mod.Commands.Select(xc => string.Concat("`", this.Context.Utilities.GetQualifiedName(xc, gld), "` ", xc.Summary));
+                var cmh = string.Join("\n", cmd);
+
+                embed = this.Context.Utilities.BuildEmbed(this.Context, "ADA Help", string.Concat("All commands defined in `", cmn, "`.\n\nFor more detailed help, visit [ADA's Command documentation](https://emzi0767.github.io/discord/ada/doc.html) page."), AdaUtilities.EmbedColour.Info);
+                this.Context.Utilities.CreateEmbedField(embed, "Commands", cmh, false);
             }
 
             await this.ReplyAsync("", false, embed);
@@ -701,7 +658,17 @@ namespace Emzi0767.Ada.Commands
             [AdaDebug]
             public async Task Environment()
             {
+                var ps = PlatformServices.Default;
+                var rf = ps.Application.RuntimeFramework;
+                var an = Assembly.GetEntryAssembly().GetName();
 
+                var embed = this.Context.Utilities.BuildEmbed(this.Context, "ADA Environment information", "Debug information about ADA's environment.", AdaUtilities.EmbedColour.Debug);
+                this.Context.Utilities.CreateEmbedField(embed, "Platform", RuntimeInformation.OSDescription);
+                this.Context.Utilities.CreateEmbedField(embed, "CPU and OS Architecture", string.Concat("", System.Environment.ProcessorCount, " cores"));
+                this.Context.Utilities.CreateEmbedField(embed, ".NET Core version", rf.Version.ToString());
+                this.Context.Utilities.CreateEmbedField(embed, "ADA version", an.Version.ToString());
+
+                await this.ReplyAsync("", false, embed);
             }
 
             [Command("evaluate")]
@@ -710,16 +677,95 @@ namespace Emzi0767.Ada.Commands
             [AdaDebug]
             public async Task Evaluate([Remainder, Summary("Code to evaluate")] string code)
             {
+                var cs1 = code.IndexOf("```") + 3;
+                cs1 = code.IndexOf('\n', cs1) + 1;
+                var cs2 = code.IndexOf("```", cs1);
+                var cs = code.Substring(cs1, cs2 - cs1);
 
+                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Evaluation in progress", "Your code is being evaluated...", AdaUtilities.EmbedColour.Debug);
+                var nmsg = await this.ReplyAsync("", false, embed);
+
+                try
+                {
+                    var globals = new AdaEvaluationGlobals
+                    {
+                        Message = this.Context.Message as SocketUserMessage,
+                        Utilities = this.Context.Utilities
+                    };
+
+                    var sopts = ScriptOptions.Default;
+                    sopts = sopts.WithImports("System", "System.Linq", "Discord", "Discord.WebSocket");
+                    sopts = sopts.WithReferences(FrameworkAssemblyLoader.GetAssemblies().Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location)));
+
+                    var script = CSharpScript.Create(cs, sopts, typeof(AdaEvaluationGlobals));
+                    script.Compile();
+                    var result = await script.RunAsync(globals);
+
+                    if (result != null && result.ReturnValue != null)
+                    {
+                        var rss = result.ReturnValue.ToString();
+
+                        if (rss.Length < 2038)
+                            embed = this.Context.Utilities.BuildEmbed(this.Context, "Evaluation successful", string.Concat("```cs\n", rss, "\n```"), AdaUtilities.EmbedColour.Debug);
+                        else
+                            embed = this.Context.Utilities.BuildEmbed(this.Context, "Evaluation successful", "The output was too long to post in an embed.", AdaUtilities.EmbedColour.Debug);
+                    }
+                    else
+                        embed = this.Context.Utilities.BuildEmbed(this.Context, "Evaluation successful", "No result was returned.", AdaUtilities.EmbedColour.Debug);
+                }
+                catch (Exception ex)
+                {
+                    embed = this.Context.Utilities.BuildEmbed(this.Context, "Evaluation failed", string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message), AdaUtilities.EmbedColour.Debug);
+                }
+
+                await nmsg.ModifyAsync(x => x.Embed = embed.Build());
             }
 
             [Command("shell")]
             [Summary("Executes a shell command and prints the output")]
             [Alias("exec")]
             [AdaDebug]
-            public async Task Shell([Remainder, Summary("Command to execute")] string command)
+            public async Task Shell([Summary("Command to execute")] string command,
+                [Remainder, Summary("Arguments")] string arguments = "")
             {
+                var output = new StringBuilder();
 
+                var psi = new ProcessStartInfo(string.Concat(@"""", command, @""""), arguments);
+                psi.UseShellExecute = false;
+                psi.RedirectStandardOutput = true;
+                psi.RedirectStandardError = true;
+
+                var proc = new Process();
+                proc.StartInfo = psi;
+                proc.OutputDataReceived += (o, e) => output.AppendLine(e.Data);
+                proc.ErrorDataReceived += (o, e) => output.AppendLine(e.Data);
+
+                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Executing", string.Concat("Executing `", command, " ", arguments, "`."), AdaUtilities.EmbedColour.Debug);
+                var nmsg = await this.ReplyAsync("", false, embed);
+
+                try
+                {
+                    proc.Start();
+                    proc.BeginOutputReadLine();
+                    proc.WaitForExit(5000);
+                    if (!proc.HasExited)
+                    {
+                        proc.Kill();
+                        throw new TimeoutException("Execution timed out");
+                    }
+
+                    var ostr = output.ToString();
+                    if (ostr.Length < 2040)
+                        embed = this.Context.Utilities.BuildEmbed(this.Context, "Execution successful", string.Concat("```\n", output.ToString(), "\n```"), AdaUtilities.EmbedColour.Debug);
+                    else
+                        embed = this.Context.Utilities.BuildEmbed(this.Context, "Execution successful", "The output was too long to post in an embed.", AdaUtilities.EmbedColour.Debug);
+                }
+                catch (Exception ex)
+                {
+                    embed = this.Context.Utilities.BuildEmbed(this.Context, "Execution failed", string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message), AdaUtilities.EmbedColour.Debug);
+                }
+
+                await nmsg.ModifyAsync(x => x.Embed = embed.Build());
             }
         }
         #endregion

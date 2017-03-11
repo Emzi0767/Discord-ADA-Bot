@@ -68,7 +68,7 @@ namespace Emzi0767.Ada.Core
             var cconf = new CommandServiceConfig
             {
                 CaseSensitiveCommands = false,
-                DefaultRunMode = RunMode.Async
+                DefaultRunMode = RunMode.Sync
             };
 
             this.DiscordCommands = new CommandService(cconf);
@@ -188,11 +188,18 @@ namespace Emzi0767.Ada.Core
                 return;
 
             var ctx = new AdaCommandContext(client, msg, this.Utilities, this.ConfigurationManager, this.SqlManager);
-            var rst = await this.DiscordCommands.ExecuteAsync(ctx, argpos);
+#pragma warning disable CS4014
+            Task.Run(async () => await this.RunCommand(ctx, argpos));
+#pragma warning restore CS4014
+        }
 
+        private async Task RunCommand(AdaCommandContext ctx, int argpos)
+        {
+            var rst = await this.DiscordCommands.ExecuteAsync(ctx, argpos);
+            
             if (!rst.IsSuccess && rst is ExecuteResult)
                 await this.HandleCommandExceptionAsync(ctx, (ExecuteResult)rst);
-            else if (!rst.IsSuccess)
+            else if (!rst.IsSuccess && !(rst is SearchResult))
                 await this.HandleCommandErrorAsync(ctx, rst);
         }
 

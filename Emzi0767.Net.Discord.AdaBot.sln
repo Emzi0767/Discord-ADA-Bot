@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ext_lib", "ext_lib", "{0F2D9783-9522-4B08-A83A-1F930CEF10FB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample_configs", "sample_configs", "{061B5A91-5E15-403B-AD53-29EE5B2BDD89}"
 	ProjectSection(SolutionItems) = preProject
 		sample_configs\config.json = sample_configs\config.json
-		N:\Visual Studio 2015\Projects\Emzi0767.Net.Discord.AdaBot\sample_configs\pamdb.sql = N:\Visual Studio 2015\Projects\Emzi0767.Net.Discord.AdaBot\sample_configs\pamdb.sql
+		sample_configs\pamdb.sql = sample_configs\pamdb.sql
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9EB9A9A8-D8C1-4D35-A445-4EBF17FD3C2D}"
@@ -17,10 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NOTICE.txt = NOTICE.txt
 		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada", "Emzi0767.Ada\Emzi0767.Ada.xproj", "{3B48C959-1A74-4D8E-BA04-E9B8C9039DD8}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Plugin.AdvancedCommands", "Emzi0767.Ada.Plugin.AdvancedCommands\Emzi0767.Ada.Plugin.AdvancedCommands.xproj", "{90DEC6F2-E77E-4052-B267-404E5EC05352}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "local_nuget", "local_nuget", "{0D09F3F4-3646-40C0-88EE-40F95019B45D}"
 EndProject
@@ -33,13 +29,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.2.1", "1.2.1", "{D21DCA42
 		ext_lib\local_nuget\markovcore\1.2.1\markovcore.nuspec = ext_lib\local_nuget\markovcore\1.2.1\markovcore.nuspec
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Plugin.Stallman", "Emzi0767.Ada.Plugin.Stallman\Emzi0767.Ada.Plugin.Stallman.xproj", "{9AA6B4E5-69F9-42E0-BED4-1F453E633759}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emzi0767.Ada", "Emzi0767.Ada\Emzi0767.Ada.csproj", "{3B48C959-1A74-4D8E-BA04-E9B8C9039DD8}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Plugin.Tags", "Emzi0767.Ada.Plugin.Tags\Emzi0767.Ada.Plugin.Tags.xproj", "{B3DBEB5A-775D-48B6-A867-5C38F59AE5D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emzi0767.Ada.Plugin.Fun", "Emzi0767.Ada.Plugin.Fun\Emzi0767.Ada.Plugin.Fun.csproj", "{90DEC6F2-E77E-4052-B267-404E5EC05352}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.Ada.Plugin.Feedle", "Emzi0767.Ada.Plugin.Feedle\Emzi0767.Ada.Plugin.Feedle.xproj", "{95FF5B3D-E1A6-4FB6-BFBF-79D567D91A16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emzi0767.Ada.Plugin.Stallman", "Emzi0767.Ada.Plugin.Stallman\Emzi0767.Ada.Plugin.Stallman.csproj", "{9AA6B4E5-69F9-42E0-BED4-1F453E633759}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Emzi0767.AssemblyResolver.Standard", "Emzi0767.AssemblyResolver.Standard\Emzi0767.AssemblyResolver.Standard.xproj", "{799B62EB-0453-4A32-885E-87392C460C2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emzi0767.Ada.Plugin.Tags", "Emzi0767.Ada.Plugin.Tags\Emzi0767.Ada.Plugin.Tags.csproj", "{B3DBEB5A-775D-48B6-A867-5C38F59AE5D7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emzi0767.Ada.Plugin.Feedle", "Emzi0767.Ada.Plugin.Feedle\Emzi0767.Ada.Plugin.Feedle.csproj", "{95FF5B3D-E1A6-4FB6-BFBF-79D567D91A16}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emzi0767.AssemblyResolver.Standard", "Emzi0767.AssemblyResolver.Standard\Emzi0767.AssemblyResolver.Standard.csproj", "{799B62EB-0453-4A32-885E-87392C460C2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

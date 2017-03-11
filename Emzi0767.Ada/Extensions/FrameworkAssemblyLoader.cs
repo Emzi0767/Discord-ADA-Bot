@@ -1,5 +1,9 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Emzi0767.AssemblyResolver;
+using Microsoft.DotNet.PlatformAbstractions;
+using Microsoft.Extensions.DependencyModel;
 
 namespace Emzi0767.Ada.Extensions
 {
@@ -16,6 +20,14 @@ namespace Emzi0767.Ada.Extensions
         public static Assembly LoadFile(string filename)
         {
             return AssemblyResolver.LoadFromFile(filename);
+        }
+
+        public static IEnumerable<Assembly> GetAssemblies()
+        {
+            var rid = RuntimeEnvironment.GetRuntimeIdentifier();
+            var ass = DependencyContext.Default.GetRuntimeAssemblyNames(rid);
+
+            return ass.Select(xan => Assembly.Load(xan)).ToArray();
         }
 
         private static Assembly Resolver_Resolving(string name)

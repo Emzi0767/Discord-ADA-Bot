@@ -1,5 +1,7 @@
 #Advanced/Automatic Discord Administrator by Emzi0767
 
+[![Emzi's Central Dispatch](https://discordapp.com/api/guilds/207879549394878464/widget.png)](https://discord.gg/rGKrJDR)
+
 ##ABOUT
 
 A Discord bot built on top of [Discord.NET library](https://github.com/RogueException/Discord.Net). It's designed to simplify and automate certain administrative tasks. Supports 3rd party plugins to allow extending the functionality even further.
@@ -33,6 +35,16 @@ In order for bot to run, you will need to set up your environment.
 ##RUNNING
 
 Run `Emzi0767.Ada.exe`. That's it, your bot is now running.
+
+##SUPPORT ME
+
+If you feel like supporting me by providing me with currency that I can exchange for goods and services, you can do so on [my Patreon](https://www.patreon.com/emzi0767).
+
+##ADDITIONAL HELP
+
+Should you still have any questions regarding the bot, feel free to join my server. I'll try to answer an questions:
+
+[![Emzi's Central Dispatch](https://discordapp.com/api/guilds/207879549394878464/embed.png?style=banner1)](https://discord.gg/rGKrJDR)
 
 ##REPORTING BUGS
 

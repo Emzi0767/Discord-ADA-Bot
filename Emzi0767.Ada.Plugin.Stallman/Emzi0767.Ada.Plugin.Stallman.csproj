@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>A plugin for ADA Bot, which adds Stallman Copypasta autoresponder.</Description>
+    <Copyright>© Emzi0767 2016</Copyright>
+    <AssemblyTitle>Stallman Plugin for ADA</AssemblyTitle>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <VersionPrefix>2.0.0</VersionPrefix>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <AssemblyName>Emzi0767.Ada.Plugin.Stallman</AssemblyName>
+    <PackageId>Emzi0767.Ada.Plugin.Stallman</PackageId>
+    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Emzi0767.Ada\Emzi0767.Ada.csproj" />
+  </ItemGroup>
+
+</Project>

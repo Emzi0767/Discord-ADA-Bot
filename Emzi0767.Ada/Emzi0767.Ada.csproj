@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>ADA is a Discord Bot designed to simplify and automate certain administrative tasks. ADA stands for Automatic/Advanced Discord Administrator.</Description>
+    <Copyright>© 2016 by Emzi0767</Copyright>
+    <AssemblyTitle>ADA Bot</AssemblyTitle>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <VersionPrefix>4.0.0</VersionPrefix>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <AssemblyName>Emzi0767.Ada</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>Emzi0767.Ada</PackageId>
+    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Emzi0767.AssemblyResolver.Standard\Emzi0767.AssemblyResolver.Standard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.2-beta2" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+    <PackageReference Include="Discord.Net.Commands" Version="1.0.0-rc-00595" />
+    <PackageReference Include="Discord.Net.Rest" Version="1.0.0-rc-00595" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="1.0.0-rc-00595" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Scripting.Common" Version="2.1.0-rc5-61416-02" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.1.0-rc5-61416-02" />
+    <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="1.2.0-beta-001090" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.0" />
+    <PackageReference Include="Npgsql" Version="3.2.1" />
+  </ItemGroup>
+
+</Project>
