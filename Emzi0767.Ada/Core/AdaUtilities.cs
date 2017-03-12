@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.Rest;
 using Discord.WebSocket;
 using Emzi0767.Ada.Commands;
 using Emzi0767.Ada.Commands.Permissions;
@@ -45,11 +44,13 @@ namespace Emzi0767.Ada.Core
 
             var clr = this.EnumToColour(colour);
 
-            var embed = new EmbedBuilder();
-            embed.Title = title;
-            embed.Description = description;
-            embed.Color = new Color(clr);
-            embed.ThumbnailUrl = ctx.Client.CurrentUser.AvatarUrl;
+            var embed = new EmbedBuilder()
+            {
+                Title = title,
+                Description = description,
+                Color = new Color(clr),
+                ThumbnailUrl = ctx.Client.CurrentUser.GetAvatarUrl(AvatarFormat.WebP)
+            };
 
             return embed;
         }
@@ -61,12 +62,14 @@ namespace Emzi0767.Ada.Core
 
             var clr = this.EnumToColour(colour);
 
-            var embed = new EmbedBuilder();
-            embed.Title = title;
-            embed.Description = description;
-            embed.Color = new Color(clr);
-            embed.ThumbnailUrl = client.DiscordClient.CurrentUser.AvatarUrl;
-
+            var embed = new EmbedBuilder()
+            {
+                Title = title,
+                Description = description,
+                Color = new Color(clr),
+                ThumbnailUrl = client.DiscordClient.CurrentUser.GetAvatarUrl(AvatarFormat.WebP)
+            };
+            
             return embed;
         }
 

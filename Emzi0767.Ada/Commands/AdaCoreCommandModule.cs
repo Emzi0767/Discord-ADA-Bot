@@ -13,6 +13,8 @@ using Emzi0767.Ada.Commands.Permissions;
 using Emzi0767.Ada.Config;
 using Emzi0767.Ada.Core;
 using Emzi0767.Ada.Extensions;
+using Emzi0767.Ada.Plugins;
+using Emzi0767.Ada.Sql;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.PlatformAbstractions;
@@ -20,14 +22,22 @@ using Microsoft.Extensions.PlatformAbstractions;
 namespace Emzi0767.Ada.Commands
 {
     [Name("core")]
-    internal class AdaCoreCommandModule : ModuleBase<AdaCommandContext>
+    internal class AdaCoreCommandModule : AdaModuleBase
     {
+        public AdaCoreCommandModule(AdaConfigurationManager cfg, AdaPluginManager plm, AdaSqlManager sql, AdaUtilities util)
+            : base(cfg, plm, sql, util)
+        { }
+
         #region Role Management
         [Group("role")]
         [Alias("roles")]
         [Summary("Role management commands")]
-        public class RoleCommands : ModuleBase<AdaCommandContext>
+        public class RoleCommands : AdaModuleBase
         {
+            public RoleCommands(AdaConfigurationManager cfg, AdaPluginManager plm, AdaSqlManager sql, AdaUtilities util)
+                : base(cfg, plm, sql, util)
+            { }
+
             [Command("create")]
             [Summary("Creates a new role")]
             [Alias("make", "new", "mk")]
@@ -41,7 +51,7 @@ namespace Emzi0767.Ada.Commands
 
                 var grl = await gld.CreateRoleAsync(name);
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Role creation successful", string.Concat("Role ", grl.Mention, " created successfully."), AdaUtilities.EmbedColour.Success);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Role creation successful", string.Concat("Role ", grl.Mention, " created successfully."), AdaUtilities.EmbedColour.Success);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -57,7 +67,7 @@ namespace Emzi0767.Ada.Commands
 
                 await grl.DeleteAsync();
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Role deletion successful", string.Concat("Role `", grl.Name, "` deleted successfully."), AdaUtilities.EmbedColour.Success);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Role deletion successful", string.Concat("Role `", grl.Name, "` deleted successfully."), AdaUtilities.EmbedColour.Success);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -96,7 +106,7 @@ namespace Emzi0767.Ada.Commands
                         x.Mentionable = gmt;
                 });
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Role modification successful", string.Concat("Role ", grl.Mention, " edited successfully."), AdaUtilities.EmbedColour.Success);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Role modification successful", string.Concat("Role ", grl.Mention, " edited successfully."), AdaUtilities.EmbedColour.Success);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -110,14 +120,14 @@ namespace Emzi0767.Ada.Commands
                 if (grl == null)
                     throw new ArgumentException("You must specify a role of which information you want to display.");
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Role information", string.Concat("Information about ", grl.Mention, "."), AdaUtilities.EmbedColour.Info);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Role information", string.Concat("Information about ", grl.Mention, "."), AdaUtilities.EmbedColour.Info);
 
-                embed = this.Context.Utilities.CreateEmbedField(embed, "Name", grl.Name);
-                embed = this.Context.Utilities.CreateEmbedField(embed, "ID", grl.Id.ToString());
-                embed = this.Context.Utilities.CreateEmbedField(embed, "Colour", grl.Color.RawValue.ToString("X6"));
-                embed = this.Context.Utilities.CreateEmbedField(embed, "Hoisted", grl.IsHoisted ? "Yes" : "No");
-                embed = this.Context.Utilities.CreateEmbedField(embed, "Mentionable", grl.IsMentionable ? "Yes" : "No");
-                embed = this.Context.Utilities.CreateEmbedField(embed, "Permissions", this.Context.Utilities.GetPermissionString((AdaPermission)grl.Permissions.RawValue));
+                embed = this.Utilities.CreateEmbedField(embed, "Name", grl.Name);
+                embed = this.Utilities.CreateEmbedField(embed, "ID", grl.Id.ToString());
+                embed = this.Utilities.CreateEmbedField(embed, "Colour", grl.Color.RawValue.ToString("X6"));
+                embed = this.Utilities.CreateEmbedField(embed, "Hoisted", grl.IsHoisted ? "Yes" : "No");
+                embed = this.Utilities.CreateEmbedField(embed, "Mentionable", grl.IsMentionable ? "Yes" : "No");
+                embed = this.Utilities.CreateEmbedField(embed, "Permissions", this.Utilities.GetPermissionString((AdaPermission)grl.Permissions.RawValue));
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -133,8 +143,8 @@ namespace Emzi0767.Ada.Commands
                 if (grl == null)
                     return;
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Role list", string.Concat("Listing of all ", grl.Count.ToString("#,##0"), " role", grl.Count > 1 ? "s" : "", " in this Guild."), AdaUtilities.EmbedColour.Info);
-                this.Context.Utilities.CreateEmbedField(embed, "Defined roles", string.Join(", ", grl.Select(xr => xr.Mention)), false);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Role list", string.Concat("Listing of all ", grl.Count.ToString("#,##0"), " role", grl.Count > 1 ? "s" : "", " in this Guild."), AdaUtilities.EmbedColour.Info);
+                this.Utilities.CreateEmbedField(embed, "Defined roles", string.Join(", ", grl.Select(xr => xr.Mention)), false);
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -157,8 +167,8 @@ namespace Emzi0767.Ada.Commands
                 foreach (var usm in usrs)
                     await usm.AddRolesAsync(grl);
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Members added successfully", string.Concat("Member", usrs.Count() > 1 ? "s were" : " was", " added to ", grl.Mention, " successfully."), AdaUtilities.EmbedColour.Success);
-                this.Context.Utilities.CreateEmbedField(embed, "Added members", string.Join(", ", users.Select(xus => xus.Mention)), false);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Members added successfully", string.Concat("Member", usrs.Count() > 1 ? "s were" : " was", " added to ", grl.Mention, " successfully."), AdaUtilities.EmbedColour.Success);
+                this.Utilities.CreateEmbedField(embed, "Added members", string.Join(", ", users.Select(xus => xus.Mention)), false);
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -181,8 +191,8 @@ namespace Emzi0767.Ada.Commands
                 foreach (var usm in usrs)
                     await usm.RemoveRolesAsync(grl);
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Members removed successfully", string.Concat("User", usrs.Count() > 1 ? "s were" : " was", " removed from ", grl.Mention, "."), AdaUtilities.EmbedColour.Success);
-                this.Context.Utilities.CreateEmbedField(embed, "Removed members", string.Join(", ", users.Select(xus => xus.Mention)), false);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Members removed successfully", string.Concat("User", usrs.Count() > 1 ? "s were" : " was", " removed from ", grl.Mention, "."), AdaUtilities.EmbedColour.Success);
+                this.Utilities.CreateEmbedField(embed, "Removed members", string.Join(", ", users.Select(xus => xus.Mention)), false);
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -193,8 +203,12 @@ namespace Emzi0767.Ada.Commands
         [Group("member")]
         [Alias("members", "user", "users")]
         [Summary("Member management commands")]
-        internal class MemberCommands : ModuleBase<AdaCommandContext>
+        internal class MemberCommands : AdaModuleBase
         {
+            public MemberCommands(AdaConfigurationManager cfg, AdaPluginManager plm, AdaSqlManager sql, AdaUtilities util)
+                : base(cfg, plm, sql, util)
+            { }
+
             [Command("report")]
             [Summary("Reports a member to moderators")]
             public async Task Report([Summary("Member to report")] SocketGuildUser user,
@@ -207,12 +221,12 @@ namespace Emzi0767.Ada.Commands
                 if (string.IsNullOrWhiteSpace(rsn))
                     throw new ArgumentException("You must specify a reason");
 
-                if (!this.Context.Utilities.CheckModLogConfiguration(gld))
+                if (!this.Utilities.CheckModLogConfiguration(gld))
                     throw new InvalidOperationException("This guild is not properly configured");
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "User reported successfully", string.Concat(user.Mention, " was reported to the moderators."), AdaUtilities.EmbedColour.Success);
+                var embed = this.Utilities.BuildEmbed(this.Context, "User reported successfully", string.Concat(user.Mention, " was reported to the moderators."), AdaUtilities.EmbedColour.Success);
 
-                await this.Context.Utilities.ReportUserAsync(user, usr, reason);
+                await this.Utilities.ReportUserAsync(user, usr, reason);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -227,7 +241,7 @@ namespace Emzi0767.Ada.Commands
                 if (members.Length < 1)
                     throw new ArgumentException("You must specify members");
 
-                var gconf = this.Context.Configuration.GetConfiguration(gld);
+                var gconf = this.ConfigurationManager.GetConfiguration(gld);
                 var mrl = gconf.MuteRole;
                 if (mrl == null)
                     throw new InvalidOperationException("This guild is not properly configured");
@@ -235,11 +249,11 @@ namespace Emzi0767.Ada.Commands
                 foreach (var usm in members)
                 {
                     await usm.AddRolesAsync(mrl);
-                    await this.Context.Utilities.CreateModLogAsync(usm, ModLogEntryType.UserMute, duration, this.Context.User as SocketGuildUser);
+                    await this.Utilities.CreateModLogAsync(usm, ModLogEntryType.UserMute, duration, this.Context.User as SocketGuildUser);
                 }
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Users muted", "Users were successfully muted.", AdaUtilities.EmbedColour.Success);
-                this.Context.Utilities.CreateEmbedField(embed, "Muted users", string.Join(", ", members.Select(xm => xm.Mention)), false);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Users muted", "Users were successfully muted.", AdaUtilities.EmbedColour.Success);
+                this.Utilities.CreateEmbedField(embed, "Muted users", string.Join(", ", members.Select(xm => xm.Mention)), false);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -253,7 +267,7 @@ namespace Emzi0767.Ada.Commands
                 if (members.Length < 1)
                     throw new ArgumentException("You must specify members");
 
-                var gconf = this.Context.Configuration.GetConfiguration(gld);
+                var gconf = this.ConfigurationManager.GetConfiguration(gld);
                 var mrl = gconf.MuteRole;
                 if (mrl == null)
                     throw new InvalidOperationException("This guild is not properly configured");
@@ -261,11 +275,11 @@ namespace Emzi0767.Ada.Commands
                 foreach (var usm in members)
                 {
                     await usm.RemoveRolesAsync(mrl);
-                    await this.Context.Utilities.CreateModLogAsync(usm, ModLogEntryType.UserUnmute, null, this.Context.User as SocketGuildUser);
+                    await this.Utilities.CreateModLogAsync(usm, ModLogEntryType.UserUnmute, null, this.Context.User as SocketGuildUser);
                 }
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Users unmuted", "Users were successfully unmuted.", AdaUtilities.EmbedColour.Success);
-                this.Context.Utilities.CreateEmbedField(embed, "Unmuted users", string.Join(", ", members.Select(xm => xm.Mention)), false);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Users unmuted", "Users were successfully unmuted.", AdaUtilities.EmbedColour.Success);
+                this.Utilities.CreateEmbedField(embed, "Unmuted users", string.Join(", ", members.Select(xm => xm.Mention)), false);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -280,11 +294,11 @@ namespace Emzi0767.Ada.Commands
                 foreach (var usm in members)
                 {
                     await usm.KickAsync();
-                    await this.Context.Utilities.CreateModLogAsync(usm, ModLogEntryType.UserKick, null, this.Context.User as SocketGuildUser);
+                    await this.Utilities.CreateModLogAsync(usm, ModLogEntryType.UserKick, null, this.Context.User as SocketGuildUser);
                 }
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Users kicked", "Users were successfully kicked.", AdaUtilities.EmbedColour.Success);
-                this.Context.Utilities.CreateEmbedField(embed, "Kicked users", string.Join(", ", members.Select(xm => xm.Mention)), false);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Users kicked", "Users were successfully kicked.", AdaUtilities.EmbedColour.Success);
+                this.Utilities.CreateEmbedField(embed, "Kicked users", string.Join(", ", members.Select(xm => xm.Mention)), false);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -304,7 +318,7 @@ namespace Emzi0767.Ada.Commands
                     await gld.RemoveBanAsync(usr);
                 }
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Members softbanned", string.Concat("The following members were softbanned: ", string.Join(", ", members.Select(xu => xu.Mention))), AdaUtilities.EmbedColour.Success);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Members softbanned", string.Concat("The following members were softbanned: ", string.Join(", ", members.Select(xu => xu.Mention))), AdaUtilities.EmbedColour.Success);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -322,11 +336,11 @@ namespace Emzi0767.Ada.Commands
                 foreach (var usm in members)
                 {
                     await gld.AddBanAsync(usm);
-                    await this.Context.Utilities.CreateModLogAsync(usm, ModLogEntryType.UserBan, duration, this.Context.User as SocketGuildUser);
+                    await this.Utilities.CreateModLogAsync(usm, ModLogEntryType.UserBan, duration, this.Context.User as SocketGuildUser);
                 }
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Users banned", "Users were successfully banned.", AdaUtilities.EmbedColour.Success);
-                this.Context.Utilities.CreateEmbedField(embed, "Banned users", string.Join(", ", members.Select(xm => xm.Mention)), false);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Users banned", "Users were successfully banned.", AdaUtilities.EmbedColour.Success);
+                this.Utilities.CreateEmbedField(embed, "Banned users", string.Join(", ", members.Select(xm => xm.Mention)), false);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -348,10 +362,10 @@ namespace Emzi0767.Ada.Commands
                         continue;
 
                     await gld.RemoveBanAsync(ban.User);
-                    await this.Context.Utilities.CreateModLogAsync(gld, ban.User, ModLogEntryType.UserUnban, null, this.Context.User as SocketGuildUser);
+                    await this.Utilities.CreateModLogAsync(gld, ban.User, ModLogEntryType.UserUnban, null, this.Context.User as SocketGuildUser);
                 }
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Users unbanned", "Users were successfully unbanned.", AdaUtilities.EmbedColour.Success);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Users unbanned", "Users were successfully unbanned.", AdaUtilities.EmbedColour.Success);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -363,7 +377,7 @@ namespace Emzi0767.Ada.Commands
                 var gld = this.Context.Guild as SocketGuild;
 
                 var usp = await gld.PruneUsersAsync(days);
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Pruned successfully", string.Concat(usp.ToString("#,##0"), " user", usp > 1 ? "s were" : " was", " pruned."), AdaUtilities.EmbedColour.Success);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Pruned successfully", string.Concat(usp.ToString("#,##0"), " user", usp > 1 ? "s were" : " was", " pruned."), AdaUtilities.EmbedColour.Success);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -376,8 +390,8 @@ namespace Emzi0767.Ada.Commands
                 var gld = this.Context.Guild as SocketGuild;
                 var usr = this.Context.User as SocketGuildUser;
 
-                var mle = await this.Context.Utilities.GetModLog(gld, caseid);
-                await this.Context.Utilities.ModifyModLogAsync(mle, mle.ActionType, usr, reason);
+                var mle = await this.Utilities.GetModLog(gld, caseid);
+                await this.Utilities.ModifyModLogAsync(mle, mle.ActionType, usr, reason);
             }
 
             [Command("information")]
@@ -387,16 +401,16 @@ namespace Emzi0767.Ada.Commands
             {
                 var gld = this.Context.Guild as SocketGuild;
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Member information", string.Concat("Information about ", member.Mention, "."), AdaUtilities.EmbedColour.Info);
-                if (!string.IsNullOrWhiteSpace(member.AvatarUrl))
-                    embed.ThumbnailUrl = member.AvatarUrl;
+                var embed = this.Utilities.BuildEmbed(this.Context, "Member information", string.Concat("Information about ", member.Mention, "."), AdaUtilities.EmbedColour.Info);
+                if (!string.IsNullOrWhiteSpace(member.GetAvatarUrl(AvatarFormat.WebP)))
+                    embed.ThumbnailUrl = member.GetAvatarUrl(AvatarFormat.WebP);
 
-                this.Context.Utilities.CreateEmbedField(embed, "Username", string.Concat("**", member.Username, "**#", member.DiscriminatorValue));
-                this.Context.Utilities.CreateEmbedField(embed, "Id", member.Id.ToString());
-                this.Context.Utilities.CreateEmbedField(embed, "Nickname", member.Nickname ?? member.Username);
-                this.Context.Utilities.CreateEmbedField(embed, "Status", member.Status.ToString());
-                this.Context.Utilities.CreateEmbedField(embed, "Game", member.Game != null ? member.Game.Value.Name : "<not playing anything>");
-                this.Context.Utilities.CreateEmbedField(embed, "Roles", string.Join(", ", member.RoleIds.Select(xid => gld.GetRole(xid).Mention)));
+                this.Utilities.CreateEmbedField(embed, "Username", string.Concat("**", member.Username, "**#", member.DiscriminatorValue));
+                this.Utilities.CreateEmbedField(embed, "Id", member.Id.ToString());
+                this.Utilities.CreateEmbedField(embed, "Nickname", member.Nickname ?? member.Username);
+                this.Utilities.CreateEmbedField(embed, "Status", member.Status.ToString());
+                this.Utilities.CreateEmbedField(embed, "Game", member.Game != null ? member.Game.Value.Name : "<not playing anything>");
+                this.Utilities.CreateEmbedField(embed, "Roles", string.Join(", ", member.Roles.Select(xr => xr.Mention)));
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -406,8 +420,12 @@ namespace Emzi0767.Ada.Commands
         #region Guild Management
         [Group("guild")]
         [Summary("Guild management commands")]
-        public class GuildCommands : ModuleBase<AdaCommandContext>
+        public class GuildCommands : AdaModuleBase
         {
+            public GuildCommands(AdaConfigurationManager cfg, AdaPluginManager plm, AdaSqlManager sql, AdaUtilities util)
+                : base(cfg, plm, sql, util)
+            { }
+
             [Command("information")]
             [Summary("Displays information about this guild")]
             [Alias("info", "inf")]
@@ -415,20 +433,20 @@ namespace Emzi0767.Ada.Commands
             public async Task Information()
             {
                 var gld = this.Context.Guild as SocketGuild;
-                var gconf = this.Context.Configuration.GetConfiguration(gld);
+                var gconf = this.ConfigurationManager.GetConfiguration(gld);
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Guild information", string.Concat("Information about `", gld.Name, "`."), AdaUtilities.EmbedColour.Info);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Guild information", string.Concat("Information about `", gld.Name, "`."), AdaUtilities.EmbedColour.Info);
                 if (!string.IsNullOrWhiteSpace(gld.IconUrl))
                     embed.ThumbnailUrl = gld.IconUrl;
 
-                this.Context.Utilities.CreateEmbedField(embed, "Name", gld.Name);
-                this.Context.Utilities.CreateEmbedField(embed, "ID", gld.Id.ToString());
-                this.Context.Utilities.CreateEmbedField(embed, "Voice region", gld.VoiceRegionId);
-                this.Context.Utilities.CreateEmbedField(embed, "Owner", gld.Owner.Mention);
-                this.Context.Utilities.CreateEmbedField(embed, "Default channel", gld.DefaultChannel.Mention);
-                this.Context.Utilities.CreateEmbedField(embed, "Moderation log", gconf.ModerationLog != null ? gconf.ModerationLog.Mention : "Not configured");
-                this.Context.Utilities.CreateEmbedField(embed, "Mute role", gconf.MuteRole != null ? gconf.MuteRole.Mention : "Not configured");
-                this.Context.Utilities.CreateEmbedField(embed, "Command prefix", string.Concat("`", this.Context.Utilities.AdaClient.GetPrefix(gld), "`"));
+                this.Utilities.CreateEmbedField(embed, "Name", gld.Name);
+                this.Utilities.CreateEmbedField(embed, "ID", gld.Id.ToString());
+                this.Utilities.CreateEmbedField(embed, "Voice region", gld.VoiceRegionId);
+                this.Utilities.CreateEmbedField(embed, "Owner", gld.Owner.Mention);
+                this.Utilities.CreateEmbedField(embed, "Default channel", gld.DefaultChannel.Mention);
+                this.Utilities.CreateEmbedField(embed, "Moderation log", gconf.ModerationLog != null ? gconf.ModerationLog.Mention : "Not configured");
+                this.Utilities.CreateEmbedField(embed, "Mute role", gconf.MuteRole != null ? gconf.MuteRole.Mention : "Not configured");
+                this.Utilities.CreateEmbedField(embed, "Command prefix", string.Concat("`", this.Utilities.AdaClient.GetPrefix(gld), "`"));
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -441,7 +459,7 @@ namespace Emzi0767.Ada.Commands
                 var gld = this.Context.Guild as SocketGuild;
 
                 await gld.ModifyAsync(x => x.Name = new_name);
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Guild rename successful", string.Concat("Guild renamed to `", new_name, "`."), AdaUtilities.EmbedColour.Success);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Guild rename successful", string.Concat("Guild renamed to `", new_name, "`."), AdaUtilities.EmbedColour.Success);
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -449,8 +467,12 @@ namespace Emzi0767.Ada.Commands
             [Group("configuration")]
             [Summary("Guild configuration commands")]
             [Alias("config", "conf")]
-            public class GuildConfigurationCommands : ModuleBase<AdaCommandContext>
+            public class GuildConfigurationCommands : AdaModuleBase
             {
+                public GuildConfigurationCommands(AdaConfigurationManager cfg, AdaPluginManager plm, AdaSqlManager sql, AdaUtilities util)
+                    : base(cfg, plm, sql, util)
+                { }
+
                 [Command("moderationlog")]
                 [Summary("Sets the channel to be used for logging moderator actions")]
                 [Alias("modlog")]
@@ -459,10 +481,10 @@ namespace Emzi0767.Ada.Commands
                 {
                     var gld = this.Context.Guild as SocketGuild;
 
-                    var cfg = this.Context.Configuration.GetConfiguration(gld);
+                    var cfg = this.ConfigurationManager.GetConfiguration(gld);
                     cfg.ModerationLog = channel;
 
-                    var embed = this.Context.Utilities.BuildEmbed(this.Context, "Setting saved", string.Concat("Moderation log set to ", channel.Mention, "."), AdaUtilities.EmbedColour.Success);
+                    var embed = this.Utilities.BuildEmbed(this.Context, "Setting saved", string.Concat("Moderation log set to ", channel.Mention, "."), AdaUtilities.EmbedColour.Success);
                     await this.ReplyAsync("", false, embed);
                 }
 
@@ -477,7 +499,7 @@ namespace Emzi0767.Ada.Commands
                     var grl = gld.Roles.FirstOrDefault(xr => xr.Name == role) as SocketRole;
                     if (grl == null)
                     {
-                        var embed = this.Context.Utilities.BuildEmbed(this.Context, "Setting error", string.Concat("No role with specified name was found."), AdaUtilities.EmbedColour.Error);
+                        var embed = this.Utilities.BuildEmbed(this.Context, "Setting error", string.Concat("No role with specified name was found."), AdaUtilities.EmbedColour.Error);
                         await this.ReplyAsync("", false, embed);
                         return;
                     }
@@ -493,10 +515,10 @@ namespace Emzi0767.Ada.Commands
                 {
                     var gld = this.Context.Guild as SocketGuild;
 
-                    var cfg = this.Context.Configuration.GetConfiguration(gld);
+                    var cfg = this.ConfigurationManager.GetConfiguration(gld);
                     cfg.MuteRole = role;
 
-                    var embed = this.Context.Utilities.BuildEmbed(this.Context, "Setting saved", string.Concat("Mute role set to ", role.Mention, "."), AdaUtilities.EmbedColour.Success);
+                    var embed = this.Utilities.BuildEmbed(this.Context, "Setting saved", string.Concat("Mute role set to ", role.Mention, "."), AdaUtilities.EmbedColour.Success);
                     await this.ReplyAsync("", false, embed);
                 }
 
@@ -508,10 +530,10 @@ namespace Emzi0767.Ada.Commands
                 {
                     var gld = this.Context.Guild as SocketGuild;
 
-                    var cfg = this.Context.Configuration.GetConfiguration(gld);
+                    var cfg = this.ConfigurationManager.GetConfiguration(gld);
                     cfg.CommandPrefix = prefix;
 
-                    var embed = this.Context.Utilities.BuildEmbed(this.Context, "Setting saved", string.Concat("Command prefix set to `", this.Context.Utilities.AdaClient.GetPrefix(gld), "`."), AdaUtilities.EmbedColour.Success);
+                    var embed = this.Utilities.BuildEmbed(this.Context, "Setting saved", string.Concat("Command prefix set to `", this.Utilities.AdaClient.GetPrefix(gld), "`."), AdaUtilities.EmbedColour.Success);
                     await this.ReplyAsync("", false, embed);
                 }
             }
@@ -522,9 +544,13 @@ namespace Emzi0767.Ada.Commands
         [Group("channels")]
         [Summary("Channel management commands")]
         [Alias("channel")]
-        public class ChannelCommands : ModuleBase<AdaCommandContext>
+        public class ChannelCommands : AdaModuleBase
         {
-            [Command("purge", RunMode = RunMode.Async)]
+            public ChannelCommands(AdaConfigurationManager cfg, AdaPluginManager plm, AdaSqlManager sql, AdaUtilities util)
+                : base(cfg, plm, sql, util)
+            { }
+
+            [Command("purge")]
             [Summary("Purges a channel")]
             [AdaPermissionRequired(AdaPermission.ManageChannels)]
             public async Task Purge([Summary("Channel to purge")] SocketTextChannel channel, [Summary("Number of messages to remove")] int count = 100)
@@ -539,7 +565,7 @@ namespace Emzi0767.Ada.Commands
                     await chp.DeleteMessagesAsync(msgs);
                 }
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Purge successful", string.Concat("Deleted ", dcount.ToString("#,##0"), " message", dcount > 1 ? "s" : "", " from channel ", chp.Mention, "."), AdaUtilities.EmbedColour.Success);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Purge successful", string.Concat("Deleted ", dcount.ToString("#,##0"), " message", dcount > 1 ? "s" : "", " from channel ", chp.Mention, "."), AdaUtilities.EmbedColour.Success);
                 await this.ReplyAsync("", false, embed);
             }
         }
@@ -549,8 +575,12 @@ namespace Emzi0767.Ada.Commands
         [Group("bot")]
         [Summary("Bot managements commands")]
         [Alias("ada")]
-        public class BotCommands : ModuleBase<AdaCommandContext>
+        public class BotCommands : AdaModuleBase
         {
+            public BotCommands(AdaConfigurationManager cfg, AdaPluginManager plm, AdaSqlManager sql, AdaUtilities util)
+                : base(cfg, plm, sql, util)
+            { }
+
             [Command("nickname")]
             [Summary("Changes bot's nickname")]
             [Alias("nick", "name")]
@@ -562,7 +592,7 @@ namespace Emzi0767.Ada.Commands
                 var ada = gld.CurrentUser;
                 await ada.ModifyAsync(x => x.Nickname = nickname);
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Nickname changed", string.Concat("Nickname set to `", nickname == "" ? ada.Username : nickname, "`."), AdaUtilities.EmbedColour.Success);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Nickname changed", string.Concat("Nickname set to `", nickname == "" ? ada.Username : nickname, "`."), AdaUtilities.EmbedColour.Success);
                 await this.ReplyAsync("", false, embed);
             }
 
@@ -571,9 +601,9 @@ namespace Emzi0767.Ada.Commands
             [Alias("information", "info")]
             public async Task About()
             {
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "About ADA", "ADA stands for Automated/Advanced Discord Administrator. ADA is a Discord bot written in C# by Emzi0767. It's designed to simplify and automate certain administrative tasks. For more information, visit [ADA's GitHub page](https://emzi0767.github.io/discord/ada/).", AdaUtilities.EmbedColour.Info);
-                this.Context.Utilities.CreateEmbedField(embed, "Source Code", "ADA is fully Open Source. The code is available on [Emzi's GitHub](https://github.com/Emzi0767/Discord-ADA-Bot).", false);
-                this.Context.Utilities.CreateEmbedField(embed, "Invite", string.Concat("Want to invite ADA to your server? Simply follow [this invite link](https://discordapp.com/oauth2/authorize?client_id=", this.Context.Client.CurrentUser.Id.ToString(), "&scope=bot&permissions=2146958463)."), false);
+                var embed = this.Utilities.BuildEmbed(this.Context, "About ADA", "ADA stands for Automated/Advanced Discord Administrator. ADA is a Discord bot written in C# by Emzi0767. It's designed to simplify and automate certain administrative tasks. For more information, visit [ADA's GitHub page](https://emzi0767.github.io/discord/ada/).", AdaUtilities.EmbedColour.Info);
+                this.Utilities.CreateEmbedField(embed, "Source Code", "ADA is fully Open Source. The code is available on [Emzi's GitHub](https://github.com/Emzi0767/Discord-ADA-Bot).", false);
+                this.Utilities.CreateEmbedField(embed, "Invite", string.Concat("Want to invite ADA to your server? Simply follow [this invite link](https://discordapp.com/oauth2/authorize?client_id=", this.Context.Client.CurrentUser.Id.ToString(), "&scope=bot&permissions=2146958463)."), false);
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -583,7 +613,7 @@ namespace Emzi0767.Ada.Commands
             [Alias("invite")]
             public async Task InviteLink()
             {
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "ADA Invite link", string.Concat("Want to invite ADA to your server? Simply follow [this invite link](https://discordapp.com/oauth2/authorize?client_id=", this.Context.Client.CurrentUser.Id.ToString(), "&scope=bot&permissions=2146958463)."), AdaUtilities.EmbedColour.Info);
+                var embed = this.Utilities.BuildEmbed(this.Context, "ADA Invite link", string.Concat("Want to invite ADA to your server? Simply follow [this invite link](https://discordapp.com/oauth2/authorize?client_id=", this.Context.Client.CurrentUser.Id.ToString(), "&scope=bot&permissions=2146958463)."), AdaUtilities.EmbedColour.Info);
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -601,15 +631,15 @@ namespace Emzi0767.Ada.Commands
 
             if (string.IsNullOrWhiteSpace(module))
             {
-                var cmdms = this.Context.Utilities.AdaClient.DiscordCommands.Modules
+                var cmdms = this.Utilities.AdaClient.DiscordCommands.Modules
                     .Select(xm => string.Concat("`", xm.Aliases.First() == "" ? xm.Name : xm.Aliases.First(), "`"));
                 var ms = string.Join(", ", cmdms);
 
-                embed = this.Context.Utilities.BuildEmbed(this.Context, "ADA Help", string.Concat("Available modules: ", ms, ".\n\nFor more detailed help, visit [ADA's Command documentation](https://emzi0767.github.io/discord/ada/doc.html) page."), AdaUtilities.EmbedColour.Info);
+                embed = this.Utilities.BuildEmbed(this.Context, "ADA Help", string.Concat("Available modules: ", ms, ".\n\nFor more detailed help, visit [ADA's Command documentation](https://emzi0767.github.io/discord/ada/doc.html) page."), AdaUtilities.EmbedColour.Info);
             }
             else
             {
-                var mod = this.Context.Utilities.AdaClient.DiscordCommands.Modules
+                var mod = this.Utilities.AdaClient.DiscordCommands.Modules
                     .FirstOrDefault(xm => xm.Name == module || xm.Aliases.Contains(module));
 
                 if (mod == null)
@@ -617,11 +647,11 @@ namespace Emzi0767.Ada.Commands
 
                 var cmn = mod.Aliases.First() == "" ? mod.Name : mod.Aliases.First();
 
-                var cmd = mod.Commands.Select(xc => string.Concat("`", this.Context.Utilities.GetQualifiedName(xc, gld), "` ", xc.Summary));
+                var cmd = mod.Commands.Select(xc => string.Concat("`", this.Utilities.GetQualifiedName(xc, gld), "` ", xc.Summary));
                 var cmh = string.Join("\n", cmd);
 
-                embed = this.Context.Utilities.BuildEmbed(this.Context, "ADA Help", string.Concat("All commands defined in `", cmn, "`.\n\nFor more detailed help, visit [ADA's Command documentation](https://emzi0767.github.io/discord/ada/doc.html) page."), AdaUtilities.EmbedColour.Info);
-                this.Context.Utilities.CreateEmbedField(embed, "Commands", cmh, false);
+                embed = this.Utilities.BuildEmbed(this.Context, "ADA Help", string.Concat("All commands defined in `", cmn, "`.\n\nFor more detailed help, visit [ADA's Command documentation](https://emzi0767.github.io/discord/ada/doc.html) page."), AdaUtilities.EmbedColour.Info);
+                this.Utilities.CreateEmbedField(embed, "Commands", cmh, false);
             }
 
             await this.ReplyAsync("", false, embed);
@@ -631,8 +661,12 @@ namespace Emzi0767.Ada.Commands
         #region Debug Commands
         [Group("debug")]
         [Summary("Debug commands")]
-        public class DebugCommands : ModuleBase<AdaCommandContext>
+        public class DebugCommands : AdaModuleBase
         {
+            public DebugCommands(AdaConfigurationManager cfg, AdaPluginManager plm, AdaSqlManager sql, AdaUtilities util)
+                : base(cfg, plm, sql, util)
+            { }
+
             [Command("say")]
             [Summary("Says something as the bot")]
             [AdaDebug]
@@ -662,11 +696,11 @@ namespace Emzi0767.Ada.Commands
                 var rf = ps.Application.RuntimeFramework;
                 var an = Assembly.GetEntryAssembly().GetName();
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "ADA Environment information", "Debug information about ADA's environment.", AdaUtilities.EmbedColour.Debug);
-                this.Context.Utilities.CreateEmbedField(embed, "Platform", RuntimeInformation.OSDescription);
-                this.Context.Utilities.CreateEmbedField(embed, "CPU and OS Architecture", string.Concat("", System.Environment.ProcessorCount, " cores"));
-                this.Context.Utilities.CreateEmbedField(embed, ".NET Core version", rf.Version.ToString());
-                this.Context.Utilities.CreateEmbedField(embed, "ADA version", an.Version.ToString());
+                var embed = this.Utilities.BuildEmbed(this.Context, "ADA Environment information", "Debug information about ADA's environment.", AdaUtilities.EmbedColour.Debug);
+                this.Utilities.CreateEmbedField(embed, "Platform", RuntimeInformation.OSDescription);
+                this.Utilities.CreateEmbedField(embed, "CPU and OS Architecture", string.Concat("", System.Environment.ProcessorCount, " cores"));
+                this.Utilities.CreateEmbedField(embed, ".NET Core version", rf.Version.ToString());
+                this.Utilities.CreateEmbedField(embed, "ADA version", an.Version.ToString());
 
                 await this.ReplyAsync("", false, embed);
             }
@@ -682,7 +716,7 @@ namespace Emzi0767.Ada.Commands
                 var cs2 = code.IndexOf("```", cs1);
                 var cs = code.Substring(cs1, cs2 - cs1);
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Evaluation in progress", "Your code is being evaluated...", AdaUtilities.EmbedColour.Debug);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Evaluation in progress", "Your code is being evaluated...", AdaUtilities.EmbedColour.Debug);
                 var nmsg = await this.ReplyAsync("", false, embed);
 
                 try
@@ -690,7 +724,7 @@ namespace Emzi0767.Ada.Commands
                     var globals = new AdaEvaluationGlobals
                     {
                         Message = this.Context.Message as SocketUserMessage,
-                        Utilities = this.Context.Utilities
+                        Utilities = this.Utilities
                     };
 
                     var sopts = ScriptOptions.Default;
@@ -706,16 +740,16 @@ namespace Emzi0767.Ada.Commands
                         var rss = result.ReturnValue.ToString();
 
                         if (rss.Length < 2038)
-                            embed = this.Context.Utilities.BuildEmbed(this.Context, "Evaluation successful", string.Concat("```cs\n", rss, "\n```"), AdaUtilities.EmbedColour.Debug);
+                            embed = this.Utilities.BuildEmbed(this.Context, "Evaluation successful", string.Concat("```cs\n", rss, "\n```"), AdaUtilities.EmbedColour.Debug);
                         else
-                            embed = this.Context.Utilities.BuildEmbed(this.Context, "Evaluation successful", "The output was too long to post in an embed.", AdaUtilities.EmbedColour.Debug);
+                            embed = this.Utilities.BuildEmbed(this.Context, "Evaluation successful", "The output was too long to post in an embed.", AdaUtilities.EmbedColour.Debug);
                     }
                     else
-                        embed = this.Context.Utilities.BuildEmbed(this.Context, "Evaluation successful", "No result was returned.", AdaUtilities.EmbedColour.Debug);
+                        embed = this.Utilities.BuildEmbed(this.Context, "Evaluation successful", "No result was returned.", AdaUtilities.EmbedColour.Debug);
                 }
                 catch (Exception ex)
                 {
-                    embed = this.Context.Utilities.BuildEmbed(this.Context, "Evaluation failed", string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message), AdaUtilities.EmbedColour.Debug);
+                    embed = this.Utilities.BuildEmbed(this.Context, "Evaluation failed", string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message), AdaUtilities.EmbedColour.Debug);
                 }
 
                 await nmsg.ModifyAsync(x => x.Embed = embed.Build());
@@ -730,17 +764,21 @@ namespace Emzi0767.Ada.Commands
             {
                 var output = new StringBuilder();
 
-                var psi = new ProcessStartInfo(string.Concat(@"""", command, @""""), arguments);
-                psi.UseShellExecute = false;
-                psi.RedirectStandardOutput = true;
-                psi.RedirectStandardError = true;
+                var psi = new ProcessStartInfo(string.Concat(@"""", command, @""""), arguments)
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
 
-                var proc = new Process();
-                proc.StartInfo = psi;
+                var proc = new Process()
+                {
+                    StartInfo = psi
+                };
                 proc.OutputDataReceived += (o, e) => output.AppendLine(e.Data);
                 proc.ErrorDataReceived += (o, e) => output.AppendLine(e.Data);
 
-                var embed = this.Context.Utilities.BuildEmbed(this.Context, "Executing", string.Concat("Executing `", command, " ", arguments, "`."), AdaUtilities.EmbedColour.Debug);
+                var embed = this.Utilities.BuildEmbed(this.Context, "Executing", string.Concat("Executing `", command, " ", arguments, "`."), AdaUtilities.EmbedColour.Debug);
                 var nmsg = await this.ReplyAsync("", false, embed);
 
                 try
@@ -756,13 +794,13 @@ namespace Emzi0767.Ada.Commands
 
                     var ostr = output.ToString();
                     if (ostr.Length < 2040)
-                        embed = this.Context.Utilities.BuildEmbed(this.Context, "Execution successful", string.Concat("```\n", output.ToString(), "\n```"), AdaUtilities.EmbedColour.Debug);
+                        embed = this.Utilities.BuildEmbed(this.Context, "Execution successful", string.Concat("```\n", output.ToString(), "\n```"), AdaUtilities.EmbedColour.Debug);
                     else
-                        embed = this.Context.Utilities.BuildEmbed(this.Context, "Execution successful", "The output was too long to post in an embed.", AdaUtilities.EmbedColour.Debug);
+                        embed = this.Utilities.BuildEmbed(this.Context, "Execution successful", "The output was too long to post in an embed.", AdaUtilities.EmbedColour.Debug);
                 }
                 catch (Exception ex)
                 {
-                    embed = this.Context.Utilities.BuildEmbed(this.Context, "Execution failed", string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message), AdaUtilities.EmbedColour.Debug);
+                    embed = this.Utilities.BuildEmbed(this.Context, "Execution failed", string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message), AdaUtilities.EmbedColour.Debug);
                 }
 
                 await nmsg.ModifyAsync(x => x.Embed = embed.Build());

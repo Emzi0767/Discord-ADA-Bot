@@ -23,16 +23,16 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.2-beta2" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
-    <PackageReference Include="Discord.Net.Commands" Version="1.0.0-rc-00595" />
-    <PackageReference Include="Discord.Net.Rest" Version="1.0.0-rc-00595" />
-    <PackageReference Include="Discord.Net.WebSocket" Version="1.0.0-rc-00595" />
+    <PackageReference Include="Discord.Net.Commands" Version="1.0.0-rc-00617" />
+    <PackageReference Include="Discord.Net.Rest" Version="1.0.0-rc-00617" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="1.0.0-rc-00617" />
     <PackageReference Include="Microsoft.CodeAnalysis.Scripting.Common" Version="2.1.0-rc5-61416-02" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.1.0-rc5-61416-02" />
-    <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="1.2.0-beta-001090" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.0" />
+    <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.1" />
     <PackageReference Include="Npgsql" Version="3.2.1" />
   </ItemGroup>
 

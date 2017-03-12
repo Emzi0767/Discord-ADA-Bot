@@ -11,7 +11,7 @@ namespace Emzi0767.Ada.Plugins
 {
     public class AdaPluginManager
     {
-        public IEnumerable<Type> Modules { get { return this.FoundModules.AsEnumerable(); } }
+        public IReadOnlyList<Type> Modules { get { return this.FoundModules.AsReadOnly(); } }
 
         private List<Type> FoundModules { get; set; }
         private Dictionary<string, Assembly> LoadedAssemblies { get; set; }
@@ -37,12 +37,12 @@ namespace Emzi0767.Ada.Plugins
             }
 
             L.W("ADA PLUGIN", "Registering core modules");
-            var mt = typeof(ModuleBase<AdaCommandContext>);
+            var mt = typeof(AdaModuleBase);
             var ea = Assembly.GetEntryAssembly();
             var cms = ea
                 .DefinedTypes
                 .Select(xti => xti.AsType())
-                .Where(xt => !xt.IsNested && xt.HasParentType(mt));
+                .Where(xt => !xt.IsNested && !xt.GetTypeInfo().IsAbstract && xt.HasParentType(mt));
             this.FoundModules.AddRange(cms);
 
             L.W("ADA PLUGIN", "Looking for modules");
@@ -54,7 +54,7 @@ namespace Emzi0767.Ada.Plugins
 
                 var xts = xa.DefinedTypes
                     .Select(xti => xti.AsType())
-                    .Where(xt => !xt.IsNested && xt.HasParentType(mt));
+                    .Where(xt => !xt.IsNested && !xt.GetTypeInfo().IsAbstract && xt.HasParentType(mt));
                 this.FoundModules.AddRange(xts);
             }
         }

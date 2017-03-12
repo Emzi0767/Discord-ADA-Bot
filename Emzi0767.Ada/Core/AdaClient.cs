@@ -26,6 +26,9 @@ namespace Emzi0767.Ada.Core
         // periodic tasks
         private Timer BanHammer { get; set; }
         private int ShardId { get; set; }
+
+        // depmap
+        private DependencyMap AdaDependencies { get; set; }
         
         internal AdaClient(int shard, AdaConfigurationManager confman, AdaPluginManager plugman, AdaSqlManager sqlman)
         {
@@ -39,6 +42,12 @@ namespace Emzi0767.Ada.Core
 
             this.BanHammer = null;
             this.ShardId = shard;
+
+            this.AdaDependencies = new DependencyMap();
+            this.AdaDependencies.Add(this.ConfigurationManager);
+            this.AdaDependencies.Add(this.PluginManager);
+            this.AdaDependencies.Add(this.SqlManager);
+            this.AdaDependencies.Add(this.Utilities);
         }
         
         public void RegisterMessageHandler(Func<SocketMessage, Task> handler)
@@ -92,7 +101,7 @@ namespace Emzi0767.Ada.Core
 
             L.W("ADA DSC", "Logging in and connecting");
             await this.DiscordClient.LoginAsync(TokenType.Bot, this.ConfigurationManager.BotConfiguration.Token);
-            await this.DiscordClient.ConnectAsync();
+            await this.DiscordClient.StartAsync();
 
             L.W("ADA DSC", "Connected and running");
         }
@@ -101,7 +110,7 @@ namespace Emzi0767.Ada.Core
         {
             L.W("ADA DSC", "Disconnect requested");
             await this.DiscordClient.LogoutAsync();
-            await this.DiscordClient.DisconnectAsync();
+            await this.DiscordClient.StopAsync();
         }
 
         public string GetPrefix(SocketGuild gld)
@@ -187,7 +196,7 @@ namespace Emzi0767.Ada.Core
             if (!msg.HasStringPrefix(cprefix, ref argpos) && !msg.HasMentionPrefix(client.CurrentUser, ref argpos))
                 return;
 
-            var ctx = new AdaCommandContext(client, msg, this.Utilities, this.ConfigurationManager, this.SqlManager);
+            var ctx = new AdaCommandContext(client, msg);
 #pragma warning disable CS4014
             Task.Run(async () => await this.RunCommand(ctx, argpos));
 #pragma warning restore CS4014
@@ -195,7 +204,7 @@ namespace Emzi0767.Ada.Core
 
         private async Task RunCommand(AdaCommandContext ctx, int argpos)
         {
-            var rst = await this.DiscordCommands.ExecuteAsync(ctx, argpos);
+            var rst = await this.DiscordCommands.ExecuteAsync(ctx, argpos, this.AdaDependencies);
             
             if (!rst.IsSuccess && rst is ExecuteResult)
                 await this.HandleCommandExceptionAsync(ctx, (ExecuteResult)rst);

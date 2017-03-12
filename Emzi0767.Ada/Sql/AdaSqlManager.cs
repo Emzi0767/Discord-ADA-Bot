@@ -23,29 +23,31 @@ namespace Emzi0767.Ada.Sql
 
         static AdaSqlManager()
         {
-            TypeMappings = new Dictionary<Type, NpgsqlDbType>();
-            TypeMappings[typeof(bool)] = NpgsqlDbType.Boolean;
+            TypeMappings = new Dictionary<Type, NpgsqlDbType>
+            {
+                [typeof(bool)] = NpgsqlDbType.Boolean,
 
-            TypeMappings[typeof(float)] = NpgsqlDbType.Real;
-            TypeMappings[typeof(double)] = NpgsqlDbType.Double;
-            TypeMappings[typeof(decimal)] = NpgsqlDbType.Numeric;
+                [typeof(float)] = NpgsqlDbType.Real,
+                [typeof(double)] = NpgsqlDbType.Double,
+                [typeof(decimal)] = NpgsqlDbType.Numeric,
 
-            TypeMappings[typeof(short)] = NpgsqlDbType.Smallint;
-            TypeMappings[typeof(short[])] = NpgsqlDbType.Array | NpgsqlDbType.Smallint;
-            TypeMappings[typeof(int)] = NpgsqlDbType.Integer;
-            TypeMappings[typeof(int[])] = NpgsqlDbType.Array | NpgsqlDbType.Integer;
-            TypeMappings[typeof(long)] = NpgsqlDbType.Bigint;
+                [typeof(short)] = NpgsqlDbType.Smallint,
+                [typeof(short[])] = NpgsqlDbType.Array | NpgsqlDbType.Smallint,
+                [typeof(int)] = NpgsqlDbType.Integer,
+                [typeof(int[])] = NpgsqlDbType.Array | NpgsqlDbType.Integer,
+                [typeof(long)] = NpgsqlDbType.Bigint,
 
-            TypeMappings[typeof(object)] = NpgsqlDbType.Circle;
-            TypeMappings[typeof(string)] = NpgsqlDbType.Varchar;
-            TypeMappings[typeof(string[])] = NpgsqlDbType.Array | NpgsqlDbType.Varchar;
-            TypeMappings[typeof(byte[])] = NpgsqlDbType.Bytea;
-            TypeMappings[typeof(Array)] = NpgsqlDbType.Array;
+                [typeof(object)] = NpgsqlDbType.Circle,
+                [typeof(string)] = NpgsqlDbType.Varchar,
+                [typeof(string[])] = NpgsqlDbType.Array | NpgsqlDbType.Varchar,
+                [typeof(byte[])] = NpgsqlDbType.Bytea,
+                [typeof(Array)] = NpgsqlDbType.Array,
 
-            TypeMappings[typeof(Guid)] = NpgsqlDbType.Uuid;
-            TypeMappings[typeof(DateTime)] = NpgsqlDbType.TimestampTZ;
-            TypeMappings[typeof(TimeSpan)] = NpgsqlDbType.Interval;
-            TypeMappings[typeof(System.Net.IPAddress)] = NpgsqlDbType.Inet;
+                [typeof(Guid)] = NpgsqlDbType.Uuid,
+                [typeof(DateTime)] = NpgsqlDbType.TimestampTZ,
+                [typeof(TimeSpan)] = NpgsqlDbType.Interval,
+                [typeof(System.Net.IPAddress)] = NpgsqlDbType.Inet
+            };
 
             //TypeMappings[typeof(System.Xml.XmlDocument)] = NpgsqlDbType.Xml;
         }
