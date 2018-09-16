@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2002
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emzi0767.Ada", "Emzi0767.Ada\Emzi0767.Ada.csproj", "{AB32637C-0F93-4EC7-9CF9-6D67C53CE4FE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E5369ECC-BDDB-4C55-BE06-949D2743DB37}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		NOTICE.txt = NOTICE.txt
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{182A5681-4AF8-4531-83D0-6DED15ADDB1E}"
+	ProjectSection(SolutionItems) = preProject
+		Database\schema_v1.sql = Database\schema_v1.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{984C608B-5291-4DFB-8B88-DCEA236F5553}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\bot.sh = Scripts\bot.sh
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB32637C-0F93-4EC7-9CF9-6D67C53CE4FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB32637C-0F93-4EC7-9CF9-6D67C53CE4FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB32637C-0F93-4EC7-9CF9-6D67C53CE4FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB32637C-0F93-4EC7-9CF9-6D67C53CE4FE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {64D65F19-2223-4353-BA60-BD562D596F55}
+	EndGlobalSection
+EndGlobal
