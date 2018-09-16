@@ -43,6 +43,16 @@ create extension fuzzystrmatch;
 -- Determines entity type of the attached ID.
 create type entity_kind as enum('user', 'channel', 'guild');
 
+-- tag_kind
+-- Determines the kind of tag, whether it's a channel-specific tag, a 
+-- guild-specific tag, or a global tag.
+create type tag_kind as enum('channel', 'guild', 'global');
+
+-- moderator_action_kind
+-- Determines the kind of a logged moderation action.
+create type moderator_action_kind as enum('kick', 'softban', 'mute', 'unmute', 
+  'ban', 'unban', 'prune');
+
 -- ----------------------------------------------------------------------------
 -- 
 -- Tables
@@ -110,18 +120,132 @@ create table tag_revisions(
 
 -- guild_settings
 -- Contains all per-guild settings defined by guild administrators.
-
+-- JSON as follows:
+-- {
+--   "invite_blocker": {
+--     "enabled": false,
+--     "exemptions": {
+--       "users": [],
+--       "roles": []
+--     }
+--   },
+--   "rolestate": {
+--     "enabled": false,
+--     "exemptions": {
+--       "users": [],
+--       "roles": []
+--     }
+--   },
+--   "modlog": {
+--     "enabled": false,
+--     "channel": 0
+--   },
+--   "joinlog": {
+--     "enabled": false,
+--     "channel": 0
+--   },
+--   "muting": {
+--     "enabled": false,
+--     "role": 0
+--   },
+--   "autorole": {
+--     "enabled": false,
+--     "roles": []
+--   },
+--   "clickrole": {
+--     "enabled": false,
+--     "add_roles": {},
+--     "remove_roles": {}
+--   },
+--   "unhoister": {
+--     "enabled": false
+--   },
+--   "disabled_commands": [],
+--   "stallman": {
+--     "enabled": false
+--   }
+-- }
+-- clickrole.add_roles and clickrole.remove_roles are both emoji->role_id 
+--   mappings.
+-- disabled_commands is a list of qualified names of commands that are to be 
+--   unavailable in the guild. Only non-moderation commands can be disabled.
+create table guild_settings(
+  guild_id bigint not null,
+  settings json not null,
+  primary key(guild_id)
+);
 
 -- moderation_logs
 -- Holds a complete log of all actions taken by guild's moderators.
+create table moderation_logs(
+  guild_id bigint not null,
+  action_id int not null,
+  logged_at timestamp with time zone not null,
+  kind moderator_action_kind not null,
+  target bigint default null,
+  moderator bigint default null,
+  reason varchar(1000) default null,
+  until timestamp with time zone default null,
+  primary key(guild_id, action_id)
+);
 
+-- moderator_notes
+-- Holds notes attached to various members by moderators.
+create table moderator_notes(
+  guild_id bigint not null,
+  user_id bigint not null,
+  contents text,
+  primary key(guild_id, user_id)
+);
+
+-- moderator_warnings
+-- Holds warnings issued to users by moderators.
+create table moderator_warnings(
+  guild_id bigint not null,
+  user_id bigint not null,
+  warning_id int not null,
+  issuer_id bigint not null,
+  issued_at timestamp with time zone not null,
+  contents text not null,
+  primary key(guild_id, user_id, warning_id)
+);
+
+
+-- rolestate
+-- Contains role state information.
+create table rolestate(
+  guild_id bigint not null,
+  user_id bigint not null,
+  role_ids bigint[] not null,
+  primary key(guild_id, user_id)
+);
 
 -- rss_feeds
 -- Contains all RSS feeds attached to guilds. These will be periodically 
 -- checked and posted by the bot.
-
+create table rss_feeds(
+  feed_id int not null,
+  guild_id bigint not null,
+  channel_id bigint not null,
+  feed_url text not null,
+  item_tag text not null default '',
+  initalized boolean not null,
+  item_cache text[] not null,
+  primary key(feed_id, guild_id),
+  unique(channel_id, feed_url)
+);
 
 -- scheduler_data
 -- Contains information about all actions to be taken by the asynchronous task 
 -- scheduler.
-
+create sequence scheduler_data_action_id_seq;
+create table scheduler_data(
+  action_id int not null default nextval('scheduler_data_action_id_seq'),
+  user_id bigint not null,
+  guild_id bigint not null,
+  dispatch_at timestamp with time zone not null,
+  dispatch_handler_type text not null,
+  action_data json,
+  primary key(action_id, user_id)
+);
+alter sequence scheduler_data_action_id_seq owned by scheduler_data.action_id;
