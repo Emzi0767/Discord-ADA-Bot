@@ -1,0 +1,26 @@
+{
+  "version": {
+    "config": 2
+  },
+  "discord": {
+    "token": "insert_token_here",
+    "prefixes": [ "ada!", "/", "?" ],
+    "mention_prefix": true,
+    "message_cache_size": 512,
+    "shards": 1,
+    "game": "Banhammer 40,000"
+  },
+  "postgres": {
+    "hostname": "localhost",
+    "port": 5432,
+    "database": "discord_ada",
+    "username": "discord_ada",
+    "password": "hunter2",
+    "ssl": true,
+    "trust_certificate": true
+  },
+  "bot": {
+    "pitchforks": "bot_data/pitchforks.json",
+    "images": "bot_data/img/"
+  }
+}
