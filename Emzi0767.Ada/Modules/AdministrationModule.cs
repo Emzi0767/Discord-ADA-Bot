@@ -138,15 +138,15 @@ namespace Emzi0767.Ada.Modules
             var embed = new DiscordEmbedBuilder
             {
                 Title = "Evaluating...",
-                Color = new DiscordColor(0xD091B2)
+                Color = new DiscordColor(0x007FFF)
             };
             var msg = await ctx.RespondAsync("", embed: embed.Build()).ConfigureAwait(false);
 
             var globals = new EvaluationEnvironment(ctx);
             var sopts = ScriptOptions.Default
                 .WithImports("System", "System.Collections.Generic", "System.Diagnostics", "System.Linq", "System.Net.Http", "System.Net.Http.Headers", "System.Reflection", "System.Text",
-                             "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.CommandsNext", "DSharpPlus.Entities", "DSharpPlus.EventArgs", "DSharpPlus.Exceptions", "Emzi0767.CompanionCube",
-                             "Emzi0767.CompanionCube.Modules", "Emzi0767.CompanionCube.Services")
+                             "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.CommandsNext", "DSharpPlus.Entities", "DSharpPlus.EventArgs", "DSharpPlus.Exceptions", "Emzi0767.Ada",
+                             "Emzi0767.Ada.Modules", "Emzi0767.Ada.Services")
                 .WithReferences(AppDomain.CurrentDomain.GetAssemblies().Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location)));
 
             var sw1 = Stopwatch.StartNew();
@@ -160,7 +160,7 @@ namespace Emzi0767.Ada.Modules
                 {
                     Title = "Compilation failed",
                     Description = string.Concat("Compilation failed after ", sw1.ElapsedMilliseconds.ToString("#,##0"), "ms with ", csc.Length.ToString("#,##0"), " errors."),
-                    Color = new DiscordColor(0xD091B2)
+                    Color = new DiscordColor(0xFF7F00)
                 };
                 foreach (var xd in csc.Take(3))
                 {
@@ -195,7 +195,7 @@ namespace Emzi0767.Ada.Modules
                 {
                     Title = "Execution failed",
                     Description = string.Concat("Execution failed after ", sw2.ElapsedMilliseconds.ToString("#,##0"), "ms with `", rex.GetType(), ": ", rex.Message, "`."),
-                    Color = new DiscordColor(0xD091B2),
+                    Color = new DiscordColor(0xFF7F00),
                 };
                 await msg.ModifyAsync(embed: embed.Build()).ConfigureAwait(false);
                 return;
@@ -205,7 +205,7 @@ namespace Emzi0767.Ada.Modules
             embed = new DiscordEmbedBuilder
             {
                 Title = "Evaluation successful",
-                Color = new DiscordColor(0xD091B2),
+                Color = new DiscordColor(0x7FFF00),
             };
 
             embed.AddField("Result", css.ReturnValue != null ? css.ReturnValue.ToString() : "No value returned", false)

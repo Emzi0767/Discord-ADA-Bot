@@ -50,7 +50,7 @@ namespace Emzi0767.Ada
         /// <returns></returns>
         private static async Task MainAsync(string[] args)
         {
-            Console.WriteLine("Loading Companion Cube...");
+            Console.WriteLine("Loading ADA...");
             Console.Write("[1/4] Loading configuration         ");
 
             // locate the config file
