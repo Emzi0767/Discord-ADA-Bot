@@ -158,7 +158,8 @@ create table tag_revisions(
 --     "remove_roles": {}
 --   },
 --   "unhoister": {
---     "enabled": false
+--     "enabled": false,
+--     "rename_to": null,
 --   },
 --   "disabled_commands": [],
 --   "stallman": {
@@ -169,6 +170,7 @@ create table tag_revisions(
 --   mappings.
 -- disabled_commands is a list of qualified names of commands that are to be 
 --   unavailable in the guild. Only non-moderation commands can be disabled.
+-- unhoister.rename_to will be used to rename artificial hoisters.
 create table guild_settings(
   guild_id bigint not null,
   settings json not null,
