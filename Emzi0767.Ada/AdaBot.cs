@@ -15,11 +15,9 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -142,6 +140,7 @@ namespace Emzi0767.Ada
 
                 EnableDefaultHelp = true,
                 DefaultHelpChecks = new[] { new NotBlockedAttribute() },
+                DmHelp = true,
 
                 EnableMentionPrefix = cfg.Discord.EnableMentionPrefix,
                 PrefixResolver = this.ResolvePrefixAsync,
@@ -291,13 +290,15 @@ namespace Emzi0767.Ada
             { } // ignore
             else if (ex is ChecksFailedException cfe)
             {
-                if (!cfe.FailedChecks.OfType<NotBlockedAttribute>().Any())
-                    embed = new DiscordEmbedBuilder
-                    {
-                        Title = "Permission denied",
-                        Description = $"{DiscordEmoji.FromName(e.Context.Client, ":msraisedhand:")} You lack permissions necessary to run this command.",
-                        Color = new DiscordColor(0xFF0000)
-                    };
+                if (cfe.FailedChecks.Any(x => x is NotBlockedAttribute))
+                    return;
+
+                if (cfe.FailedChecks.Any(x => x is NotDisabledAttribute))
+                    await e.Context.RespondAsync($"{DiscordEmoji.FromName(e.Context.Client, ":msraisedhand:")} This command was disabled by server's moderators.").ConfigureAwait(false);
+                else
+                    await e.Context.RespondAsync($"{DiscordEmoji.FromName(e.Context.Client, ":msraisedhand:")} You lack permissions necessary to run this command.").ConfigureAwait(false);
+
+                return;
             }
             else
             {
