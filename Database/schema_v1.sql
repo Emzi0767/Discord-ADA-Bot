@@ -53,6 +53,10 @@ create type tag_kind as enum('channel', 'guild', 'global');
 create type moderator_action_kind as enum('kick', 'softban', 'mute', 'unmute', 
   'ban', 'unban', 'prune');
 
+-- rss_feed_kind
+-- Determines the kind of parser to use for an RSS feed.
+create type rss_feed_kind as enum('rss', 'atom');
+
 -- ----------------------------------------------------------------------------
 -- 
 -- Tables
@@ -233,6 +237,7 @@ create table rss_feeds(
   guild_id bigint not null,
   channel_id bigint not null,
   feed_url text not null,
+  kind rss_feed_kind not null,
   item_tag text not null default '',
   initalized boolean not null,
   item_cache text[] not null,

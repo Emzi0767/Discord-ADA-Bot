@@ -423,6 +423,12 @@ namespace Emzi0767.Ada.Data
         public string FeedUrl { get; set; }
 
         /// <summary>
+        /// Gets or sets the kind of this feed. This determines which RSS parser to use.
+        /// </summary>
+        [Column("kind")]
+        public DatabaseRssFeedKind Kind { get; set; }
+
+        /// <summary>
         /// Gets or sets the optional tag for all items posted from this feed. This can be used to distinguish items from various feeds.
         /// </summary>
         [Required]

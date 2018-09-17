@@ -71,6 +71,7 @@ namespace Emzi0767.Ada
             NpgsqlConnection.GlobalTypeMapper.MapEnum<DatabaseEntityKind>("entity_kind");
             NpgsqlConnection.GlobalTypeMapper.MapEnum<DatabaseTagKind>("tag_kind");
             NpgsqlConnection.GlobalTypeMapper.MapEnum<DatabaseModeratorActionKind>("moderator_action_kind");
+            NpgsqlConnection.GlobalTypeMapper.MapEnum<DatabaseRssFeedKind>("rss_feed_kind");
 
             // create database connection and validate schema
             var dbcsp = new ConnectionStringProvider(cfg.PostgreSQL);

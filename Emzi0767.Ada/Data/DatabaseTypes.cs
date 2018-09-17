@@ -113,4 +113,22 @@ namespace Emzi0767.Ada.Data
         [PgName("prune")]
         Prune
     }
+
+    /// <summary>
+    /// Represents kind of RSS feed, which determines which RSS parser to use.
+    /// </summary>
+    public enum DatabaseRssFeedKind
+    {
+        /// <summary>
+        /// Defines that the feed is an RSS feed.
+        /// </summary>
+        [PgName("rss")]
+        RSS,
+
+        /// <summary>
+        /// Defines that the feed is an Atom feed.
+        /// </summary>
+        [PgName("atom")]
+        Atom
+    }
 }

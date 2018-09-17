@@ -117,6 +117,7 @@ namespace Emzi0767.Ada.Services
             modelBuilder.ForNpgsqlHasEnum(null, "entity_kind", new[] { "user", "channel", "guild" })
                 .ForNpgsqlHasEnum(null, "tag_kind", new[] { "channel", "guild", "global" })
                 .ForNpgsqlHasEnum(null, "moderator_action_kind", new[] { "kick", "softban", "mute", "unmute", "ban", "unban", "prune" })
+                .ForNpgsqlHasEnum(null, "rss_feed_kind", new[] { "rss", "atom" })
                 .HasPostgresExtension("fuzzystrmatch");
 
             modelBuilder.Entity<DatabaseMetadata>(entity =>
