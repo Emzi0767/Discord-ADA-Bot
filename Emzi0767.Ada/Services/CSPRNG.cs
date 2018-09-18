@@ -15,6 +15,8 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace Emzi0767.Ada.Services
@@ -42,6 +44,12 @@ namespace Emzi0767.Ada.Services
             bytes = new byte[count];
             this.RNG.GetBytes(bytes);
         }
+
+        public void GetBytes(byte[] bytes)
+            => this.RNG.GetBytes(bytes);
+
+        public void GetBytes(Span<byte> bytes)
+            => this.RNG.GetBytes(bytes);
 
         public byte GetU8()
             => this.GetBytes(1)[0];
@@ -99,6 +107,21 @@ namespace Emzi0767.Ada.Services
             var (l1, l2) = ((double)this.GetS64(), (double)this.GetS64());
             return Math.Abs(l1 / l2) % 1.0;
         }
+
+        public T PickOne<T>(IEnumerable<T> items)
+        {
+            if (!items.Any())
+                throw new ArgumentException("The collection cannot be empty.", nameof(items));
+
+            var index = this.Next(0, items.Count());
+            if (items is IList<T> list)
+                return list[index];
+
+            return items.ElementAt(index);
+        }
+
+        public T PickOne<T>(params T[] items)
+            => this.PickOne(items as IEnumerable<T>);
 
         public void Dispose()
         {

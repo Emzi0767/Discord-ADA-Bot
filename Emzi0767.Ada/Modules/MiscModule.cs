@@ -35,9 +35,9 @@ namespace Emzi0767.Ada.Modules
 {
     [ModuleLifespan(ModuleLifespan.Transient)]
     [NotBlocked, NotDisabled]
-    public sealed class MiscCommandsModule : BaseCommandModule
+    public sealed class MiscModule : BaseCommandModule
     {
-        public MiscCommandsModule()
+        public MiscModule()
         { }
 
         [Command("about"), Aliases("info"), Description("Displays information about the bot.")]
