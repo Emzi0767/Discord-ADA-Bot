@@ -36,7 +36,10 @@ namespace Emzi0767.Ada.Attributes
 
             var db = ctx.Services.GetService<DatabaseContext>();
             var cfg = db.GuildSettings.FirstOrDefault(x => x.GuildId == gid);
-            return Task.FromResult(cfg.Settings.DisabledCommands.Contains(ctx.Command.QualifiedName.ToLowerInvariant()));
+            if (cfg != null)
+                return Task.FromResult(cfg.Settings.DisabledCommands.Contains(ctx.Command.QualifiedName.ToLowerInvariant()));
+            else
+                return Task.FromResult(true);
         }
     }
 }

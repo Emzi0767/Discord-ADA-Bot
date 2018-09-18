@@ -36,6 +36,7 @@
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00524" />
     <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-nightly-00524" />
     <PackageReference Include="Humanizer.Core" Version="2.5.1" />
+    <PackageReference Include="Markov" Version="2.0.0" />
     <PackageReference Include="Microsoft.SyndicationFeed.ReaderWriter" Version="1.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.3" />
