@@ -229,7 +229,7 @@ namespace Emzi0767.Ada.Modules
             await ctx.RespondAsync(DiscordEmoji.FromName(ctx.Client, ":msokhand:").ToString()).ConfigureAwait(false);
         }
 
-        [Command("blacklist"), Description("Sets blacklisted status for a user, channel, or guild."), Aliases("bl"), RequireOwner]
+        [Command("blacklist"), Description("Sets blacklisted status for a user, channel, or guild. Invoking with no arguments lists blacklisted entities."), Aliases("bl"), RequireOwner]
         public async Task BlacklistAsync(CommandContext ctx,
            [Description("User whose blacklisted status to change.")] DiscordUser user,
            [Description("Whether the user should be blacklisted.")] bool blacklisted,
