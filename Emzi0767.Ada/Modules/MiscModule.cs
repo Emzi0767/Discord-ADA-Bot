@@ -34,7 +34,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 namespace Emzi0767.Ada.Modules
 {
     [ModuleLifespan(ModuleLifespan.Transient)]
-    [NotBlocked, NotDisabled]
+    [NotBlacklisted, NotDisabled]
     public sealed class MiscModule : BaseCommandModule
     {
         public MiscModule()

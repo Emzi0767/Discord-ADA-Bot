@@ -35,9 +35,9 @@ namespace Emzi0767.Ada.Services
         public virtual DbSet<DatabasePrefix> Prefixes { get; set; }
 
         /// <summary>
-        /// Gets or sets blocked entities.
+        /// Gets or sets entities that are blacklisted from using the bot.
         /// </summary>
-        public virtual DbSet<DatabaseBlockedEntity> BlockedEntities { get; set; }
+        public virtual DbSet<DatabaseBlacklistedEntity> EntityBlacklist { get; set; }
 
         /// <summary>
         /// Gets or sets defined tags.
@@ -136,7 +136,7 @@ namespace Emzi0767.Ada.Services
                 entity.Property(e => e.EnableDefault).HasDefaultValueSql("true");
             });
 
-            modelBuilder.Entity<DatabaseBlockedEntity>(entity =>
+            modelBuilder.Entity<DatabaseBlacklistedEntity>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.Kind });
             });

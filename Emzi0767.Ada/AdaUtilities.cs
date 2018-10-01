@@ -15,6 +15,8 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Emzi0767.Ada.Data;
@@ -100,6 +102,150 @@ namespace Emzi0767.Ada
             if (ts.TotalHours >= 1)
                 return ts.ToString(@"h\:mm\:ss");
             return ts.ToString(@"m\:ss");
+        }
+        
+        /// <summary>
+        /// Extracts a substring token from supplied string.
+        /// </summary>
+        /// <param name="str">String to extract token from.</param>
+        /// <param name="startPos">Starting position to search from.</param>
+        /// <returns>Extracted token or null if no token could be extracted.</returns>
+        private static string ExtractNextArgument(this string str, ref int startPos)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+                return null;
+
+            var in_backtick = false;
+            var in_triple_backtick = false;
+            var in_quote = false;
+            var in_escape = false;
+            var remove = new List<int>(str.Length - startPos);
+
+            var i = startPos;
+            for (; i < str.Length; i++)
+                if (!char.IsWhiteSpace(str[i]))
+                    break;
+            startPos = i;
+
+            var ep = -1;
+            var sp = startPos;
+            for (i = sp; i < str.Length; i++)
+            {
+                if (char.IsWhiteSpace(str[i]) && !in_quote && !in_triple_backtick && !in_backtick && !in_escape)
+                    ep = i;
+
+                if (str[i] == '\\')
+                {
+                    if (!in_escape && !in_backtick && !in_triple_backtick)
+                    {
+                        in_escape = true;
+                        if (str.IndexOf("\\`", i) == i || str.IndexOf("\\\"", i) == i || str.IndexOf("\\\\", i) == i || (str.Length >= i && char.IsWhiteSpace(str[i + 1])))
+                            remove.Add(i - sp);
+                        i++;
+                    }
+                    else if ((in_backtick || in_triple_backtick) && str.IndexOf("\\`", i) == i)
+                    {
+                        in_escape = true;
+                        remove.Add(i - sp);
+                        i++;
+                    }
+                }
+
+                if (str[i] == '`' && !in_escape)
+                {
+                    var tritick = str.IndexOf("```", i) == i;
+                    if (in_triple_backtick && tritick)
+                    {
+                        in_triple_backtick = false;
+                        i += 2;
+                    }
+                    else if (!in_backtick && tritick)
+                    {
+                        in_triple_backtick = true;
+                        i += 2;
+                    }
+
+                    if (in_backtick && !tritick)
+                        in_backtick = false;
+                    else if (!in_triple_backtick && tritick)
+                        in_backtick = true;
+                }
+
+                if (str[i] == '"' && !in_escape && !in_backtick && !in_triple_backtick)
+                {
+                    remove.Add(i - sp);
+
+                    if (!in_quote)
+                        in_quote = true;
+                    else
+                        in_quote = false;
+                }
+
+                if (in_escape)
+                    in_escape = false;
+
+                if (ep != -1)
+                {
+                    startPos = ep;
+                    if (sp != ep)
+                        return str.Substring(sp, ep - sp).CleanupString(remove);
+                    return null;
+                }
+            }
+
+            startPos = str.Length;
+            if (startPos != sp)
+                return str.Substring(sp).CleanupString(remove);
+            return null;
+        }
+
+        /// <summary>
+        /// Cleans up input string.
+        /// </summary>
+        /// <param name="s">String to clean up.</param>
+        /// <param name="indices">Indices of things to remove.</param>
+        /// <returns>Cleaned-up string.</returns>
+        internal static string CleanupString(this string s, IList<int> indices)
+        {
+            if (!indices.Any())
+                return s;
+
+            var li = indices.Last();
+            var ll = 1;
+            for (var x = indices.Count - 2; x >= 0; x--)
+            {
+                if (li - indices[x] == ll)
+                {
+                    ll++;
+                    continue;
+                }
+
+                s = s.Remove(li - ll + 1, ll);
+                li = indices[x];
+                ll = 1;
+            }
+
+            return s.Remove(li - ll + 1, ll);
+        }
+
+        /// <summary>
+        /// Splits supplied text into sentence items.
+        /// </summary>
+        /// <param name="str">String to split.</param>
+        /// <returns>Split sentence enumerator.</returns>
+        public static IEnumerable<string> SplitSentence(this string str)
+        {
+            var findpos = 0;
+            var argv = "";
+
+            while (true)
+            {
+                argv = str.ExtractNextArgument(ref findpos);
+                if (argv == null)
+                    yield break;
+
+                yield return argv;
+            }
         }
     }
 }

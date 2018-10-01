@@ -139,7 +139,7 @@ namespace Emzi0767.Ada
                 IgnoreExtraArguments = false,
 
                 EnableDefaultHelp = true,
-                DefaultHelpChecks = new[] { new NotBlockedAttribute() },
+                DefaultHelpChecks = new[] { new NotBlacklistedAttribute() },
                 DmHelp = true,
 
                 EnableMentionPrefix = cfg.Discord.EnableMentionPrefix,
@@ -290,7 +290,7 @@ namespace Emzi0767.Ada
             { } // ignore
             else if (ex is ChecksFailedException cfe)
             {
-                if (cfe.FailedChecks.Any(x => x is NotBlockedAttribute))
+                if (cfe.FailedChecks.Any(x => x is NotBlacklistedAttribute))
                     return;
 
                 if (cfe.FailedChecks.Any(x => x is NotDisabledAttribute))

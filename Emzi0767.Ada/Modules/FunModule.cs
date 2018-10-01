@@ -14,22 +14,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Emzi0767.Ada.Attributes;
 using Emzi0767.Ada.Services;
+using Markov;
 
 namespace Emzi0767.Ada.Modules
 {
     [Group("fun")]
     [Description("Various fun commands, such as random number generators, markov chain generators, etc.")]
     [ModuleLifespan(ModuleLifespan.Transient)]
-    [NotBlocked, NotDisabled]
+    [NotBlacklisted, NotDisabled]
     public sealed class FunModule : BaseCommandModule
     {
         private static Regex DiceRegex { get; } = new Regex(@"^(?<count>\d+)?d(?<sides>\d+)$", RegexOptions.Compiled | RegexOptions.ECMAScript);
@@ -41,7 +44,7 @@ namespace Emzi0767.Ada.Modules
             this.RNG = rng;
         }
 
-        [Command("random"), Description("Generates a random number between specified bounds (lower inclusive)."), NotBlocked, NotDisabled]
+        [Command("random"), Description("Generates a random number between specified bounds (lower inclusive)."), NotBlacklisted, NotDisabled]
         public async Task RandomAsync(CommandContext ctx, 
             [Description("Minimum value to generate (inclusive). 0 by default.")] int min = 0, 
             [Description("Maximum value to generate (exclusive). 32,768 by default.")] int max = 32768, 
@@ -77,7 +80,7 @@ namespace Emzi0767.Ada.Modules
             }
         }
 
-        [Command("dice"), Description("Roll dice!"), NotBlocked, NotDisabled]
+        [Command("dice"), Description("Roll dice!"), NotBlacklisted, NotDisabled]
         public async Task DiceAsync(CommandContext ctx, 
             [Description("Number of sides in a die. Minimum of 2, default of 6.")] int sides = 6, 
             [Description("Number of dice to roll. Minimum and default of 1.")] int count = 1)
@@ -150,7 +153,7 @@ namespace Emzi0767.Ada.Modules
             await this.DiceAsync(ctx, sides, count).ConfigureAwait(false);
         }
 
-        [Command("choice"), Aliases("pick", "choose"), Description("Pick a random element from a list of options."), NotBlocked, NotDisabled]
+        [Command("choice"), Aliases("pick", "choose"), Description("Pick a random element from a list of options."), NotBlacklisted, NotDisabled]
         public async Task ChoiceAsync(CommandContext ctx,
             [Description("Options to choose from.")] params string[] options)
         {
@@ -164,7 +167,7 @@ namespace Emzi0767.Ada.Modules
             await ctx.RespondAsync($"\u200b{opt}").ConfigureAwait(false);
         }
 
-        [Command("choicex"), Aliases("pickx", "choosex"), Description("Pick random elements from a list of options, performing the choice a specified number of times."), NotBlocked, NotDisabled]
+        [Command("choicex"), Aliases("pickx", "choosex"), Description("Pick random elements from a list of options, performing the choice a specified number of times."), NotBlacklisted, NotDisabled]
         public async Task ChoicexAsync(CommandContext ctx,
             [Description("Number of times to perform random choice. Minimum of 2, maximum of 10.")] int count,
             [Description("Options to choose from.")] params string[] options)
@@ -206,6 +209,107 @@ namespace Emzi0767.Ada.Modules
             sb.AppendLine().Append($"Result: {topc}");
             var result = sb.ToString().Trim().Replace("\r\n", "\n");
             await ctx.RespondAsync(result).ConfigureAwait(false);
+        }
+
+        [Group("markov")]
+        [Description("Generates Markov chains from input data.")]
+        [ModuleLifespan(ModuleLifespan.Transient)]
+        [NotBlacklisted, NotDisabled]
+        public sealed class MarkovModule : BaseCommandModule
+        {
+            private CSPRNG RNG { get; }
+
+            public MarkovModule(CSPRNG rng)
+            {
+                this.RNG = rng;
+            }
+
+            [Command("channel")]
+            [Aliases("chn")]
+            [Description("Generates messages from up to 200 messages in specified channel.")]
+            [NotBlacklisted, NotDisabled]
+            public async Task ChannelAsync(CommandContext ctx, 
+                [Description("Channel to generate message from. Will use current if not specified.")] DiscordChannel channel = null)
+            {
+                await ctx.TriggerTypingAsync().ConfigureAwait(false);
+
+                channel = channel ?? ctx.Channel;
+                if (channel.Type != ChannelType.Text)
+                {
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":msunamused:")} You need to specify a text channel.").ConfigureAwait(false);
+                    return;
+                }
+
+                var msgs = await channel.GetMessagesAsync(200).ConfigureAwait(false);
+                if (msgs.Count < 100)
+                {
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":msunamused:")} Not enough messages available in {channel.Mention}.").ConfigureAwait(false);
+                    return;
+                }
+
+                var markov = new MarkovChain<string>(1);
+                foreach (var msg in msgs)
+                    markov.Add(msg.Content.SplitSentence(), 1);
+
+                var rng = new EnhancedRandom(this.RNG);
+                var sentence = string.Join(" ", markov.Chain(rng));
+                if (string.IsNullOrWhiteSpace(sentence))
+                {
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":mscry:")} Somehow I failed to generate a sentence.").ConfigureAwait(false);
+                    return;
+                }
+
+                if (sentence.Length <= 1500)
+                    await ctx.RespondAsync($"\u200b{sentence}").ConfigureAwait(false);
+                else
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":msfrown:")} Generated sentence was too long.").ConfigureAwait(false);
+            }
+
+            [Command("role")]
+            [Description("Generates messages from up to 50 messages sent by members with specified role in specified channel.")]
+            [NotBlacklisted, NotDisabled]
+            public async Task RoleAsync(CommandContext ctx,
+                [Description("Role to generate messages from.")] DiscordRole role,
+                [Description("Channel to generate message from. Will use current if not specified.")] DiscordChannel channel = null)
+            {
+                await ctx.TriggerTypingAsync().ConfigureAwait(false);
+
+                channel = channel ?? ctx.Channel;
+                if (channel.Type != ChannelType.Text)
+                {
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":msunamused:")} You need to specify a text channel.").ConfigureAwait(false);
+                    return;
+                }
+
+                var msgsRaw = await channel.GetMessagesAsync(500).ConfigureAwait(false);
+                var msgs = new List<DiscordMessage>();
+                foreach (var msg in msgsRaw)
+                    if (msg.Author is DiscordMember mbr && mbr.Roles.Contains(role))
+                        msgs.Add(msg);
+
+                if (msgs.Count < 50)
+                {
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":msunamused:")} Not enough messages available in {channel.Mention}.").ConfigureAwait(false);
+                    return;
+                }
+
+                var markov = new MarkovChain<string>(1);
+                foreach (var msg in msgs)
+                    markov.Add(msg.Content.SplitSentence(), 1);
+
+                var rng = new EnhancedRandom(this.RNG);
+                var sentence = string.Join(" ", markov.Chain(rng));
+                if (string.IsNullOrWhiteSpace(sentence))
+                {
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":mscry:")} Somehow I failed to generate a sentence.").ConfigureAwait(false);
+                    return;
+                }
+
+                if (sentence.Length <= 1500)
+                    await ctx.RespondAsync($"\u200b{sentence}").ConfigureAwait(false);
+                else
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":msfrown:")} Generated sentence was too long.").ConfigureAwait(false);
+            }
         }
     }
 }

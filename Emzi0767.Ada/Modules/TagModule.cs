@@ -34,7 +34,7 @@ namespace Emzi0767.Ada.Modules
     [Group("tag")]
     [Description("Tag commands. Invoking without a subcommand will display requested tag.")]
     [ModuleLifespan(ModuleLifespan.Transient)]
-    [NotBlocked, NotDisabled]
+    [NotBlacklisted, NotDisabled]
     public sealed class TagModule : BaseCommandModule
     {
         private static string[] ForbiddenNames { get; } = new[] { "create", "make", "delete", "remove", "force_delete", "force_remove", "edit", "modify", "force_edit", "force_modify", "history", "view_edit", "alias", "dump", "raw", "info", "unhide", "force_unhide", "hide", "force_hide", "list", "changetype", "force_changetype", "global", "@everyone", "@here" };
@@ -1007,7 +1007,7 @@ namespace Emzi0767.Ada.Modules
     }
 
     [ModuleLifespan(ModuleLifespan.Transient)]
-    [NotBlocked, NotDisabled]
+    [NotBlacklisted, NotDisabled]
     public sealed class TagsModule : BaseCommandModule
     {
         [Command("tags"), Description("Lists tags, optionally specifying a search query.")]

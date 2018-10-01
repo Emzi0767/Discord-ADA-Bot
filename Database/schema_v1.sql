@@ -85,10 +85,10 @@ create table prefixes(
   primary key(guild_id)
 );
 
--- blocked_entities
--- Holds information about blocked users, channels, and guilds, along with 
--- information about block reason.
-create table blocked_entities(
+-- entity_blacklist
+-- Holds information about blacklisted users, channels, and guilds, along with 
+-- information about blacklisting reason.
+create table entity_blacklist(
   id bigint not null, -- snowflake
   kind entity_kind not null,
   reason text,

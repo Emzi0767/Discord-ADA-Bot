@@ -73,10 +73,10 @@ namespace Emzi0767.Ada.Data
     }
 
     /// <summary>
-    /// Represents a collection of entities blocked from using the bot.
+    /// Represents an entity blacklisted from using the bot.
     /// </summary>
-    [Table("blocked_entities")]
-    public partial class DatabaseBlockedEntity
+    [Table("entity_blacklist")]
+    public partial class DatabaseBlacklistedEntity
     {
         /// <summary>
         /// Gets or sets the entity's ID.
@@ -91,13 +91,13 @@ namespace Emzi0767.Ada.Data
         public DatabaseEntityKind Kind { get; set; }
 
         /// <summary>
-        /// Gets or sets the reason why the entity was blocked.
+        /// Gets or sets the reason why the entity was blacklisted.
         /// </summary>
         [Column("reason")]
         public string Reason { get; set; }
 
         /// <summary>
-        /// Gets or sets when the entity was blocked.
+        /// Gets or sets when the entity was blacklisted.
         /// </summary>
         [Column("since", TypeName = "timestamp with time zone")]
         public DateTime Since { get; set; }
